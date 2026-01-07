@@ -41,41 +41,54 @@ namespace LinkwellProductionSystem.Controllers
             return HttpContext.Session.GetString("Username") ?? "system";
         }
 
-        // ==============================
-        // GET ALL STATIONS (ADMIN)
-        // ==============================
+
         [HttpGet("get-all")]
         public IActionResult GetStations()
         {
-            if (!IsAdmin())
-                return Unauthorized(new { message = "Admin access only" });
-
-            try
-            {
-                var stations = _context.StationVMs
-                .FromSqlRaw(
-                "EXEC usp_Admin_GetStations @UserRole",
-                new SqlParameter("@UserRole", "Admin")
-                )
-                .AsNoTracking()
-                .ToList();
-
-
-                return Ok(new
-                {
-                    success = true,
-                    data = stations
-                });
-            }
-            catch (SqlException ex)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = ex.Message
-                });
-            }
+            return Ok(_context.Stations
+                .Where(x => x.IsActive)
+                .Select(x => new {
+                    id = x.Id,
+                    stationName = x.StationName
+                }).ToList());
         }
+
+
+        // ==============================
+        // GET ALL STATIONS (ADMIN)
+        // ==============================
+       // [HttpGet("get-all")]
+        //public IActionResult GetStations()
+        //{
+        //    if (!IsAdmin())
+        //        return Unauthorized(new { message = "Admin access only" });
+
+        //    try
+        //    {
+        //        var stations = _context.StationVMs
+        //        .FromSqlRaw(
+        //        "EXEC usp_Admin_GetStations @UserRole",
+        //        new SqlParameter("@UserRole", "Admin")
+        //        )
+        //        .AsNoTracking()
+        //        .ToList();
+
+
+        //        return Ok(new
+        //        {
+        //            success = true,
+        //            data = stations
+        //        });
+        //    }
+        //    catch (SqlException ex)
+        //    {
+        //        return BadRequest(new
+        //        {
+        //            success = false,
+        //            message = ex.Message
+        //        });
+        //    }
+        //}
 
 
         [HttpPost("save")]

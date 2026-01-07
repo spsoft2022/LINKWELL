@@ -8,6 +8,8 @@ namespace LinkwellProductionSystem.Data
     public class ApplicationDbContext : DbContext
     {
         public DbSet<Model> Models { get; set; } = null!;
+
+        public DbSet<ModelStationMap> ModelStationMap { get; set; } = null!;
         public DbSet<Stage> Stages { get; set; } = null!;
         public DbSet<ModelStage> ModelStages { get; set; } = null!;
         public DbSet<WorkInstruction> WorkInstructions { get; set; } = null!;
