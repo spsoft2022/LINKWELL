@@ -1,0 +1,44 @@
+﻿@model string
+@{
+    ViewData["Title"] = Model + " Dashboard";
+    var station = Model;
+}
+
+<div class="container-fluid">
+    <h1>LINKWELL ELECTRONICS</h1>
+    <h2>Station: @station</h2>
+    <div class="text-end mb-3">
+        <h3>Current Month Production: <strong>1,24,567</strong></h3>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Daily Target: 1200 pcs | Achieved: 1050 pcs | 87.5%</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-lg">
+                <thead>
+                    <tr><th>Hour</th><th>Target</th><th>Actual</th><th>%</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @for (int i = 9; i <= 18; i++)
+                    {
+                        var hour = $"{i:D2}-{i + 1:D2}";
+                        var isCurrent = (i == DateTime.Now.Hour);
+                        <tr class="@(isCurrent ? "current-hour" : "")">
+                            <td>@hour</td>
+                            <td>120</td>
+                            <td>115</td>
+                            <td>96%</td>
+                            <td>@(isCurrent ? "ONGOING" : "Completed")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    setInterval(() => location.reload(), 20000);  // auto refresh every 20 sec
+</script>

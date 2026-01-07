@@ -1,0 +1,243 @@
+﻿@{
+	ViewData["Title"] = "Model Management";
+}
+
+<button class="btn btn-primary mb-3" id="btnAddModel">
+	➕ Add Model
+</button>
+
+<div id="modelGrid"></div>
+
+<div class="modal fade" id="modelModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+
+			<div class="modal-header">
+				<h5 class="modal-title">Add Model</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<div class="modal-body">
+				<input type="hidden" id="modelId">
+
+				<div class="mb-2">
+					<label>Model Code</label>
+					<input type="text" class="form-control" id="modelCode">
+				</div>
+
+				<div class="mb-2">
+					<label>Model Name</label>
+					<input type="text" class="form-control" id="modelName">
+				</div>
+
+				<div class="mb-2">
+					<label>Description</label>
+					<textarea class="form-control" id="description"></textarea>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-secondary" id="btnCancelModel" data-bs-dismiss="modal">Cancel</button>
+				<button class="btn btn-success" id="btnSaveModel">Save</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		loadModelGrid();
+
+	});
+	 let modelModal;
+
+	/* ---------------- ADD MODEL ---------------- */
+	$("#btnAddModel").click(function () {
+		clearModelForm();
+		$(".modal-title").text("Add Model");
+		$("#modelCode").prop("disabled", false);
+
+	 modelModal = new bootstrap.Modal(
+		document.getElementById('modelModal')
+	);
+
+	modelModal.show();
+
+	});
+
+	/* ---------------- EDIT MODEL ---------------- */
+	function editModel(rowIndex) {
+
+		const rowData = $("#modelGrid").jqxGrid('getrowdata', rowIndex);
+
+		$("#modelId").val(rowData.id);
+		$("#modelCode").val(rowData.modelCode).prop("disabled", true);
+		$("#modelName").val(rowData.modelName);
+		$("#description").val(rowData.description);
+
+		$(".modal-title").text("Edit Model");
+
+		var modal = new bootstrap.Modal(document.getElementById('modelModal'));
+		modal.show();
+	}
+
+	/* ---------------- CLEAR FORM ---------------- */
+	function clearModelForm() {
+		$("#modelId").val("");
+		$("#modelCode").val("");
+		$("#modelName").val("");
+		$("#description").val("");
+	}
+
+	/* ---------------- SAVE MODEL ---------------- */
+	$("#btnSaveModel").click(function () {
+
+		const id = $("#modelId").val();
+
+		let data;
+
+		if (id) {
+		// UPDATE
+		data = {
+		id: parseInt(id),
+		modelName: $("#modelName").val().trim(),
+		description: $("#description").val()
+		};
+		} else {
+		// INSERT
+		data = {
+		modelCode: $("#modelCode").val().trim(),
+		modelName: $("#modelName").val().trim(),
+		description: $("#description").val()
+		};
+	}
+
+		const url = id ? "/api/model/update" : "/api/model/add";
+		const method = id ? "PUT" : "POST";
+
+			   $.ajax({
+		url: url,
+		type: method,
+		contentType: "application/json",
+		data: JSON.stringify(data),
+		  success: function (res) {
+
+		// res is a STRING → "Model created successfully"
+		toastr.success(res);
+
+		$("#modelGrid").jqxGrid('updatebounddata');
+
+		// ✅ Close Bootstrap modal properly
+		const modalEl = document.getElementById('modelModal');
+		const modal = bootstrap.Modal.getInstance(modalEl);
+		if (modal) modal.hide();
+	}
+	,
+		error: function (xhr) {
+			console.error(xhr.responseText);
+			toastr.error("Save failed");
+		}
+	});
+
+	});
+
+	/* ---------------- ENABLE / DISABLE ---------------- */
+	function toggleModel(modelId, isActive) {
+
+		const action = isActive ? "disable" : "enable";
+
+		if (!confirm(`Are you sure you want to ${action} this model?`))
+			return;
+
+		$.ajax({
+			url: "/api/model/toggle-status",
+			type: "PUT",
+			contentType: "application/json",
+			data: JSON.stringify({
+				id: modelId,
+				isActive: !isActive
+			}),
+			success: function (res) {
+				if (res.success) {
+					toastr.success(res.message);
+					$("#modelGrid").jqxGrid('updatebounddata');
+				} else {
+					toastr.error(res.message);
+				}
+			},
+			error: function () {
+				toastr.error("Status update failed");
+			}
+		});
+	}
+
+	/* ---------------- GRID ---------------- */
+	function loadModelGrid() {
+
+		var source = {
+			datatype: "json",
+			url: "/api/model/get-models",
+			root: "data",
+			datafields: [
+				{ name: "id", type: "number" },
+				{ name: "modelCode", type: "string" },
+				{ name: "modelName", type: "string" },
+				{ name: "description", type: "string" },
+				{ name: "isActive", type: "bool" }
+			]
+		};
+
+		var adapter = new $.jqx.dataAdapter(source);
+
+		$("#modelGrid").jqxGrid({
+			width: "100%",
+			height: 400,
+			source: adapter,
+			pageable: true,
+			sortable: true,
+			filterable: true,
+			showfilterrow: true,
+			columnsresize: true,
+			columns: [
+				{ text: "Model Code", datafield: "modelCode", width: 120 },
+				{ text: "Model Name", datafield: "modelName", width: 200 },
+				{ text: "Description", datafield: "description", width: 400 },
+				{
+					text: "Status",
+					datafield: "isActive",
+					width: 100,
+					cellsrenderer: function (row, col, val) {
+						return val
+							? "<span style='color:green;font-weight:bold'>Active</span>"
+							: "<span style='color:red;font-weight:bold'>Disabled</span>";
+					}
+				},
+				{
+					text: "Actions",
+					width: 160,
+					cellsrenderer: function (row) {
+
+						const data = $("#modelGrid").jqxGrid('getrowdata', row);
+						const toggleText = data.isActive ? "Disable" : "Enable";
+						const toggleClass = data.isActive ? "btn-danger" : "btn-success";
+
+						return `
+							<button class="btn btn-sm btn-warning me-1"
+								onclick="editModel(${row})">
+								✏️ Edit
+							</button>
+
+							<button class="btn btn-sm ${toggleClass}"
+								onclick="toggleModel(${data.id}, ${data.isActive})">
+								${toggleText}
+							</button>
+						`;
+					},
+					filterable: false,
+					sortable: false
+				}
+			]
+		});
+	}
+</script>

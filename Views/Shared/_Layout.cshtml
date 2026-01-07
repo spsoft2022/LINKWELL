@@ -1,0 +1,92 @@
+﻿@{
+    var isLoggedIn = Context.Session.GetString("Username") != null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"] - Linkwell</title>
+    <meta name="viewport" content="width=device-width" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="~/lib/support/jqx.base.css" rel="stylesheet" />
+
+    <!-- jQuery MUST be first -->
+    <script src="~/lib/support/jquery-3.6.4.min.js"></script>
+
+    <!-- Bootstrap 5 -->
+    <script src="~/lib/support/bootstrap.bundle.min.js"></script>
+
+    <!-- jqxGrid -->
+    <script src="~/lib/support/jqx-all.js"></script>
+
+    <!-- toastr (optional) -->
+    <script src="~/lib/support/toastr.min.js"></script>
+
+
+</head>
+
+<body>
+
+    @if (isLoggedIn)
+    {
+        <!-- LOGGED-IN LAYOUT -->
+        <div class="d-flex" style="min-height:100vh;">
+
+            <!-- SIDEBAR -->
+            <div class="bg-primary text-white p-3" style="width:250px;">
+                <h4 class="text-center border-bottom pb-2">LINKWELL</h4>
+
+                <a asp-controller="Home" asp-action="Index" class="text-white d-block my-2">Dashboard</a>
+
+                @if (Context.Session.GetString("Role") == "Admin")
+                {
+                    <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
+                    <a asp-controller="Stages" asp-action="Index" class="text-white d-block my-2">Stages</a>
+                    <a asp-controller="Station" asp-action="Index" class="text-white d-block my-2">Stations</a>
+                }
+
+                @if (Context.Session.GetString("Role") == "Incharge")
+                {
+                    <a asp-controller="Incharge" asp-action="HourlyEntry" class="text-white d-block my-2">
+                        Hourly Entry
+                    </a>
+                }
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="flex-grow-1 d-flex flex-column">
+
+                <!-- HEADER -->
+                <div class="bg-light p-3 border-bottom d-flex justify-content-between">
+                    <div>
+                        <strong>@Context.Session.GetString("FullName")</strong>
+                        <span class="text-muted">
+                            (@Context.Session.GetString("Role"))
+                        </span>
+                    </div>
+
+                    <a asp-controller="Account" asp-action="Logout" class="btn btn-sm btn-danger">
+                        Logout
+                    </a>
+                </div>
+
+                <!-- CONTENT -->
+                <div class="p-4 bg-light flex-grow-1">
+                    @RenderBody()
+                </div>
+
+                <!-- FOOTER -->
+                <div class="bg-light text-center p-2 border-top">
+                    © @DateTime.Now.Year Linkwell Electronics
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- LOGGED-OUT VIEW (LOGIN ONLY) -->
+        @RenderBody()
+    }
+
+</body>
+</html>

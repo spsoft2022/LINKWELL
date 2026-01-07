@@ -1,0 +1,159 @@
+[
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.ModelController",
+    "Method": "Index",
+    "RelativePath": "api/Model",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.ModelController",
+    "Method": "AddModel",
+    "RelativePath": "api/Model/add",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "LinkwellProductionSystem.ViewModels.ModelVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.ModelController",
+    "Method": "GetModels",
+    "RelativePath": "api/Model/get-models",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.ModelController",
+    "Method": "ToggleStatus",
+    "RelativePath": "api/Model/toggle",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "isActive",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.ModelController",
+    "Method": "UpdateModel",
+    "RelativePath": "api/Model/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "LinkwellProductionSystem.ViewModels.ModelVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.StationController",
+    "Method": "Index",
+    "RelativePath": "api/Station",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.StationController",
+    "Method": "GetStations",
+    "RelativePath": "api/Station/get-all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.StationController",
+    "Method": "InsertStation",
+    "RelativePath": "api/Station/insert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "LinkwellProductionSystem.ViewModels.StationUpsertVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.StationController",
+    "Method": "SaveStation",
+    "RelativePath": "api/Station/save",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "LinkwellProductionSystem.ViewModels.StationUpsertVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.StationController",
+    "Method": "ToggleStationStatus",
+    "RelativePath": "api/Station/toggle-status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "LinkwellProductionSystem.ViewModels.StationStatusVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LinkwellProductionSystem.Controllers.StationController",
+    "Method": "UpdateStation",
+    "RelativePath": "api/Station/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "LinkwellProductionSystem.ViewModels.StationUpdateVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

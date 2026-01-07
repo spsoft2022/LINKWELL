@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Linkwell Production System";
+}
+
+@{
+    var fullName = Context.Session.GetString("FullName") ?? "User";
+    var role = Context.Session.GetString("Role") ?? "Unknown";
+    var stationName = Context.Session.GetString("StationName"); // we will set this in controller
+}
+
+<div class="container mt-5">
+    <div class="jumbotron text-center bg-primary text-white p-5 rounded">
+        <h1 class="display-3">LINKWELL ELECTRONICS</h1>
+        <p class="lead">Production Tracking & Work Instruction System</p>
+        <hr class="my-4">
+
+        <h3>Welcome, @fullName!</h3>
+        <p class="display-6">Role: <strong>@role</strong></p>
+        @if (!string.IsNullOrEmpty(stationName))
+        {
+            <p class="display-6">Station: <strong>@stationName</strong></p>
+        }
+
+        @if (role == "Admin")
+        {
+            <div class="mt-4">
+                <a asp-controller="Models" asp-action="Index" class="btn btn-light btn-lg m-2">Models Master</a>
+                <a asp-controller="Stages" asp-action="Index" class="btn btn-light btn-lg m-2">Stages Master</a>
+                <a asp-controller="Stations" asp-action="Index" class="btn btn-light btn-lg m-2">Stations</a>
+            </div>
+        }
+
+        @if (role == "Incharge")
+        {
+            <div class="mt-4">
+                <a asp-controller="Incharge" asp-action="HourlyEntry" class="btn btn-success btn-lg">Enter Hourly Production</a>
+            </div>
+        }
+
+        <div class="mt-5">
+            <h4>Live Dashboards (Open on Factory TVs)</h4>
+            <div>
+                <a href="/Dashboard/ASSY01" target="_blank" class="btn btn-info btn-lg m-2">ASSY01</a>
+                <a href="/Dashboard/ASSY02" target="_blank" class="btn btn-info btn-lg m-2">ASSY02</a>
+                <a href="/Dashboard/QC01" target="_blank" class="btn btn-info btn-lg m-2">QC01</a>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-danger btn-lg">Logout</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+﻿// Models/AppUser.cs
+namespace LinkwellProductionSystem.Models
+{
+    public class AppUser
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;   // BCrypt hashed
+        public string? FullName { get; set; }
+        public int? StationId { get; set; }                        // NULL for Admin
+        public string Role { get; set; } = "Incharge";             // "Admin" or "Incharge"
+
+        public Station? Station { get; set; }
+    }
+}

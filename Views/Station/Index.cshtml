@@ -1,0 +1,225 @@
+﻿@{
+    ViewData["Title"] = "Station Management";
+}
+
+
+<button class="btn btn-primary mb-3" id="btnAddStation">
+    ➕ Add Station
+</button>
+
+<div id="stationGrid"></div>
+
+<div class="modal fade" id="stationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Add Station</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="stationId">
+
+                <div class="mb-2">
+                    <label>Station Code</label>
+                    <input type="text" class="form-control" id="stationCode">
+                </div>
+
+                <div class="mb-2">
+                    <label>Station Name</label>
+                    <input type="text" class="form-control" id="stationName">
+                </div>
+
+                <div class="mb-2">
+                    <label>Description</label>
+                    <textarea class="form-control" id="description"></textarea>
+                </div>
+
+                <div class="mb-2">
+                    <label>Location</label>
+                    <input type="text" class="form-control" id="location">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-success" id="btnSaveStation">Save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+    loadStationGrid();
+    });
+
+    $("#btnAddStation").click(function () {
+    clearStationForm();
+    var modal = new bootstrap.Modal(document.getElementById('stationModal'));
+    modal.show();
+
+    });
+
+
+    function editStation(rowIndex) {
+
+    const rowData = $("#stationGrid").jqxGrid('getrowdata', rowIndex);
+
+    $("#stationId").val(rowData.id);
+    $("#stationCode").val(rowData.stationCode);
+    $("#stationName").val(rowData.stationName);
+    $("#description").val(rowData.description);
+    $("#location").val(rowData.location);
+
+    $(".modal-title").text("Edit Station");
+
+    var modal = new bootstrap.Modal(document.getElementById('stationModal'));
+    modal.show();
+}
+
+
+    function clearStationForm() {
+         $("#stationId").val("");
+        $("#stationCode").val("");
+        $("#stationName").val("");
+        $("#description").val("");
+        $("#location").val("");
+    }
+
+            $("#btnSaveStation").click(function () {
+
+                const id = $("#stationId").val();
+
+                const data = {
+                stationId: id ? parseInt(id) : null,
+                stationCode: $("#stationCode").val().trim(),
+                stationName: $("#stationName").val().trim(),
+                description: $("#description").val(),
+                location: $("#location").val()
+                };
+
+
+                $.ajax({
+                url: "/api/station/save",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (res) {
+                toastr.success(res.message);
+                $("#stationModal").modal("hide");
+                $("#stationGrid").jqxGrid('updatebounddata');
+                clearStationForm();
+                },
+                error: function (xhr) {
+                toastr.error(xhr.responseText || "Save failed");
+                }
+                });
+
+         
+            });
+
+            function toggleStation(stationId, isActive) {
+
+            const action = isActive ? "disable" : "enable";
+
+            if (!confirm(`Are you sure you want to ${action} this station?`))
+            return;
+
+            $.ajax({
+            url: "/api/station/toggle-status",
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+            stationId: stationId,
+            isActive: !isActive
+            }),
+            success: function (res) {
+            if (res.success) {
+            toastr.success(res.message);
+            $("#stationGrid").jqxGrid('updatebounddata');
+            } else {
+            toastr.error(res.message);
+            }
+            },
+            error: function () {
+            toastr.error("Status update failed");
+            }
+            });
+            }
+
+
+    function loadStationGrid() {
+
+        var source = {
+            datatype: "json",
+            url: "/api/station/get-all",
+            root: "data",
+            datafields: [
+                { name: "id", type: "number" },
+                { name: "stationCode", type: "string" },
+                { name: "stationName", type: "string" },
+                { name: "description", type: "string" },
+                { name: "location", type: "string" },
+                { name: "isActive", type: "bool" }
+            ]
+        };
+
+        var adapter = new $.jqx.dataAdapter(source);
+
+        $("#stationGrid").jqxGrid({
+            width: "100%",
+            height: 400,
+            source: adapter,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            showfilterrow: true,
+            columnsresize: true,
+            columns: [
+                { text: "Code", datafield: "stationCode", width: 60 },
+                { text: "Name", datafield: "stationName", width: 150 },
+                { text: "Description", datafield: "description", width: 400 },
+                { text: "Location", datafield: "location", width: 200 },
+                {
+                    text: "Status",
+                    datafield: "isActive",
+                    width: 100,
+                    cellsrenderer: function (row, col, val) {
+                        return val
+                            ? "<span style='color:green;font-weight:bold'>Active</span>"
+                            : "<span style='color:red;font-weight:bold'>Disabled</span>";
+                    }
+                },
+                {
+                text: "Actions",
+                width: 160,
+                cellsrenderer: function (row) {
+
+                const data = $("#stationGrid").jqxGrid('getrowdata', row);
+                const toggleText = data.isActive ? "Disable" : "Enable";
+                const toggleClass = data.isActive ? "btn-danger" : "btn-success";
+
+                return `
+                <button class="btn btn-sm btn-warning me-1"
+                onclick="editStation(${row})">
+                ✏️ Edit
+                </button>
+
+                <button class="btn btn-sm ${toggleClass}"
+                onclick="toggleStation(${data.id}, ${data.isActive})">
+                ${toggleText}
+                </button>
+                `;
+                },
+                filterable: false,
+                sortable: false
+                }
+
+
+            ]
+        });
+    }
+</script>
