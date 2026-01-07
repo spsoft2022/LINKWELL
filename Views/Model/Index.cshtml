@@ -91,56 +91,41 @@
 	}
 
 	/* ---------------- SAVE MODEL ---------------- */
-	$("#btnSaveModel").click(function () {
+		$("#btnSaveModel").on("click", function () {
 
 		const id = $("#modelId").val();
 
-		let data;
-
-		if (id) {
-		// UPDATE
-		data = {
-		id: parseInt(id),
-		modelName: $("#modelName").val().trim(),
-		description: $("#description").val()
+		const data = {
+			Id: id ? parseInt(id) : null,
+			ModelCode: $("#modelCode").val().trim(),
+			ModelName: $("#modelName").val().trim(),
+			Description: $("#description").val(),
+			IsActive: true
 		};
-		} else {
-		// INSERT
-		data = {
-		modelCode: $("#modelCode").val().trim(),
-		modelName: $("#modelName").val().trim(),
-		description: $("#description").val()
-		};
-	}
 
-		const url = id ? "/api/model/update" : "/api/model/add";
-		const method = id ? "PUT" : "POST";
+		$.ajax({
+			url: "/api/model/save",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify(data),
+			success: function (res) {
 
-			   $.ajax({
-		url: url,
-		type: method,
-		contentType: "application/json",
-		data: JSON.stringify(data),
-		  success: function (res) {
+				toastr.success(res.message);
 
-		// res is a STRING → "Model created successfully"
-		toastr.success(res);
+				$("#modelGrid").jqxGrid('updatebounddata');
 
-		$("#modelGrid").jqxGrid('updatebounddata');
-
-		// ✅ Close Bootstrap modal properly
-		const modalEl = document.getElementById('modelModal');
-		const modal = bootstrap.Modal.getInstance(modalEl);
-		if (modal) modal.hide();
-	}
-	,
-		error: function (xhr) {
-			console.error(xhr.responseText);
-			toastr.error("Save failed");
-		}
+				// Close Bootstrap modal
+				const modalEl = document.getElementById('modelModal');
+				const modal = bootstrap.Modal.getInstance(modalEl);
+				if (modal) modal.hide();
+			},
+			error: function (xhr) {
+				console.error(xhr.responseText);
+				toastr.error(xhr.responseText || "Save failed");
+			}
+		});
 	});
 
-	});
 
 	/* ---------------- ENABLE / DISABLE ---------------- */
 	function toggleModel(modelId, isActive) {
@@ -151,7 +136,7 @@
 			return;
 
 		$.ajax({
-			url: "/api/model/toggle-status",
+			url: "/api/model/toggle",
 			type: "PUT",
 			contentType: "application/json",
 			data: JSON.stringify({
@@ -167,7 +152,7 @@
 				}
 			},
 			error: function () {
-				toastr.error("Status update failed");
+				toastr.error("Model update failed");
 			}
 		});
 	}

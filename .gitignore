@@ -1,0 +1,122 @@
+# =========================
+# Build results
+# =========================
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# =========================
+# Visual Studio
+# =========================
+.vs/
+*.user
+*.userosscache
+*.suo
+*.cache
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+
+# =========================
+# Rider / VS Code
+# =========================
+.idea/
+.vscode/
+*.code-workspace
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# NuGet
+# =========================
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+.nuget/packages/
+
+# =========================
+# ASP.NET Core
+# =========================
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# =========================
+# Secrets & Environment
+# =========================
+secrets.json
+*.env
+.env.*
+
+# =========================
+# Publish / Deploy
+# =========================
+publish/
+wwwroot/lib/
+wwwroot/dist/
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Database
+# =========================
+*.mdf
+*.ldf
+*.bak
+
+# =========================
+# Test results
+# =========================
+TestResults/
+
+# =========================
+# Coverage reports
+# =========================
+coverage/
+*.coverage
+*.coveragexml
+
+# =========================
+# Node (if frontend included)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# =========================
+# Resharper
+# =========================
+_ReSharper*/
+*.DotSettings.user
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+
+# Logs
+*.log
+
+# User files
+*.user
+*.suo
+
