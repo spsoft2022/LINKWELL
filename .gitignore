@@ -60,7 +60,6 @@ secrets.json
 # Publish / Deploy
 # =========================
 publish/
-wwwroot/lib/
 wwwroot/dist/
 
 # =========================
