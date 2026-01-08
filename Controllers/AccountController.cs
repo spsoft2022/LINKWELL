@@ -33,7 +33,7 @@ namespace LinkwellProductionSystem.Controllers
                 HttpContext.Session.SetString("FullName", user.FullName);
                 HttpContext.Session.SetString("Role", user.Role);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index","Station");
             }
 
             ViewBag.Error = "Invalid username or password";

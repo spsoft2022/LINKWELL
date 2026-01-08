@@ -30,7 +30,7 @@
         // ===============================
         // LOAD MODELS DROPDOWN
         // ===============================
-        $.get('/Model/GetModels', function (data) {
+        $.get('/api/model/get-models', function (data) {
 
             $("#ddlModel").jqxDropDownList({
                 source: data,
@@ -45,7 +45,7 @@
         // ===============================
         // LOAD STATIONS CHECKBOX LIST
         // ===============================
-        $.get('/Station/GetStations', function (data) {
+        $.get('api/station/get-stations', function (data) {
 
             $("#stationList").jqxListBox({
                 source: data,

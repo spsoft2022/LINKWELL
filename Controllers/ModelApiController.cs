@@ -47,38 +47,70 @@ namespace LinkwellProductionSystem.Controllers.Api
             if (!IsAdmin())
                 return Unauthorized("Admin access only");
 
+          
+
             if (model.Id == null)
             {
-                // INSERT
-                _context.Database.ExecuteSqlRaw(
-                    @"EXEC usp_Admin_InsertModel
-              @ModelCode, @ModelName, @Description, @IsActive, @CreatedBy, @UserRole",
-                    new SqlParameter("@ModelCode", model.ModelCode),
-                    new SqlParameter("@ModelName", model.ModelName),
-                    new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
-                    new SqlParameter("@IsActive", model.IsActive),
-                    new SqlParameter("@CreatedBy", CurrentUser()),
-                    new SqlParameter("@UserRole", "Admin")
-                );
 
-                return Ok(new { success = true, message = "Model created successfully" });
+                try
+                {
+                        // INSERT
+                        _context.Database.ExecuteSqlRaw(
+                        @"EXEC usp_Admin_InsertModel
+                        @CategoryId,
+                        @ModelCode,
+                        @ModelName,
+                        @Description,
+                        @IsActive,
+                        @CreatedBy,
+                        @UserRole",
+                        new SqlParameter("@CategoryId", model.CategoryId),   // ⬅ NEW
+                        new SqlParameter("@ModelCode", model.ModelCode),
+                        new SqlParameter("@ModelName", model.ModelName),
+                        new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
+                        new SqlParameter("@IsActive", model.IsActive),
+                        new SqlParameter("@CreatedBy", CurrentUser()),
+                        new SqlParameter("@UserRole", "Admin")
+                    );
+
+
+                    return Ok(new { success = true, message = "Model created successfully" });
+
+                }
+                catch (SqlException ex)
+                {
+
+                    return BadRequest(new { success = false, message = ex.Message });
+                }
+
             }
             else
             {
-                // UPDATEMicrosoft.Data.SqlClient.SqlException: 'Invalid object name 'Model'.'
-                _context.Database.ExecuteSqlRaw(
-                    @"EXEC usp_Admin_UpdateModel
-              @Id, @ModelCode, @ModelName, @Description, @IsActive, @ModifiedBy, @UserRole",
-                    new SqlParameter("@Id", model.Id),
-                    new SqlParameter("@ModelCode", model.ModelCode),
-                    new SqlParameter("@ModelName", model.ModelName),
-                    new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
-                    new SqlParameter("@IsActive", model.IsActive),
-                    new SqlParameter("@ModifiedBy", CurrentUser()),
-                    new SqlParameter("@UserRole", "Admin")
-                );
+                try
+                {
 
-                return Ok(new { success = true, message = "Model updated successfully" });
+                    // UPDATEMicrosoft.Data.SqlClient.SqlException: 'Invalid object name 'Model'.'
+                    _context.Database.ExecuteSqlRaw(
+                        @"EXEC usp_Admin_UpdateModel
+              @Id, @ModelCode, @ModelName, @Description, @IsActive, @ModifiedBy, @UserRole",
+                        new SqlParameter("@Id", model.Id),
+                        new SqlParameter("@ModelCode", model.ModelCode),
+                        new SqlParameter("@ModelName", model.ModelName),
+                        new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
+                        new SqlParameter("@IsActive", model.IsActive),
+                        new SqlParameter("@ModifiedBy", CurrentUser()),
+                        new SqlParameter("@UserRole", "Admin")
+                    );
+
+                    return Ok(new { success = true, message = "Model updated successfully" });
+
+                }
+                catch (SqlException ex)
+                {
+
+                    return BadRequest(new { success = false, message = ex.Message });
+                }
+           
             }
         }
 

@@ -34,6 +34,11 @@
 					<label>Description</label>
 					<textarea class="form-control" id="description"></textarea>
 				</div>
+				<div class="mb-2">
+					<label>Category</label>
+					<select class="form-select" id="categoryId"></select>
+				</div>
+
 			</div>
 
 			<div class="modal-footer">
@@ -52,19 +57,38 @@
 	});
 	 let modelModal;
 
+
+	 function loadCategories(callback) {
+    $.get("/api/category/get-categories", function (res) {
+        $("#categoryId").empty();
+        $("#categoryId").append(`<option value="">-- Select --</option>`);
+
+        res.data.forEach(c => {
+            $("#categoryId").append(
+                `<option value="${c.categoryId}">${c.categoryName}</option>`
+            );
+        });
+
+        if (callback) callback();
+    });
+}
+
+
 	/* ---------------- ADD MODEL ---------------- */
 	$("#btnAddModel").click(function () {
 		clearModelForm();
 		$(".modal-title").text("Add Model");
 		$("#modelCode").prop("disabled", false);
 
-	 modelModal = new bootstrap.Modal(
-		document.getElementById('modelModal')
-	);
-
-	modelModal.show();
-
+		// 🔹 load categories before showing modal
+		loadCategories(function () {
+			modelModal = new bootstrap.Modal(
+				document.getElementById('modelModal')
+			);
+			modelModal.show();
+		});
 	});
+
 
 	/* ---------------- EDIT MODEL ---------------- */
 	function editModel(rowIndex) {
@@ -75,6 +99,7 @@
 		$("#modelCode").val(rowData.modelCode).prop("disabled", true);
 		$("#modelName").val(rowData.modelName);
 		$("#description").val(rowData.description);
+	    $("#categoryId").val(rowData.categoryId);
 
 		$(".modal-title").text("Edit Model");
 
@@ -97,6 +122,7 @@
 
 		const data = {
 			Id: id ? parseInt(id) : null,
+		    CategoryId: $("#categoryId").val() ? parseInt($("#categoryId").val()) : null,
 			ModelCode: $("#modelCode").val().trim(),
 			ModelName: $("#modelName").val().trim(),
 			Description: $("#description").val(),
@@ -119,10 +145,28 @@
 				const modal = bootstrap.Modal.getInstance(modalEl);
 				if (modal) modal.hide();
 			},
-			error: function (xhr) {
-				console.error(xhr.responseText);
-				toastr.error(xhr.responseText || "Save failed");
+				  error: function (xhr) {
+			let msg = "Save failed";
+
+			if (xhr.responseJSON) {
+				const res = xhr.responseJSON;
+
+				// ASP.NET validation format
+				if (res.errors) {
+					// Flatten first error
+					const allErrors = [];
+					for (let key in res.errors) {
+						allErrors.push(...res.errors[key]);
+					}
+					msg = allErrors.join("<br/>");
+				}
+				else if (res.message) {
+					msg = res.message;
+				}
 			}
+
+			toastr.error(msg);
+		}
 		});
 	});
 
@@ -161,18 +205,20 @@
 	function loadModelGrid() {
 
 
-		var source = {
+			var source = {
 			datatype: "json",
 			url: "/api/model/get-models",
 			root: "data",
 			datafields: [
-				{ name: "id", type: "number" },
-				{ name: "modelCode", type: "string" },
-				{ name: "modelName", type: "string" },
-				{ name: "description", type: "string" },
-				{ name: "isActive", type: "bool" }
+			{ name: "id", type: "number" },
+			{ name: "modelCode", type: "string" },
+			{ name: "modelName", type: "string" },
+			{ name: "description", type: "string" },
+			{ name: "isActive", type: "bool" },
+			{ name: "categoryId", type: "number" },
+			{ name: "categoryName", type: "string" }
 			]
-		};
+			};
 
 		var adapter = new $.jqx.dataAdapter(source);
 
@@ -186,9 +232,10 @@
 			showfilterrow: true,
 			columnsresize: true,
 			columns: [
+						{ text: "Category", datafield: "categoryName", width: 200 },
 				{ text: "Model Code", datafield: "modelCode", width: 120 },
 				{ text: "Model Name", datafield: "modelName", width: 200 },
-				{ text: "Description", datafield: "description", width: 400 },
+				{ text: "Description", datafield: "description", width: 300 },
 				{
 					text: "Status",
 					datafield: "isActive",
@@ -222,7 +269,9 @@
 					},
 					filterable: false,
 					sortable: false
-				}
+				},
+				
+
 			]
 		});
 	}

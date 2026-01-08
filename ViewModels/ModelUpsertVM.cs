@@ -19,5 +19,8 @@ namespace LinkwellProductionSystem.ViewModels
 
         public bool IsActive { get; set; } = true;
 
+        public int CategoryId { get; set; }
+
+
     }
 }

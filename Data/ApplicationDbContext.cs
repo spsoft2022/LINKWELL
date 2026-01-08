@@ -18,6 +18,8 @@ namespace LinkwellProductionSystem.Data
         public DbSet<DailyProduction> DailyProductions { get; set; } = null!;
         public DbSet<HourlyProduction> HourlyProductions { get; set; } = null!;
 
+        public DbSet<CategoryVM> CategoryVM { get; set; }
+
         public DbSet<StationVM> StationVMs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -38,6 +40,9 @@ namespace LinkwellProductionSystem.Data
         {
             modelBuilder.Entity<ModelStage>()
                 .HasKey(ms => new { ms.ModelId, ms.StageId });
+
+            modelBuilder.Entity<CategoryVM>().HasNoKey();
+
 
             modelBuilder.Entity<StationVM>().HasNoKey();
 

@@ -7,7 +7,7 @@
     <title>@ViewData["Title"] - Linkwell</title>
     <meta name="viewport" content="width=device-width" />
     <link href="~/lib/support/bootstrap.min.css" rel="stylesheet">
-
+    <link href="~/lib/support/toastr.min.css" rel="stylesheet">
     <link href="~/lib/support/jqx.base.css" rel="stylesheet" />
 
     <!-- jQuery MUST be first -->
@@ -22,6 +22,11 @@
     <!-- toastr (optional) -->
     <script src="~/lib/support/toastr.min.js"></script>
 
+    <style>
+        #toast-container {
+            z-index: 999999 !important;
+        }
+    </style>
 
 </head>
 
@@ -36,13 +41,11 @@
             <div class="bg-primary text-white p-3" style="width:250px;">
                 <h4 class="text-center border-bottom pb-2">LINKWELL</h4>
 
-                <a asp-controller="Home" asp-action="Index" class="text-white d-block my-2">Dashboard</a>
 
                 @if (Context.Session.GetString("Role") == "Admin")
                 {
-                    <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
-                    <a asp-controller="Stages" asp-action="Index" class="text-white d-block my-2">Stages</a>
                     <a asp-controller="Station" asp-action="Index" class="text-white d-block my-2">Stations</a>
+                    <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
                     <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a>
                 }
 

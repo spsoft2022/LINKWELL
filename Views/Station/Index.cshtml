@@ -113,9 +113,30 @@
                 $("#stationGrid").jqxGrid('updatebounddata');
                 clearStationForm();
                 },
-                error: function (xhr) {
-                toastr.error(xhr.responseText || "Save failed");
+                    error: function (xhr) {
+        let msg = "Save failed";
+
+        if (xhr.responseJSON) {
+            const res = xhr.responseJSON;
+
+            // ASP.NET validation format
+            if (res.errors) {
+                // Flatten first error
+                const allErrors = [];
+                for (let key in res.errors) {
+                    allErrors.push(...res.errors[key]);
                 }
+                msg = allErrors.join("<br/>");
+            }
+            else if (res.message) {
+                msg = res.message;
+            }
+        }
+
+        toastr.error(msg);
+    }
+
+
                 });
 
          
@@ -155,7 +176,7 @@
 
         var source = {
             datatype: "json",
-            url: "/api/station/get-all",
+                url: "/api/station/get-stations",
             root: "data",
             datafields: [
                 { name: "id", type: "number" },
