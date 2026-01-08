@@ -146,25 +146,22 @@ namespace LinkwellProductionSystem.Controllers.Api
         }
 
 
-        [HttpPost]
+        [HttpPost("assignstations")]
         public IActionResult AssignStations([FromBody] ModelStationAssignVM vm)
         {
-            // Remove old mappings
+            // Remove existing mappings
             var existing = _context.ModelStationMap
                 .Where(x => x.ModelId == vm.ModelId);
 
             _context.ModelStationMap.RemoveRange(existing);
 
-            // Insert new mappings
-            foreach (var stationId in vm.StationIds)
+            // Insert new
+            foreach (var code in vm.StationCodes)
             {
                 _context.ModelStationMap.Add(new ModelStationMap
                 {
                     ModelId = vm.ModelId,
-                    StationId = stationId,
-                    CreatedBy = "admin",
-                    CreatedOn = DateTime.Now,
-                    IsActive = true
+                    StationCode = code,
                 });
             }
 
@@ -173,6 +170,7 @@ namespace LinkwellProductionSystem.Controllers.Api
         }
 
 
-        
+
+
     }
 }

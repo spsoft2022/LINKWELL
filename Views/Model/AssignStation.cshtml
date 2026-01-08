@@ -45,17 +45,35 @@
         // ===============================
         // LOAD STATIONS CHECKBOX LIST
         // ===============================
-        $.get('api/station/get-stations', function (data) {
+
 
             $("#stationList").jqxListBox({
-                source: data,
-                displayMember: "stationName",
-                valueMember: "id",
-                checkboxes: true,
-                width: '100%',
-                height: 300
+            displayMember: "stationCode",
+            valueMember: "stationCode",
+            checkboxes: true,
+            width: '100%',
+            height: 300,
+            enableSelection: true,
+            enableHover: true
             });
-        });
+
+
+    
+            $.get('/api/station/get-stations', function(res) {
+            $("#stationList").jqxListBox('source', res.data);
+            });
+
+            $("#stationList").on('select', function (event) {
+            $("#stationList").jqxListBox('checkIndex', event.args.index);
+            });
+
+
+
+    
+
+
+
+
 
         // ===============================
         // ASSIGN BUTTON CLICK
@@ -83,7 +101,7 @@
             };
 
             $.ajax({
-                url: '/Model/AssignStations',
+                url: '/api/model/assignstations',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(payload),
