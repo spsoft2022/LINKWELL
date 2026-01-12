@@ -49,6 +49,24 @@ namespace LinkwellProductionSystem.Controllers.Api
         }
 
 
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            var uploads = Path.Combine("wwwroot", "uploads", "workinstr");
+            Directory.CreateDirectory(uploads);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploads, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok(new { path = "/uploads/workinstr/" + fileName });
+        }
+
+
         // =====================================================
         // 2️⃣ POST: Add New Work Instruction
         // =====================================================

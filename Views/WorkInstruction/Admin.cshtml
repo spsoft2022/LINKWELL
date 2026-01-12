@@ -45,6 +45,12 @@
         <label class="mt-2">Content</label>
         <textarea id="txtContent"></textarea>
 
+        <div class="mt-2" id="fileContainer" style="display:none;">
+            <label>File Upload</label>
+            <input type="file" id="fileInput" />
+        </div>
+
+
         <label class="mt-2">Sequence</label>
         <input type="text" id="txtSequence" />
 
@@ -66,6 +72,24 @@
     let stationId = 0;
 
     $(document).ready(function () {
+
+
+            $("#ddlInstructionType").on('select', function (event) {
+            const type = event.args.item.label;
+
+            if (type === "Text") {
+            $("#txtContent").show();
+            $("#fileContainer").hide();
+            } else {
+            $("#txtContent").hide();
+            $("#fileContainer").show();
+
+            if (type === "Image") $("#fileInput").attr("accept", "image/*");
+            if (type === "PDF") $("#fileInput").attr("accept", "application/pdf");
+            if (type === "Video") $("#fileInput").attr("accept", "video/*");
+            }
+            });
+
 
         /* ================= LOAD MODELS ================= */
         $.get("/api/model/get-models", function (data) {
@@ -151,6 +175,8 @@
         $("#btnSave").click(saveInstruction);
     });
 
+
+
     /* ================= GRID ================= */
       function initGrid() {
 
@@ -183,24 +209,19 @@
             columnsresize: true,
             columns: [
                 { text: "Seq", datafield: "sequenceNo", width: 60 },
-
                 { text: "Title", datafield: "title", width: 180 },
-
                 { text: "Type", datafield: "instructionType", width: 100 },
-
                 {
                     text: "Content",
                     datafield: "content",
                     minwidth: 250
                 },
-
                 {
                     text: "Mandatory",
                     datafield: "isMandatory",
                     columntype: "checkbox",
                     width: 100
                 },
-
                 {
                     text: "Active",
                     datafield: "isActive",
@@ -242,45 +263,62 @@
     }
 
     /* ================= SAVE ================= */
-    function saveInstruction() {
+       function saveInstruction() {
 
-        const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
-        const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
+        const type = $("#ddlInstructionType").jqxDropDownList("getSelectedItem")?.label;
 
-        if (!modelItem || !stationItem || !$("#txtTitle").val()) {
-            alert("Model, Station and Title are required");
+        function doSave(contentUrl) {
+            const data = {
+                title: $("#txtTitle").val(),
+                instructionType: type,
+                content: contentUrl,
+                isActive: $("#chkIsActive").jqxCheckBox("checked"),
+                modelId: modelId,
+                stationId: stationId,
+                sequenceNo: $("#txtSequence").jqxNumberInput("val"),
+                isMandatory: $("#chkMandatory").jqxCheckBox("checked"),
+                versionNo: 1,
+                status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
+                createdBy: "admin"
+            };
+
+            $.ajax({
+                url: "/api/admin/work-instructions/add",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: () => {
+                    $("#instructionWindow").jqxWindow("close");
+                    loadInstructions();
+                }
+            });
+        }
+
+        // TEXT path
+        if (type === "Text") {
+            doSave($("#txtContent").val());
             return;
         }
 
-        const data = {
-            title: $("#txtTitle").val(),
-            instructionType: $("#ddlInstructionType").jqxDropDownList("getSelectedItem")?.label,
-            content: $("#txtContent").val(),
-            isActive: $("#chkIsActive").jqxCheckBox("checked"),
+        // FILE path
+        const file = $("#fileInput")[0].files[0];
+        if (!file) {
+            alert("Select file first!");
+            return;
+        }
 
-            modelId: modelItem.value,
-            stationId: stationItem.value,
-            sequenceNo: $("#txtSequence").jqxNumberInput("val"),
-            isMandatory: $("#chkMandatory").jqxCheckBox("checked"),
-            versionNo: 1,
-            status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
-            createdBy: "admin"
-        };
+        const formData = new FormData();
+        formData.append("file", file);
 
-        console.log(JSON.stringify(data));
-
+        // Upload file first
         $.ajax({
-            url: "/api/admin/work-instructions/add",
+            url: "/api/admin/work-instructions/upload",
             type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(data),
-            success: function () {
-                $("#instructionWindow").jqxWindow("close");
-                loadInstructions();
-            },
-            error: function () {
-                alert("Save failed");
-            }
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: res => doSave(res.path),
+            error: () => alert("Upload failed")
         });
     }
 
