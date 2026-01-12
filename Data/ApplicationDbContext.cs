@@ -1,18 +1,19 @@
 ﻿using LinkwellProductionSystem.Models;
 using LinkwellProductionSystem.ViewModels;
 using Microsoft.EntityFrameworkCore;
-
+using LinkwellProductionSystem.Core.Entities;
 
 namespace LinkwellProductionSystem.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<Model> Models { get; set; } = null!;
+        public DbSet<ModelStationWorkInstruction> ModelStationWorkInstruction { get; set; } = null!;
 
+        public DbSet<WorkInstruction> WorkInstruction { get; set; } = null!;
+        public DbSet<Model> Models { get; set; } = null!;
         public DbSet<ModelStationMap> ModelStationMap { get; set; } = null!;
         public DbSet<Stage> Stages { get; set; } = null!;
         public DbSet<ModelStage> ModelStages { get; set; } = null!;
-        public DbSet<WorkInstruction> WorkInstructions { get; set; } = null!;
         public DbSet<Station> Stations { get; set; } = null!;
         public DbSet<AppUser> AppUsers { get; set; } = null!;
         public DbSet<DailyProduction> DailyProductions { get; set; } = null!;

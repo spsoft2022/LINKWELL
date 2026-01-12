@@ -1,0 +1,297 @@
+﻿@{
+    ViewData["Title"] = "Work Instruction Management";
+}
+
+
+<!-- ================= HEADER CONTROLS ================= -->
+<div class="row align-items-end g-3 mb-3">
+
+    <div class="col-md-3">
+        <label class="form-label fw-semibold">Model</label>
+        <div id="ddlModel"></div>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label fw-semibold">Station</label>
+        <div id="ddlStation"></div>
+    </div>
+
+    <div class="col-md-3 pt-4">
+        <input type="button" id="btnLoad" value="Load" />
+    </div>
+
+    <div class="col-md-3 pt-4 text-end">
+        <input type="button" id="btnAdd" value="Add Instruction" />
+    </div>
+
+</div>
+
+<!-- ================= GRID ================= -->
+<div id="instructionGrid"></div>
+
+<!-- ================= MODAL ================= -->
+<div id="instructionWindow">
+    <div>Add / Edit Instruction</div>
+    <div style="padding:10px;">
+
+        <input type="hidden" id="hdnId" />
+
+        <label>Title</label>
+        <input type="text" id="txtTitle" />
+
+        <label class="mt-2">Instruction Type</label>
+        <div id="ddlInstructionType"></div>
+
+        <label class="mt-2">Content</label>
+        <textarea id="txtContent"></textarea>
+
+        <label class="mt-2">Sequence</label>
+        <input type="text" id="txtSequence" />
+
+        <div class="mt-2" id="chkMandatory">Mandatory</div>
+        <div class="mt-2" id="chkIsActive">Is Active</div>
+
+        <label class="mt-2">Status</label>
+        <div id="ddlStatus"></div>
+
+        <br />
+        <input type="button" id="btnSave" value="Save" />
+        <input type="button" id="btnCancel" value="Cancel" />
+    </div>
+</div>
+
+
+<script>
+    let modelId = 0;
+    let stationId = 0;
+
+    $(document).ready(function () {
+
+        /* ================= LOAD MODELS ================= */
+        $.get("/api/model/get-models", function (data) {
+            $("#ddlModel").jqxDropDownList({
+                source: data,
+                displayMember: "modelName",
+                valueMember: "id",
+                width: "100%",
+                height: 30,
+                placeHolder: "Select Model"
+            });
+        });
+
+        /* ================= LOAD STATIONS ================= */
+        $.get("/api/station/get-stations", function (res) {
+            $("#ddlStation").jqxDropDownList({
+                source: res.data,
+                displayMember: "stationName",
+                valueMember: "id",
+                width: "100%",
+                height: 30,
+                placeHolder: "Select Station"
+            });
+        });
+
+        /* ================= FORM CONTROLS ================= */
+        $("#txtTitle").jqxInput({ width: "100%", height: 30 });
+
+        $("#ddlInstructionType").jqxDropDownList({
+            source: ["Text", "Image", "PDF", "Video"],
+            width: "100%",
+            height: 30,
+            placeHolder: "Select Type"
+        });
+
+        $("#txtContent").jqxTextArea({ width: "100%", height: 100 });
+
+        $("#txtSequence").jqxNumberInput({
+            width: 200,
+            height: 30,
+            decimalDigits: 0,
+            spinButtons: true,
+            min: 1
+        });
+
+        $("#chkMandatory").jqxCheckBox({ width: 120 });
+        $("#chkIsActive").jqxCheckBox({ width: 120, checked: true });
+
+        $("#ddlStatus").jqxDropDownList({
+            source: ["Draft", "Published"],
+            width: 200,
+            height: 30,
+            selectedIndex: 0
+        });
+
+        /* ================= BUTTONS ================= */
+        $("#btnLoad, #btnAdd, #btnSave, #btnCancel").jqxButton({ height: 30 });
+
+        /* ================= WINDOW ================= */
+        $("#instructionWindow").jqxWindow({
+            width: 560,
+            height: 520,
+            isModal: true,
+            autoOpen: false,
+            resizable: false
+        });
+
+        /* ================= GRID INIT ================= */
+        initGrid();
+
+        /* ================= EVENTS ================= */
+        $("#btnLoad").click(loadInstructions);
+
+        $("#btnAdd").click(function () {
+            clearForm();
+            $("#instructionWindow").jqxWindow("open");
+        });
+
+        $("#btnCancel").click(function () {
+            $("#instructionWindow").jqxWindow("close");
+        });
+
+        $("#btnSave").click(saveInstruction);
+    });
+
+    /* ================= GRID ================= */
+      function initGrid() {
+
+        const source = {
+            datatype: "json",
+            localdata: [],
+            datafields: [
+                { name: "id", type: "number" },
+                { name: "sequenceNo", type: "number" },
+                { name: "title", type: "string" },
+                { name: "instructionType", type: "string" },
+                { name: "content", type: "string" },
+                { name: "isActive", type: "bool" },
+                { name: "isMandatory", type: "bool" },
+                { name: "status", type: "string" },
+                { name: "versionNo", type: "number" }
+            ]
+        };
+
+        const adapter = new $.jqx.dataAdapter(source);
+
+        $("#instructionGrid").jqxGrid({
+            width: "100%",
+            height: 400,
+            source: adapter,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            showfilterrow: true,
+            columnsresize: true,
+            columns: [
+                { text: "Seq", datafield: "sequenceNo", width: 60 },
+
+                { text: "Title", datafield: "title", width: 180 },
+
+                { text: "Type", datafield: "instructionType", width: 100 },
+
+                {
+                    text: "Content",
+                    datafield: "content",
+                    minwidth: 250
+                },
+
+                {
+                    text: "Mandatory",
+                    datafield: "isMandatory",
+                    columntype: "checkbox",
+                    width: 100
+                },
+
+                {
+                    text: "Active",
+                    datafield: "isActive",
+                    columntype: "checkbox",
+                    width: 80
+                },
+
+                { text: "Status", datafield: "status", width: 100 },
+
+                { text: "Version", datafield: "versionNo", width: 80 }
+            ]
+        });
+    }
+
+    /* ================= LOAD DATA ================= */
+    function loadInstructions() {
+
+        const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
+        const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
+
+        if (!modelItem || !stationItem) {
+            alert("Please select Model and Station");
+            return;
+        }
+
+        modelId = modelItem.value;
+        stationId = stationItem.value;
+
+        $.get("/api/admin/work-instructions/by-model-station",
+            { modelId, stationId },
+            function (res) {
+                const source = {
+                    datatype: "json",
+                    localdata: res,
+                    datafields: $("#instructionGrid").jqxGrid("source")._source.datafields
+                };
+                $("#instructionGrid").jqxGrid({ source: new $.jqx.dataAdapter(source) });
+            });
+    }
+
+    /* ================= SAVE ================= */
+    function saveInstruction() {
+
+        const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
+        const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
+
+        if (!modelItem || !stationItem || !$("#txtTitle").val()) {
+            alert("Model, Station and Title are required");
+            return;
+        }
+
+        const data = {
+            title: $("#txtTitle").val(),
+            instructionType: $("#ddlInstructionType").jqxDropDownList("getSelectedItem")?.label,
+            content: $("#txtContent").val(),
+            isActive: $("#chkIsActive").jqxCheckBox("checked"),
+
+            modelId: modelItem.value,
+            stationId: stationItem.value,
+            sequenceNo: $("#txtSequence").jqxNumberInput("val"),
+            isMandatory: $("#chkMandatory").jqxCheckBox("checked"),
+            versionNo: 1,
+            status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
+            createdBy: "admin"
+        };
+
+        console.log(JSON.stringify(data));
+
+        $.ajax({
+            url: "/api/admin/work-instructions/add",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function () {
+                $("#instructionWindow").jqxWindow("close");
+                loadInstructions();
+            },
+            error: function () {
+                alert("Save failed");
+            }
+        });
+    }
+
+    /* ================= CLEAR ================= */
+    function clearForm() {
+        $("#txtTitle").val("");
+        $("#txtContent").val("");
+        $("#txtSequence").jqxNumberInput("val", 1);
+        $("#ddlInstructionType").jqxDropDownList("clearSelection");
+        $("#ddlStatus").jqxDropDownList("selectIndex", 0);
+        $("#chkMandatory").jqxCheckBox("uncheck");
+        $("#chkIsActive").jqxCheckBox("check");
+    }
+</script>

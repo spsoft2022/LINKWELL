@@ -45,7 +45,7 @@
         // ===============================
         // LOAD STATIONS CHECKBOX LIST
         // ===============================
-        $.get('/api/station/get-stations', function (res) {
+        $.get('/api/stationapi/get-stations', function (res) {
 
             $("#stationList").jqxListBox({
                 source: res.data,
