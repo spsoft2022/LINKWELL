@@ -3,7 +3,7 @@
     public class ModelStationAssignVM
     {
         public int ModelId { get; set; }
-        public List<string> StationCodes { get; set; }
+        public List<int> ids { get; set; }
     }
 
 

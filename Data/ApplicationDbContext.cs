@@ -38,38 +38,42 @@ namespace LinkwellProductionSystem.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // ===============================
+            // ModelStationMap (STRING BASED)
+            // ===============================
+            modelBuilder.Entity<ModelStationMap>()
+        .HasKey(x => new { x.ModelId, x.StationId });
 
+
+            // ===============================
+            // AppUser → Station (VALID FK)
+            // ===============================
             modelBuilder.Entity<AppUser>()
-    .HasOne(u => u.Station)
-    .WithMany()
-    .HasForeignKey(u => u.StationId);
+                .HasOne(u => u.Station)
+                .WithMany()
+                .HasForeignKey(u => u.StationId);
 
-
+            // ===============================
+            // Station
+            // ===============================
             modelBuilder.Entity<Station>()
-    .HasKey(s => s.Id);   // PK
+                .HasKey(s => s.Id);
 
             modelBuilder.Entity<Station>()
                 .HasIndex(s => s.StationCode)
                 .IsUnique();
 
-            modelBuilder.Entity<ModelStationMap>()
-                .HasOne(ms => ms.Station)
-                .WithMany()
-                .HasForeignKey(ms => ms.StationCode)
-                .HasPrincipalKey(s => s.StationCode);
-
-
-
-
+            // ===============================
+            // Other configs
+            // ===============================
             modelBuilder.Entity<ModelStage>()
                 .HasKey(ms => new { ms.ModelId, ms.StageId });
 
             modelBuilder.Entity<CategoryVM>().HasNoKey();
-
-
             modelBuilder.Entity<StationVM>().HasNoKey();
 
-
+            base.OnModelCreating(modelBuilder);
         }
+
     }
 }

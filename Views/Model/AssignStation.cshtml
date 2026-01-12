@@ -31,7 +31,6 @@
         // LOAD MODELS DROPDOWN
         // ===============================
         $.get('/api/model/get-models', function (data) {
-
             $("#ddlModel").jqxDropDownList({
                 source: data,
                 displayMember: "modelName",
@@ -42,74 +41,103 @@
             });
         });
 
+
         // ===============================
         // LOAD STATIONS CHECKBOX LIST
         // ===============================
-
+        $.get('/api/station/get-stations', function (res) {
 
             $("#stationList").jqxListBox({
-            displayMember: "stationCode",
-            valueMember: "stationCode",
-            checkboxes: true,
-            width: '100%',
-            height: 300,
-            enableSelection: true,
-            enableHover: true
+                source: res.data,
+                displayMember: "stationCode",
+                valueMember: "id",
+                checkboxes: true,
+                width: '100%',
+                height: 300,
+                enableSelection: true,
+                enableHover: true
             });
 
+            // when stations binding is complete, load any assigned mapping
+            $("#stationList").on('bindingComplete', loadMappedStations);
+        });
 
-    
-            $.get('/api/station/get-stations', function(res) {
-            $("#stationList").jqxListBox('source', res.data);
+
+        // ===============================
+        // HELPERS
+        // ===============================
+        function uncheckAllStations() {
+            const items = $("#stationList").jqxListBox('getItems');
+            if (!items) return;
+            items.forEach((_, i) => $("#stationList").jqxListBox('uncheckIndex', i));
+        }
+
+        function loadMappedStations() {
+            const modelId = $("#ddlModel").jqxDropDownList('val');
+            if (!modelId) return;
+
+            $.get('/api/model/get-mapped-stations/' + modelId, function (mappedIds) {
+
+                if (!mappedIds || mappedIds.length === 0) return;
+
+                const items = $("#stationList").jqxListBox('getItems');
+                if (!items) return;
+
+                items.forEach((item, index) => {
+                    if (mappedIds.includes(item.value)) {
+                        $("#stationList").jqxListBox('checkIndex', index);
+                    }
+                });
             });
-
-            $("#stationList").on('select', function (event) {
-            $("#stationList").jqxListBox('checkIndex', event.args.index);
-            });
+        }
 
 
-
-    
-
-
-
+        // ===============================
+        // MODEL CHANGE EVENT
+        // ===============================
+        $("#ddlModel").on('change', function () {
+            uncheckAllStations();
+            loadMappedStations();
+        });
 
 
         // ===============================
         // ASSIGN BUTTON CLICK
         // ===============================
-        $("#btnAssign").on("click", function () {
+           $("#btnAssign").on("click", function () {
 
-            const modelId = $("#ddlModel").jqxDropDownList('val');
-            const checkedStations = $("#stationList").jqxListBox('getCheckedItems');
+        let modelId = $("#ddlModel").jqxDropDownList('val');
+        const checkedStations = $("#stationList").jqxListBox('getCheckedItems');
 
-            if (!modelId) {
-                alert("Please select a model");
-                return;
+        if (!modelId) {
+             toastr.error("Please select a model");
+            return;
+        }
+
+        if (checkedStations.length === 0) {
+            toastr.error("Please select at least one station");
+            return;
+        }
+
+        const stationIds = checkedStations.map(x => parseInt(x.value));
+
+
+        const payload = {
+            ModelId: parseInt(modelId),   // <-- IMPORTANT
+            ids: stationIds
+        };
+
+        $.ajax({
+            url: '/api/model/assignstations',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function () {
+                toastr.success("Stations assigned successfully");
             }
-
-            if (checkedStations.length === 0) {
-                alert("Please select at least one station");
-                return;
-            }
-
-            const stationIds = checkedStations.map(x => x.value);
-
-            const payload = {
-                ModelId: modelId,
-                StationIds: stationIds
-            };
-
-            $.ajax({
-                url: '/api/model/assignstations',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(payload),
-                success: function () {
-                    alert("Stations assigned successfully");
-                }
-            });
         });
+    });
 
     });
 </script>
+

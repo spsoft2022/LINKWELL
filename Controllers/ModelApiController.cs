@@ -146,28 +146,73 @@ namespace LinkwellProductionSystem.Controllers.Api
         }
 
 
+
+        [HttpGet("get-mapped-stations/{modelId}")]
+        public IActionResult GetMappedStations(int modelId)
+        {
+            return Ok(
+                _context.ModelStationMap
+                    .Where(x => x.ModelId == modelId && x.IsActive)
+                    .Select(x => x.StationId)
+                    .ToList()
+            );
+        }
+
+
+
+
+
+
+
+        //[HttpPost("assignstations")]
+        //public IActionResult AssignStations([FromBody] ModelStationAssignVM vm)
+        //{
+        //    // Remove existing mappings
+        //    var existing = _context.ModelStationMap
+        //        .Where(x => x.ModelId == vm.ModelId);
+
+        //    _context.ModelStationMap.RemoveRange(existing);
+
+        //    // Insert new
+        //    foreach (var code in vm.StationCodes)
+        //    {
+        //        _context.ModelStationMap.Add(new ModelStationMap
+        //        {
+        //            ModelId = vm.ModelId,
+        //            StationCode = code,
+        //        });
+        //    }
+
+        //    _context.SaveChanges();
+        //    return Ok();
+        //}
+
+
         [HttpPost("assignstations")]
         public IActionResult AssignStations([FromBody] ModelStationAssignVM vm)
         {
-            // Remove existing mappings
             var existing = _context.ModelStationMap
-                .Where(x => x.ModelId == vm.ModelId);
+                .Where(x => x.ModelId == vm.ModelId)
+                .ToList();
 
             _context.ModelStationMap.RemoveRange(existing);
 
-            // Insert new
-            foreach (var code in vm.StationCodes)
+            foreach (var stationId in vm.ids)
             {
                 _context.ModelStationMap.Add(new ModelStationMap
                 {
                     ModelId = vm.ModelId,
-                    StationCode = code,
+                    StationId = stationId,
+                    IsActive = true,
+                    CreatedOn = DateTime.Now
                 });
             }
 
             _context.SaveChanges();
             return Ok();
         }
+
+
 
 
 
