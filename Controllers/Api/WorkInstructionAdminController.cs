@@ -59,12 +59,18 @@ namespace LinkwellProductionSystem.Controllers.Api
             var filePath = Path.Combine(uploads, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
-            {
                 await file.CopyToAsync(stream);
-            }
 
-            return Ok(new { path = "/uploads/workinstr/" + fileName });
+            // auto detect base URL from current request
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            return Ok(new
+            {
+                relativePath = $"/uploads/workinstr/{fileName}",
+                absoluteUrl = $"{baseUrl}/uploads/workinstr/{fileName}"
+            });
         }
+
 
 
         // =====================================================

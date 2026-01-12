@@ -212,9 +212,23 @@
                 { text: "Title", datafield: "title", width: 180 },
                 { text: "Type", datafield: "instructionType", width: 100 },
                 {
-                    text: "Content",
-                    datafield: "content",
-                    minwidth: 250
+                text: "Content",
+                datafield: "content",
+                minwidth: 250,
+                cellsrenderer: function (row, col, value, rowData) {
+                const type = rowData.instructionType;
+
+                if (type === "Image")
+                return `<img src="${value}" width="50" style="cursor:pointer;" />`;
+
+                if (type === "PDF")
+                return `<a href="${value}" target="_blank">Open PDF</a>`;
+
+                if (type === "Video")
+                return `<video width="120" controls src="${value}"></video>`;
+
+                return value;
+                }
                 },
                 {
                     text: "Mandatory",
@@ -253,6 +267,16 @@
         $.get("/api/admin/work-instructions/by-model-station",
             { modelId, stationId },
             function (res) {
+
+                  const base = window.location.origin; // auto-detects http://localhost:7207
+                  
+        res = res.map(x => {
+            if (x.content && x.instructionType == "Image") {
+                x.content = base + x.content;  // build full URL
+            }
+            return x;
+        });
+
                 const source = {
                     datatype: "json",
                     localdata: res,
