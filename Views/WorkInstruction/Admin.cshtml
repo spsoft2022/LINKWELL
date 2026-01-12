@@ -204,31 +204,19 @@
             source: adapter,
             pageable: true,
             sortable: true,
-            filterable: true,
-            showfilterrow: true,
+            filterable: false,
             columnsresize: true,
             columns: [
                 { text: "Seq", datafield: "sequenceNo", width: 60 },
                 { text: "Title", datafield: "title", width: 180 },
                 { text: "Type", datafield: "instructionType", width: 100 },
-                {
+               {
                 text: "Content",
                 datafield: "content",
                 minwidth: 250,
-                cellsrenderer: function (row, col, value, rowData) {
-                const type = rowData.instructionType;
-
-                if (type === "Image")
-                return `<img src="${value}" width="50" style="cursor:pointer;" />`;
-
-                if (type === "PDF")
-                return `<a href="${value}" target="_blank">Open PDF</a>`;
-
-                if (type === "Video")
-                return `<video width="120" controls src="${value}"></video>`;
-
-                return value;
-                }
+                filterable: false,
+                sortable: false,
+                cellsrenderer: imagerenderer
                 },
                 {
                     text: "Mandatory",
@@ -249,6 +237,23 @@
             ]
         });
     }
+
+
+        var imagerenderer = function (row, columnfield, value, defaulthtml, columnproperties, rowdata) {
+
+        const type = rowdata["instructionType"];
+        if (type === "Image")
+        return `<img src='${value}' width='50' height='50' style='margin-left:1px;' />`;
+
+        if (type === "PDF")
+        return `<a href='${value}' target='_blank'>Open PDF</a>`;
+
+        if (type === "Video")
+        return `<video width='120' controls src='${value}'></video>`;
+
+        return value || "";
+        }
+ 
 
     /* ================= LOAD DATA ================= */
     function loadInstructions() {
