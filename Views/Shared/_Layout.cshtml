@@ -44,9 +44,9 @@
 
                 @if (Context.Session.GetString("Role") == "Admin")
                 {
-                    @* <a asp-controller="Station" asp-action="Index" class="text-white d-block my-2">Stations</a>
+                    <a asp-controller="Station" asp-action="Index" class="text-white d-block my-2">Stations</a>
                     <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
-                    <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a> *@
+                    <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a> 
                     <a asp-controller="WorkInstruction" asp-action="Admin" class="text-white d-block my-2">Instructions</a>
                     <a asp-controller="WorkInstruction" asp-action="Preview" class="text-white d-block my-2">Preview</a>
                     

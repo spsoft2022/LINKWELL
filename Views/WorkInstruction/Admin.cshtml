@@ -165,6 +165,7 @@
 
         $("#btnAdd").click(function () {
             clearForm();
+                  $("#hdnId").val("");   // 👈 reset edit mode
             $("#instructionWindow").jqxWindow("open");
         });
 
@@ -174,6 +175,38 @@
 
         $("#btnSave").click(saveInstruction);
     });
+
+
+    function editInstruction(rowIndex) {
+
+    const row = $("#instructionGrid").jqxGrid("getrowdata", rowIndex);
+    if (!row) return;
+
+    // store id (IMPORTANT)
+    $("#hdnId").val(row.id);
+
+    $("#txtTitle").val(row.title);
+    $("#txtSequence").jqxNumberInput("val", row.sequenceNo);
+
+    $("#chkMandatory").jqxCheckBox(row.isMandatory ? "check" : "uncheck");
+    $("#chkIsActive").jqxCheckBox(row.isActive ? "check" : "uncheck");
+
+    $("#ddlStatus").jqxDropDownList("selectItem", row.status);
+    $("#ddlInstructionType").jqxDropDownList("selectItem", row.instructionType);
+
+    // Handle content based on type
+    if (row.instructionType === "Text") {
+        $("#txtContent").show();
+        $("#fileContainer").hide();
+        $("#txtContent").val(row.content);
+    } else {
+        $("#txtContent").hide();
+        $("#fileContainer").show();
+        $("#fileInput").val(""); // cannot set file programmatically
+    }
+
+    $("#instructionWindow").jqxWindow("open");
+}
 
 
 
@@ -233,10 +266,22 @@
 
                 { text: "Status", datafield: "status", width: 100 },
 
-                { text: "Version", datafield: "versionNo", width: 80 }
+                { text: "Version", datafield: "versionNo", width: 80 },
+                {
+                text: "Edit",
+                width: 70,
+                cellsrenderer: function (row) {
+                return `
+                <button class="btn btn-sm btn-primary"
+                onclick="editInstruction(${row})">
+                Edit
+                </button>`;
+                }
+                }
             ]
         });
     }
+
 
 
         var imagerenderer = function (row, columnfield, value, defaulthtml, columnproperties, rowdata) {
@@ -296,8 +341,37 @@
 
         const type = $("#ddlInstructionType").jqxDropDownList("getSelectedItem")?.label;
 
-        function doSave(contentUrl) {
-            const data = {
+    function doSave(contentUrl) {
+
+        const id = $("#hdnId").val();
+        const type = $("#ddlInstructionType").jqxDropDownList("getSelectedItem")?.label;
+
+        let data;
+        let url;
+
+        if (id) {
+            // ============================
+            // UPDATE PAYLOAD
+            // ============================
+            data = {
+                modelStationWorkInstructionId: parseInt(id),
+                title: $("#txtTitle").val(),
+                instructionType: type,
+                content: contentUrl,
+                isActive: $("#chkIsActive").jqxCheckBox("checked"),
+                sequenceNo: $("#txtSequence").jqxNumberInput("val"),
+                isMandatory: $("#chkMandatory").jqxCheckBox("checked"),
+                status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
+                modifiedBy: "admin",
+                      versionNo: 1
+            };
+
+            url = "/api/admin/work-instructions/update";
+        } else {
+            // ============================
+            // ADD PAYLOAD
+            // ============================
+            data = {
                 title: $("#txtTitle").val(),
                 instructionType: type,
                 content: contentUrl,
@@ -311,17 +385,24 @@
                 createdBy: "admin"
             };
 
-            $.ajax({
-                url: "/api/admin/work-instructions/add",
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                success: () => {
-                    $("#instructionWindow").jqxWindow("close");
-                    loadInstructions();
-                }
-            });
+            url = "/api/admin/work-instructions/add";
         }
+
+        $.ajax({
+            url: url,
+                type: id ? "POST" : "POST",   // 🔥 important
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: () => {
+                $("#instructionWindow").jqxWindow("close");
+                loadInstructions();
+            },
+            error: (err) => {
+                console.error(err);
+                alert("Save failed. Check console.");
+            }
+        });
+    }
 
         // TEXT path
         if (type === "Text") {
@@ -346,7 +427,7 @@
             data: formData,
             contentType: false,
             processData: false,
-            success: res => doSave(res.path),
+            success: res => doSave(res.relativePath),
             error: () => alert("Upload failed")
         });
     }

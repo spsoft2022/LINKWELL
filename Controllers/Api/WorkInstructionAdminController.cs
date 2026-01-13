@@ -116,32 +116,48 @@ namespace LinkwellProductionSystem.Controllers.Api
         }
 
         // =====================================================
-        // 3️⃣ PUT: Update Instruction
+        // UPDATE WORK INSTRUCTION
         // =====================================================
-        [HttpPut("update")]
+        [HttpPost("update")]
         public IActionResult Update([FromBody] UpdateWorkInstructionRequest request)
         {
+            // 1️⃣ Fetch mapping
             var ms = _context.ModelStationWorkInstruction
                 .FirstOrDefault(x => x.Id == request.ModelStationWorkInstructionId);
 
             if (ms == null)
-                return NotFound("Instruction mapping not found");
+                return NotFound("ModelStationWorkInstruction not found");
 
+            // 2️⃣ Fetch master instruction
             var wi = _context.WorkInstruction
                 .FirstOrDefault(x => x.Id == ms.WorkInstructionId);
 
             if (wi == null)
                 return NotFound("WorkInstruction not found");
 
-            // Update execution info
+            // ==============================
+            // UPDATE MASTER (WorkInstruction)
+            // ==============================
+            wi.Title = request.Title;
+            wi.InstructionType = request.InstructionType;
+            wi.Content = request.Content;
+            wi.IsActive = request.IsActive;
+            wi.ModifiedBy = request.ModifiedBy;
+            wi.ModifiedOn = DateTime.Now;
+
+            // ==============================
+            // UPDATE MAPPING
+            // ==============================
             ms.SequenceNo = request.SequenceNo;
             ms.IsMandatory = request.IsMandatory;
             ms.Status = request.Status;
+            ms.VersionNo = request.VersionNo;
 
             _context.SaveChanges();
 
             return Ok(new { success = true });
         }
+
 
         // =====================================================
         // 4️⃣ DELETE: Remove Instruction
