@@ -159,6 +159,22 @@ namespace LinkwellProductionSystem.Controllers.Api
         }
 
 
+
+        [HttpGet("versions")]
+        public IActionResult GetVersions(int modelId, int stationId)
+        {
+            var versions = _context.ModelStationWorkInstruction
+                .Where(x => x.ModelId == modelId && x.StationId == stationId)
+                .Select(x => x.VersionNo)
+                .Distinct()
+                .OrderByDescending(x => x)
+                .ToList();
+
+            return Ok(versions);
+        }
+
+
+
         // =====================================================
         // 4️⃣ DELETE: Remove Instruction
         // =====================================================
