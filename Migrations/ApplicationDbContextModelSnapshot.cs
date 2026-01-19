@@ -22,6 +22,83 @@ namespace LinkwellProductionSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("LinkwellProductionSystem.Core.Entities.ModelStationWorkInstruction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ConditionJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsMandatory")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SequenceNo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValidationJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("VersionNo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WorkInstructionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ModelStationWorkInstruction");
+                });
+
+            modelBuilder.Entity("LinkwellProductionSystem.Core.Entities.WorkInstruction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InstructionType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkInstruction");
+                });
+
             modelBuilder.Entity("LinkwellProductionSystem.Models.AppUser", b =>
                 {
                     b.Property<int>("Id")
@@ -41,8 +118,8 @@ namespace LinkwellProductionSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StationId")
-                        .HasColumnType("int");
+                    b.Property<string>("StationId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -53,25 +130,6 @@ namespace LinkwellProductionSystem.Migrations
                     b.HasIndex("StationId");
 
                     b.ToTable("AppUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FullName = "Administrator",
-                            PasswordHash = "$2a$11$Wj8i7g5v5j5m9k3n7p2q8e9r0t1y2u3i4o5p6a7s8d9f0g1h2j3k4l",
-                            Role = "Admin",
-                            Username = "admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            FullName = "John - ASSY01",
-                            PasswordHash = "$2a$11$ZmNlMjQwOWRkMjE0YjYxOOU5ZjQ5ZmU5NjY0NjY0NjY0NjY0NjY0Ng==",
-                            Role = "Incharge",
-                            StationId = 1,
-                            Username = "assy01"
-                        });
                 });
 
             modelBuilder.Entity("LinkwellProductionSystem.Models.DailyProduction", b =>
@@ -91,9 +149,12 @@ namespace LinkwellProductionSystem.Migrations
                     b.Property<int>("StationId")
                         .HasColumnType("int");
 
+                    b.Property<string>("StationId1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("StationId");
+                    b.HasIndex("StationId1");
 
                     b.ToTable("DailyProductions");
                 });
@@ -137,6 +198,10 @@ namespace LinkwellProductionSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -156,7 +221,53 @@ namespace LinkwellProductionSystem.Migrations
                     b.ToTable("Models");
                 });
 
+            modelBuilder.Entity("LinkwellProductionSystem.Models.ModelStationMap", b =>
+                {
+                    b.Property<int>("ModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ModelId", "StationId");
+
+                    b.ToTable("ModelStationMap");
+                });
+
             modelBuilder.Entity("LinkwellProductionSystem.Models.Station", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StationCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("StationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StationCode")
+                        .IsUnique();
+
+                    b.ToTable("Stations");
+                });
+
+            modelBuilder.Entity("LinkwellProductionSystem.Models.StationAssignment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -164,7 +275,49 @@ namespace LinkwellProductionSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<bool>("IsActive")
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AssignedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StationAssignments");
+                });
+
+            modelBuilder.Entity("LinkwellProductionSystem.ViewModels.CategoryVM", b =>
+                {
+                    b.Property<string>("CategoryCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("CategoryVM");
+                });
+
+            modelBuilder.Entity("LinkwellProductionSystem.ViewModels.StationVM", b =>
+                {
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Location")
@@ -178,64 +331,7 @@ namespace LinkwellProductionSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Stations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IsActive = true,
-                            Location = "Plant A",
-                            StationCode = "ASSY01",
-                            StationName = "Assembly Line 01"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IsActive = true,
-                            Location = "Plant A",
-                            StationCode = "QC01",
-                            StationName = "Quality Check 01"
-                        });
-                });
-
-            modelBuilder.Entity("LinkwellProductionSystem.Models.WorkInstruction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AttachmentPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Instruction")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ModelId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ModelId");
-
-                    b.HasIndex("StageId");
-
-                    b.ToTable("WorkInstructions");
+                    b.ToTable("StationVMs");
                 });
 
             modelBuilder.Entity("ModelStage", b =>
@@ -293,9 +389,7 @@ namespace LinkwellProductionSystem.Migrations
                 {
                     b.HasOne("LinkwellProductionSystem.Models.Station", "Station")
                         .WithMany()
-                        .HasForeignKey("StationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StationId1");
 
                     b.Navigation("Station");
                 });
@@ -309,25 +403,6 @@ namespace LinkwellProductionSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("DailyProduction");
-                });
-
-            modelBuilder.Entity("LinkwellProductionSystem.Models.WorkInstruction", b =>
-                {
-                    b.HasOne("LinkwellProductionSystem.Models.Model", "Model")
-                        .WithMany()
-                        .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Stage", "Stage")
-                        .WithMany()
-                        .HasForeignKey("StageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Model");
-
-                    b.Navigation("Stage");
                 });
 
             modelBuilder.Entity("ModelStage", b =>

@@ -76,7 +76,7 @@
         $("#previewPanel").jqxPanel({ width: '100%', height: 600, theme: 'light' });
 
         loadDropdowns();
-         loadVersions(modelId, stationId);
+         //loadVersions(modelId, stationId);
         $("#btnLoad").on("click", function () {
             const modelId = $("#ddlModel").jqxDropDownList('val');
             const stationId = $("#ddlStation").jqxDropDownList('val');
@@ -102,7 +102,7 @@
             url: `/api/workinstructions/preview?modelId=${modelId}&stationId=${stationId}`,
             type: "GET",
             success: function (data) {
-                renderPreview(data);
+                renderPreview(data.steps);
             },
             error: function () {
                 $("#previewPanel").jqxPanel('clearContent');
@@ -196,16 +196,17 @@
     function loadDropdowns() {
 
         $.get('/api/model/get-models', function (data) {
-            $("#ddlModel").jqxDropDownList({
-                source: data,
-                displayMember: "modelName",
-                valueMember: "id",
-                width: 250,
-                height: 30,
-                theme: 'light',
-                placeHolder: "Select Model"
-            });
+        $("#ddlModel").jqxDropDownList({
+        source: data,
+        displayMember: "modelName",
+        valueMember: "id",
+        width: 250,
+        height: 30,
+        placeHolder: "Select Model"
         });
+        });
+
+
 
         $.get('/api/station/get-stations', function (data) {
             $("#ddlStation").jqxDropDownList({
@@ -214,6 +215,7 @@
                 valueMember: "id",
                 width: 250,
                 height: 30,
+                selectedIndex: -1,
                 theme: 'light',
                 placeHolder: "Select Station"
             });

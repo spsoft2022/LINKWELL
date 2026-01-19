@@ -8,7 +8,7 @@ namespace LinkwellProductionSystem.Data
     public class ApplicationDbContext : DbContext
     {
         public DbSet<ModelStationWorkInstruction> ModelStationWorkInstruction { get; set; } = null!;
-
+        public DbSet<StationAssignment> StationAssignment { get; set; }
         public DbSet<WorkInstruction> WorkInstruction { get; set; } = null!;
         public DbSet<Model> Models { get; set; } = null!;
         public DbSet<ModelStationMap> ModelStationMap { get; set; } = null!;
