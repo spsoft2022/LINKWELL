@@ -1,0 +1,54 @@
+﻿<div id="instructionContainer">
+    <div id="instructionArea">Loading instructions...</div>
+</div>
+
+<script type="text/javascript">
+
+    const stationId = "@ViewBag.StationId";
+    const modelId = "@ViewBag.ModelId";
+
+    $(document).ready(function () {
+
+        const container = document.getElementById('instructionContainer');
+
+        // Hover pause behavior
+        let paused = false;
+        container.onmouseover = () => paused = true;
+        container.onmouseleave = () => paused = false;
+
+        // Auto-scroll function
+        function autoScroll() {
+            const maxScroll = container.scrollHeight - container.clientHeight;
+            container.scrollTop += 1;
+            if (container.scrollTop >= maxScroll) {
+                container.scrollTop = 0;
+            }
+        }
+
+        // Fetch instructions
+        $.get(`/api/admin/work-instructions/by-model-station?modelId=${modelId}&stationId=${stationId}`, function (res) {
+            if (!res || res.length === 0) {
+                $("#instructionArea").html("<div class='alert alert-warning'>No instructions configured</div>");
+                return;
+            }
+
+            let html = "";
+            res.forEach(x => {
+                html += `
+                    <div class="border rounded p-3 mb-3">
+                        <h5>${x.title}</h5>
+                        <p>${x.content}</p>
+                    </div>`;
+            });
+
+            $("#instructionArea").html(html);
+
+            // Only start scrolling after content loaded
+            setInterval(() => {
+                if (!paused) autoScroll();
+            }, 30);
+
+        });
+
+    });
+</script>

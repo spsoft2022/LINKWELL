@@ -31,6 +31,13 @@
     // LOAD GRID
     // ============================================================
     function loadAssignments() {
+
+
+        $("#assignmentGrid").on('rowdoubleclick', function (event) {
+        $("#btnPreview").click();
+        });
+
+
         $.get('/api/admin/assignments', function (data) {
 
             const source = {
@@ -44,10 +51,35 @@
                 width: 800,
                 autoheight: true,
                 source: adapter,
+                 selectionmode: 'singlerow',
+                showtoolbar: true,
+                rendertoolbar: function (toolbar) {
+                let container = $("<div style='margin: 5px; display:flex; gap:10px;'></div>");
+                toolbar.append(container);
+
+                let btnPreview = $("<input type='button' id='btnPreview' value='Preview' />");
+                container.append(btnPreview);
+
+                btnPreview.jqxButton({ width: 90, height: 28 });
+
+                btnPreview.on('click', function () {
+                let rowIndex = $("#assignmentGrid").jqxGrid('getselectedrowindex');
+                if (rowIndex === -1) {
+                    toastr.warning("Select a running assignment to preview");
+                    return;
+                }
+
+                let row = $("#assignmentGrid").jqxGrid('getrowdata', rowIndex);
+
+                window.open(`/floor-preview?station=${row.stationId}&model=${row.modelId}`, "_blank");
+                });
+                },
                 columns: [
                     { text: "Station", datafield: "stationName", width: 330 },
                     { text: "Model", datafield: "modelName", width: 230 },
-                    { text: "Updated", datafield: "updatedAt", width: 250 }
+                    { text: "Updated", datafield: "updatedAt", width: 250 },
+                    { datafield: "stationId", hidden: true },
+                    { datafield: "modelId", hidden: true }
                 ]
             });
         });

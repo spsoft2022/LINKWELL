@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"]</title>
+
+    <link href="~/lib/support/bootstrap.min.css" rel="stylesheet">
+    <link href="~/lib/support/jqx.base.css" rel="stylesheet" />
+
+    <!-- jQuery MUST be first -->
+    <script src="~/lib/support/jquery.min.js"></script>
+
+    <!-- Bootstrap 5 -->
+    <script src="~/lib/support/bootstrap.min.js"></script>
+
+    <!-- jqxGrid -->
+    <script src="~/lib/support/jqx-all.js"></script>
+
+    <style>
+        body {
+            background: #fff;
+            padding: 10px 20px;
+            font-size: 22px;
+        }
+        .instruction-block {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+        }
+        .instruction-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        #instructionContainer {
+            height: 100vh; /* full screen */
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            scroll-behavior: smooth;
+            padding: 20px;
+            background: white;
+        }
+
+
+    </style>
+</head>
+<body>
+    @RenderBody()
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+</body>
+</html>
