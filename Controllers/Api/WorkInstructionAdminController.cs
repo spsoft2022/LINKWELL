@@ -127,8 +127,8 @@ namespace LinkwellProductionSystem.Controllers.Api
             entity.Status = dto.Status;
             entity.ModelId= dto.ModelId;
             entity.StationId= dto.StationId;
-            entity.CreatedBy = "Admin";
-            entity.CreatedOn = DateTime.Now;
+            entity.ModifiedBy = "Admin";
+            entity.ModifiedOn = DateTime.Now;
 
 
             await _context.SaveChangesAsync();
