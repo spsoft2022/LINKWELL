@@ -16,5 +16,10 @@ namespace LinkwellProductionSystem.Controllers
         {
             return View();
         }
+
+        public IActionResult AddInstructions()
+        {
+            return View();
+        }
     }
 }

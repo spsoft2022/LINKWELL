@@ -1,5 +1,6 @@
 ﻿using LinkwellProductionSystem.Core.Entities;
 using LinkwellProductionSystem.Data;
+using LinkwellProductionSystem.DTOs.WorkInstruction;
 using LinkwellProductionSystem.ViewModels.WorkInstructions.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,34 +20,41 @@ namespace LinkwellProductionSystem.Controllers.Api
         // =====================================================
         // 1️⃣ GET: Instructions by Model + Station
         // =====================================================
-        [HttpGet("by-model-station")]
-        public IActionResult GetByModelStation(int modelId, int stationId)
+        [HttpGet("getInstructions")]
+        public IActionResult GetAllInstructions()
         {
-            var data = from ms in _context.ModelStationWorkInstruction
-                       join wi in _context.WorkInstruction
-                           on ms.WorkInstructionId equals wi.Id
-                       where ms.ModelId == modelId
-                          && ms.StationId == stationId
-                       orderby ms.SequenceNo
-                       select new
-                       {
-                           id = ms.Id,
-                           sequenceNo = ms.SequenceNo,
+            var data =
+                from wi in _context.WorkInstruction
 
-                           // FROM WorkInstruction (MASTER)
-                           title = wi.Title,
-                           instructionType = wi.InstructionType,
-                           content = wi.Content,
-                           isActive = wi.IsActive,
+                    // LEFT JOIN mapping
+                from ms in _context.ModelStationWorkInstruction
+                    .Where(x => x.WorkInstructionId == wi.Id)
+                    .DefaultIfEmpty()
 
-                           // FROM MAPPING
-                           isMandatory = ms.IsMandatory,
-                           status = ms.Status,
-                           versionNo = ms.VersionNo
-                       };
+                    // INNER JOIN model & station (these must exist)
+                from s in _context.Stations
+                    .Where(x => x.Id == wi.StationId.ToString())
+                from m in _context.Models
+                .Where(x => x.Id == wi.ModelId)
+
+                orderby (ms.SequenceNo ?? wi.Id)
+
+                select new
+                {
+                    id = wi.Id,
+                    modelId = wi.ModelId,
+                    modelName = m.ModelName,
+                    stationId = wi.StationId,
+                    stationName = s.StationName,
+                    htmlContent = wi.HtmlContent,
+                    status = wi.Status,
+                    isActive = wi.IsActive,
+                };
 
             return Ok(data.ToList());
         }
+
+
 
 
         [HttpPost("upload")]
@@ -77,86 +85,52 @@ namespace LinkwellProductionSystem.Controllers.Api
         // 2️⃣ POST: Add New Work Instruction
         // =====================================================
         [HttpPost("add")]
-        public IActionResult Add([FromBody] AddWorkInstructionRequest request)
+        public async Task<IActionResult> AddInstruction([FromBody] WorkInstructionDto dto)
         {
-            // ==============================
-            // 1. INSERT INTO WorkInstruction (MASTER)
-            // ==============================
-            var workInstruction = new WorkInstruction
+            if (dto is null)
+                return BadRequest("Invalid payload");
+
+            var entity = new WorkInstruction
             {
-                Title = request.Title,
-                InstructionType = request.InstructionType,
-                Content = request.Content,
-                IsActive = request.IsActive,
-                CreatedBy = request.CreatedBy,
-                CreatedOn = DateTime.Now
+                HtmlContent = dto.HtmlContent,
+                ModelId = dto.ModelId,
+                StationId = dto.StationId,
+                Status = dto.Status,
+                CreatedBy = "Admin",
+                CreatedOn = DateTime.UtcNow.ToString(),
             };
 
-            _context.WorkInstruction.Add(workInstruction);
-            _context.SaveChanges();
+            _context.WorkInstruction.Add(entity);
+            await _context.SaveChangesAsync();
 
-            // ==============================
-            // 2. INSERT INTO ModelStationWorkInstruction (MAPPING)
-            // ==============================
-            var modelStationWI = new ModelStationWorkInstruction
-            {
-                ModelId = request.ModelId,
-                StationId = request.StationId,
-                WorkInstructionId = workInstruction.Id,
-                SequenceNo = request.SequenceNo,
-                IsMandatory = request.IsMandatory,
-                VersionNo = request.VersionNo,
-                Status = request.Status
-            };
-
-            _context.ModelStationWorkInstruction.Add(modelStationWI);
-            _context.SaveChanges();
-
-            return Ok(new { success = true, id = modelStationWI.Id });
+            return Ok(new { message = "Instruction added", id = entity.Id });
         }
+
+
 
         // =====================================================
         // UPDATE WORK INSTRUCTION
         // =====================================================
         [HttpPost("update")]
-        public IActionResult Update([FromBody] UpdateWorkInstructionRequest request)
+        public async Task<IActionResult> UpdateInstruction([FromBody] WorkInstructionDto dto)
         {
-            // 1️⃣ Fetch mapping
-            var ms = _context.ModelStationWorkInstruction
-                .FirstOrDefault(x => x.Id == request.ModelStationWorkInstructionId);
+            if (dto.Id <= 0)
+                return BadRequest("Invalid Id");
 
-            if (ms == null)
-                return NotFound("ModelStationWorkInstruction not found");
+            var entity = await _context.WorkInstruction.FindAsync(dto.Id);
 
-            // 2️⃣ Fetch master instruction
-            var wi = _context.WorkInstruction
-                .FirstOrDefault(x => x.Id == ms.WorkInstructionId);
+            if (entity == null)
+                return NotFound("Instruction not found");
 
-            if (wi == null)
-                return NotFound("WorkInstruction not found");
+            entity.HtmlContent = dto.HtmlContent;
+            entity.Status = dto.Status;
 
-            // ==============================
-            // UPDATE MASTER (WorkInstruction)
-            // ==============================
-            wi.Title = request.Title;
-            wi.InstructionType = request.InstructionType;
-            wi.Content = request.Content;
-            wi.IsActive = request.IsActive;
-            wi.ModifiedBy = request.ModifiedBy;
-            wi.ModifiedOn = DateTime.Now;
+            await _context.SaveChangesAsync();
 
-            // ==============================
-            // UPDATE MAPPING
-            // ==============================
-            ms.SequenceNo = request.SequenceNo;
-            ms.IsMandatory = request.IsMandatory;
-            ms.Status = request.Status;
-            ms.VersionNo = request.VersionNo;
-
-            _context.SaveChanges();
-
-            return Ok(new { success = true });
+            return Ok(new { message = "Instruction updated" });
         }
+
+
 
 
 

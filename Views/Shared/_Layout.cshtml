@@ -19,6 +19,9 @@
     <!-- jqxGrid -->
     <script src="~/lib/support/jqx-all.js"></script>
 
+    <script src="~/lib/support/ckeditor.js"></script>
+    
+
     <!-- toastr (optional) -->
     <script src="~/lib/support/toastr.min.js"></script>
 
@@ -46,8 +49,8 @@
                 {
                     <a asp-controller="Station" asp-action="Index" class="text-white d-block my-2">Stations</a>
                     <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
-                    <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a> 
-                    <a asp-controller="WorkInstruction" asp-action="Admin" class="text-white d-block my-2">Instructions</a>
+                    <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a>
+                    <a asp-controller="WorkInstruction" asp-action="AddInstructions" class="text-white d-block my-2">Instructions</a>
                     <a asp-controller="WorkInstruction" asp-action="Preview" class="text-white d-block my-2">Preview</a>
                     <a asp-controller="Assignment" asp-action="Index" class="text-white d-block my-2">Display Instruction</a>
                 }

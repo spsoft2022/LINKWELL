@@ -1,0 +1,274 @@
+﻿@{
+    ViewData["Title"] = "Work Instruction Management";
+}
+
+
+<div class="row align-items-end g-3 mb-3">
+    <div class="col-md-3">
+        <label class="form-label fw-semibold">Model</label>
+        <div id="ddlModel"></div>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label fw-semibold">Station</label>
+        <div id="ddlStation"></div>
+    </div>
+
+    <div class="col-md-3 pt-4">
+        <input type="button" id="btnLoad" value="Load" />
+    </div>
+
+    <div class="col-md-3 pt-4 text-end">
+        <input type="button" id="btnAdd" value="Add Instruction" />
+    </div>
+</div>
+
+<div id="instructionGrid"></div>
+
+<!-- ================= MODAL ================= -->
+<div id="instructionWindow">
+    <div>Work Instruction Editor</div>
+    <div style="padding:10px;">
+        <input type="hidden" id="hdnId" />
+
+        <div id="editor" style="border:1px solid #ccc; min-height:350px;"></div>
+
+        <div class="mt-3">
+            <label>Status</label>
+            <div id="ddlStatus"></div>
+        </div>
+
+
+        <br />
+        <input type="button" id="btnSave" value="Save" />
+        <input type="button" id="btnCancel" value="Cancel" />
+    </div>
+</div>
+<div id="toastMsg">Please select Model and Station</div>
+<script>
+    let modelId = 0;
+    let stationId = 0;
+    let editor;
+
+    $(document).ready(function () {
+
+        $("#toastMsg").jqxNotification({
+        width: 300,
+        position: "top-right",
+        opacity: 0.9,
+        autoOpen: false,
+        autoClose: true,
+        autoCloseDelay: 2500,
+        template: "warning"
+        });
+
+
+        /* --------- MODEL LIST --------- */
+        $.get("/api/model/get-models", function (data) {
+            $("#ddlModel").jqxDropDownList({
+                source: data,
+                displayMember: "modelName",
+                valueMember: "id",
+                width: "100%",
+                height: 30,
+                placeHolder: "Select Model"
+            });
+        });
+
+        /* --------- STATION LIST --------- */
+        $.get("/api/station/get-stations", function (res) {
+            $("#ddlStation").jqxDropDownList({
+                source: res.data,
+                displayMember: "stationName",
+                valueMember: "id",
+                width: "100%",
+                height: 30,
+                placeHolder: "Select Station"
+            });
+        });
+
+        /* --------- STATUS --------- */
+        $("#ddlStatus").jqxDropDownList({
+            source: ["Draft", "Published"],
+            width: 200,
+            height: 30,
+            selectedIndex: 0
+        });
+
+
+        $("#btnLoad, #btnAdd, #btnSave, #btnCancel").jqxButton({ height: 30 });
+
+        $("#instructionWindow").jqxWindow({
+            width: 900,
+            height: 650,
+            isModal: true,
+            autoOpen: false,
+            resizable: true
+        });
+
+        // initGrid();
+        loadInstructions();
+
+        $("#btnLoad").click(loadInstructions);
+
+            $("#btnAdd").click(function () {
+            const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
+            const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
+
+            if (!modelItem || !stationItem) {
+            $("#toastMsg").text("Please select Model and Station");
+            $("#toastMsg").jqxNotification("open");
+            return;
+            }
+
+            $("#hdnId").val("");
+            editor.setData("");
+            $("#instructionWindow").jqxWindow("open");
+            });
+
+
+        $("#btnCancel").click(function () {
+            $("#instructionWindow").jqxWindow("close");
+        });
+
+        /* --------- INIT CKEDITOR --------- */
+         ClassicEditor.create(document.querySelector('#editor'), {
+        language: 'en'
+    }).then(ed => editor = ed);
+
+
+
+
+        $("#btnSave").click(saveInstruction);
+    });
+
+
+    function initGrid() {
+        const source = {
+            datatype: "json",
+            localdata: [],
+            datafields: [
+                { name: "id", type: "number" },
+                { name: "versionNo", type: "number" },
+                { name: "status", type: "string" },
+                { name: "isMandatory", type: "bool" },
+                { name: "isActive", type: "bool" }
+            ]
+        };
+
+        const adapter = new $.jqx.dataAdapter(source);
+
+        $("#instructionGrid").jqxGrid({
+            width: "100%",
+            height: 400,
+            source: adapter,
+            pageable: true,
+            sortable: true,
+            columnsresize: true,
+            columns: [
+                { text: "Version", datafield: "versionNo", width: 90 },
+                { text: "Mandatory", datafield: "isMandatory", columntype: "checkbox", width: 110 },
+                { text: "Active", datafield: "isActive", columntype: "checkbox", width: 90 },
+                { text: "Status", datafield: "status", width: 110 },
+                {
+                    text: "Edit", width: 80, cellsrenderer: (row) => `
+                        <button class="btn btn-sm btn-primary" onclick="editInstruction(${row})">Edit</button>`
+                }
+            ]
+        });
+    }
+
+
+    function loadInstructions() {
+
+    $.get("/api/admin/work-instructions/getInstructions", function (res) {
+
+        const source = {
+            datatype: "json",
+            localdata: res,
+            datafields: [
+                { name: "id", type: "number" },
+                { name: "modelId", type: "number" },
+                 { name: "modelName", type: "string" },
+                { name: "stationId", type: "number" },
+                { name: "stationName", type: "string" },
+                { name: "htmlContent", type: "string" },
+                { name: "status", type: "string" },
+                { name: "isActive", type: "bool" },
+            ]
+        };
+
+        const adapter = new $.jqx.dataAdapter(source);
+
+        $("#instructionGrid").jqxGrid({
+            source: adapter,
+            width: "100%",
+            autoheight: true,
+            columns: [
+                { text: "ID", datafield: "id", width: 50 },
+                { text: "Model", datafield: "modelId" },
+                  { text: "Model", datafield: "modelName" },
+                { text: "Station", datafield: "stationName" },
+                { text: "Status", datafield: "status" },
+                { text: "Active", datafield: "isActive", columntype: "checkbox" },
+              
+            ]
+        });
+
+    });
+
+      
+
+    }
+
+
+    function editInstruction(rowIndex) {
+        const row = $("#instructionGrid").jqxGrid("getrowdata", rowIndex);
+        if (!row) return;
+
+        $("#hdnId").val(row.id);
+        editor.setData(row.htmlContent || "");
+
+        $("#ddlStatus").jqxDropDownList("selectItem", row.status);
+
+        $("#instructionWindow").jqxWindow("open");
+    }
+
+
+    function saveInstruction() {
+        const id = $("#hdnId").val();
+
+            const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
+            const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
+
+        modelId = modelItem.value;
+        stationId = stationItem.value;
+
+        const payload = {
+            htmlContent: editor.getData(),
+            status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
+            modelId,
+            stationId,
+            createdBy: "admin",
+            versionNo: 1
+        };
+
+        const url = id
+            ? "/api/admin/work-instructions/update"
+            : "/api/admin/work-instructions/add";
+
+        if (id) payload.id = parseInt(id);
+
+        $.ajax({
+            url,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload),
+            success: () => {
+                $("#instructionWindow").jqxWindow("close");
+                loadInstructions();
+            },
+            error: err => console.error(err)
+        });
+    }
+</script>

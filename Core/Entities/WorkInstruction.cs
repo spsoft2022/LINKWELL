@@ -2,23 +2,19 @@
 {
     public class WorkInstruction
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
+        public string HtmlContent { get; set; }
+        public int ModelId { get; set; }
+        public int StationId { get; set; }
+        public string Status { get; set; }
+        public int? VersionNo { get; set; }
+        public string CreatedBy { get; set; }
 
-        public string? Title { get; set; }
+        public string CreatedOn { get; set; }
 
-        public string? InstructionType { get; set; }  // Text / Image / PDF etc.
+        public bool IsActive { get; set; }
+        
 
-        public string? Content { get; set; }          // Actual instruction / JSON
-
-        public bool? IsActive { get; set; }
-
-        public string? CreatedBy { get; set; }
-
-        public DateTime? CreatedOn { get; set; }
-
-        public DateTime? ModifiedOn { get; set; }
-
-        public string? ModifiedBy { get; set; }
     }
 
 }

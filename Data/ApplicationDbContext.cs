@@ -9,8 +9,9 @@ namespace LinkwellProductionSystem.Data
     {
         public DbSet<ModelStationWorkInstruction> ModelStationWorkInstruction { get; set; } = null!;
         public DbSet<StationAssignment> StationAssignment { get; set; }
+
         public DbSet<WorkInstruction> WorkInstruction { get; set; } = null!;
-        public DbSet<Model> Models { get; set; } = null!;
+        public DbSet<Model> Models { get; set; }
         public DbSet<ModelStationMap> ModelStationMap { get; set; } = null!;
         public DbSet<Stage> Stages { get; set; } = null!;
         public DbSet<ModelStage> ModelStages { get; set; } = null!;

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\support\" />
+    <Folder Include="wwwroot\uploads\work-instructions\" />
   </ItemGroup>
 
 </Project>
