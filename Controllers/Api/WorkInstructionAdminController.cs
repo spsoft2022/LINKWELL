@@ -2,6 +2,7 @@
 using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.DTOs.WorkInstruction;
 using LinkwellProductionSystem.ViewModels.WorkInstructions.Requests;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkwellProductionSystem.Controllers.Api
@@ -97,7 +98,7 @@ namespace LinkwellProductionSystem.Controllers.Api
                 StationId = dto.StationId,
                 Status = dto.Status,
                 CreatedBy = "Admin",
-                CreatedOn = DateTime.UtcNow.ToString(),
+                CreatedOn = DateTime.Now
             };
 
             _context.WorkInstruction.Add(entity);
@@ -124,6 +125,11 @@ namespace LinkwellProductionSystem.Controllers.Api
 
             entity.HtmlContent = dto.HtmlContent;
             entity.Status = dto.Status;
+            entity.ModelId= dto.ModelId;
+            entity.StationId= dto.StationId;
+            entity.CreatedBy = "Admin";
+            entity.CreatedOn = DateTime.Now;
+
 
             await _context.SaveChangesAsync();
 

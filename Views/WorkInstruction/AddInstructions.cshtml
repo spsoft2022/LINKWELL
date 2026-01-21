@@ -15,7 +15,6 @@
     </div>
 
     <div class="col-md-3 pt-4">
-        <input type="button" id="btnLoad" value="Load" />
     </div>
 
     <div class="col-md-3 pt-4 text-end">
@@ -30,7 +29,8 @@
     <div>Work Instruction Editor</div>
     <div style="padding:10px;">
         <input type="hidden" id="hdnId" />
-
+        <input type="hidden" id="modeleditId" />
+        <input type="hidden" id="stationeditId" />
         <div id="editor" style="border:1px solid #ccc; min-height:350px;"></div>
 
         <div class="mt-3">
@@ -49,6 +49,7 @@
     let modelId = 0;
     let stationId = 0;
     let editor;
+    let isEditMode = false;
 
     $(document).ready(function () {
 
@@ -207,10 +208,17 @@
             columns: [
                 { text: "ID", datafield: "id", width: 50 },
                 { text: "Model", datafield: "modelId" },
-                  { text: "Model", datafield: "modelName" },
+                { text: "Model", datafield: "modelName" },
                 { text: "Station", datafield: "stationName" },
                 { text: "Status", datafield: "status" },
                 { text: "Active", datafield: "isActive", columntype: "checkbox" },
+                {
+                text: "Edit",
+                width: 80,
+                cellsrenderer: function (row, column, value) {
+                return `<button class="btn btn-sm btn-primary" onclick="editInstruction(${row})">Edit</button>`;
+                }
+    }
               
             ]
         });
@@ -222,11 +230,30 @@
     }
 
 
+        function resetForm() {
+        $("#hdnId").val("");
+        editor.setData("");
+
+        $("#ddlStatus").jqxDropDownList("selectIndex", 0);
+
+        const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
+        const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
+
+        // keep selection if user already picked
+        if (!modelItem) $("#ddlModel").jqxDropDownList("selectIndex", -1);
+        if (!stationItem) $("#ddlStation").jqxDropDownList("selectIndex", -1);
+    }
+
+
     function editInstruction(rowIndex) {
+        isEditMode = true;
         const row = $("#instructionGrid").jqxGrid("getrowdata", rowIndex);
         if (!row) return;
 
+        console.log(row);
         $("#hdnId").val(row.id);
+             $("#modeleditId").val(row.modelId);
+                  $("#stationeditId").val(row.stationId);
         editor.setData(row.htmlContent || "");
 
         $("#ddlStatus").jqxDropDownList("selectItem", row.status);
@@ -235,29 +262,42 @@
     }
 
 
-    function saveInstruction() {
+        function saveInstruction() {
         const id = $("#hdnId").val();
 
+        let modelId, stationId;
+
+        // EDIT MODE → pick from hidden fields, no toast validation
+        if (id) {
+            modelId = $("#modeleditId").val();
+            stationId = $("#stationeditId").val();
+        }
+        // ADD MODE → pick from dropdown, and validate
+        else {
             const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
             const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
 
-        modelId = modelItem.value;
-        stationId = stationItem.value;
+            if (!modelItem || !stationItem) {
+                $("#toastMsg").text("Please select Model and Station");
+                $("#toastMsg").jqxNotification("open");
+                return;
+            }
+
+            modelId = modelItem.value;
+            stationId = stationItem.value;
+        }
 
         const payload = {
+            id: id ? parseInt(id) : undefined,
             htmlContent: editor.getData(),
             status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
-            modelId,
-            stationId,
+            modelId: modelId,
+            stationId: stationId,
             createdBy: "admin",
             versionNo: 1
         };
 
-        const url = id
-            ? "/api/admin/work-instructions/update"
-            : "/api/admin/work-instructions/add";
-
-        if (id) payload.id = parseInt(id);
+        const url = id ? "/api/admin/work-instructions/update" : "/api/admin/work-instructions/add";
 
         $.ajax({
             url,
@@ -267,8 +307,15 @@
             success: () => {
                 $("#instructionWindow").jqxWindow("close");
                 loadInstructions();
+                resetForm();
+                isEditMode = false;
             },
-            error: err => console.error(err)
+            error: console.error
         });
     }
+
+
+
+       
+
 </script>

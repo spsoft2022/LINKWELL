@@ -1,4 +1,6 @@
-﻿namespace LinkwellProductionSystem.Core.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace LinkwellProductionSystem.Core.Entities
 {
     public class WorkInstruction
     {
@@ -10,7 +12,7 @@
         public int? VersionNo { get; set; }
         public string CreatedBy { get; set; }
 
-        public string CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
 
         public bool IsActive { get; set; }
         
