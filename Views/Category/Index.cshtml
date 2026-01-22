@@ -1,0 +1,278 @@
+﻿@{
+    ViewData["Title"] = "Category Management";
+}
+
+<button class="btn btn-primary mb-3" id="btnAddCategory">
+    ➕ Add Category
+</button>
+
+<div id="categoryGrid"></div>
+
+<!-- MODAL -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="categoryId">
+
+                <div class="mb-2">
+                    <label>Category Code</label>
+                    <input type="text" class="form-control" id="categoryCode">
+                </div>
+
+                <div class="mb-2">
+                    <label>Category Name</label>
+                    <input type="text" class="form-control" id="categoryName">
+                </div>
+
+                <div class="mb-2">
+                    <label>Description</label>
+                    <textarea class="form-control" id="categoryDescription"></textarea>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button class="btn btn-success" id="btnSaveCategory">
+                    Save
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        loadCategoryGrid();
+    });
+
+    let categoryModal;
+
+    /* ---------------- ADD CATEGORY ---------------- */
+
+    $("#btnAddCategory").click(function () {
+
+        clearCategoryForm();
+
+        $(".modal-title").text("Add Category");
+
+        $("#categoryCode").prop("disabled", false);
+
+        categoryModal = new bootstrap.Modal(
+            document.getElementById('categoryModal')
+        );
+
+        categoryModal.show();
+    });
+
+    /* ---------------- EDIT CATEGORY ---------------- */
+
+    function editCategory(rowIndex) {
+
+        const rowData = $("#categoryGrid").jqxGrid('getrowdata', rowIndex);
+
+        $("#categoryId").val(rowData.categoryId);
+        $("#categoryCode").val(rowData.categoryCode).prop("disabled", true);
+        $("#categoryName").val(rowData.categoryName);
+        $("#categoryDescription").val(rowData.description);
+
+        $(".modal-title").text("Edit Category");
+
+        var modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+        modal.show();
+    }
+
+    /* ---------------- CLEAR FORM ---------------- */
+
+    function clearCategoryForm() {
+
+        $("#categoryId").val("");
+        $("#categoryCode").val("");
+        $("#categoryName").val("");
+        $("#categoryDescription").val("");
+    }
+
+    /* ---------------- SAVE CATEGORY ---------------- */
+
+    $("#btnSaveCategory").on("click", function () {
+
+            let data;
+
+            let catid= $("#categoryId").val().trim();
+
+    if (catid) {
+        // UPDATE
+        data = {
+            CategoryId: parseInt(catid),
+            CategoryCode: $("#categoryCode").val().trim(),
+            CategoryName: $("#categoryName").val().trim(),
+            Description: $("#categoryDescription").val(),
+            IsActive: true
+        };
+    } else {
+        // CREATE
+        data = {
+            CategoryCode: $("#categoryCode").val().trim(),
+            CategoryName: $("#categoryName").val().trim(),
+            Description: $("#categoryDescription").val(),
+            IsActive: true
+        };
+    }
+
+
+        if (!data.CategoryCode || !data.CategoryName) {
+            toastr.warning("Category Code and Name required");
+            return;
+        }
+
+        const url = catid
+            ? "/category/update/" + catid
+            : "/category/create";
+
+        const method = catid ? "PUT" : "POST";
+
+        $.ajax({
+            url: url,
+            type: method,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (res) {
+
+                toastr.success(res.message);
+
+                $("#categoryGrid").jqxGrid('updatebounddata');
+
+                const modalEl = document.getElementById('categoryModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            },
+            error: function (xhr) {
+
+                let msg = "Save failed";
+
+                if (xhr.responseJSON?.message)
+                    msg = xhr.responseJSON.message;
+
+                toastr.error(msg);
+            }
+        });
+
+    });
+
+    /* ---------------- ENABLE / DISABLE ---------------- */
+
+    function toggleCategory(categoryId, isActive) {
+
+        const action = isActive ? "disable" : "enable";
+
+        if (!confirm(`Are you sure you want to ${action} this category?`))
+            return;
+
+            alert(categoryId);
+        $.ajax({
+            url: "/category/toggle/" + categoryId,
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+                IsActive: !isActive
+            }),
+            success: function (res) {
+
+                toastr.success(res.message);
+                $("#categoryGrid").jqxGrid('updatebounddata');
+            },
+            error: function () {
+                toastr.error("Category update failed");
+            }
+        });
+    }
+
+    /* ---------------- GRID ---------------- */
+
+    function loadCategoryGrid() {
+
+        var source = {
+            datatype: "json",
+            url: "/category/all",
+            datafields: [
+                { name: "categoryId", type: "number" },
+                { name: "categoryCode", type: "string" },
+                { name: "categoryName", type: "string" },
+                { name: "description", type: "string" },
+                { name: "isActive", type: "bool" }
+            ]
+        };
+
+        var adapter = new $.jqx.dataAdapter(source);
+
+        $("#categoryGrid").jqxGrid({
+
+            width: "100%",
+            height: 400,
+            source: adapter,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            showfilterrow: true,
+            columnsresize: true,
+
+            columns: [
+
+                { text: "Category Code", datafield: "categoryCode", width: 150 },
+                { text: "Category Name", datafield: "categoryName", width: 220 },
+                { text: "Description", datafield: "description", width: 300 },
+
+                {
+                    text: "Status",
+                    datafield: "isActive",
+                    width: 100,
+                    cellsrenderer: function (row, col, val) {
+
+                        return val
+                            ? "<span style='color:green;font-weight:bold'>Active</span>"
+                            : "<span style='color:red;font-weight:bold'>Disabled</span>";
+                    }
+                },
+
+                {
+                    text: "Actions",
+                    width: 170,
+                    cellsrenderer: function (row) {
+
+                        const data = $("#categoryGrid").jqxGrid('getrowdata', row);
+
+                        const toggleText = data.isActive ? "Disable" : "Enable";
+                        const toggleClass = data.isActive ? "btn-danger" : "btn-success";
+
+                        return `
+                            <button class="btn btn-sm btn-warning me-1"
+                                onclick="editCategory(${row})">
+                                ✏️ Edit
+                            </button>
+
+                            <button class="btn btn-sm ${toggleClass}"
+                                onclick="toggleCategory(${data.categoryId}, ${data.isActive})">
+                                ${toggleText}
+                            </button>
+                        `;
+                    },
+                    filterable: false,
+                    sortable: false
+                }
+            ]
+        });
+    }
+
+</script>
