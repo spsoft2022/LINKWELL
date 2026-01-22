@@ -43,18 +43,19 @@
 
         container.onmouseover = () => paused = true;
         container.onmouseleave = () => paused = false;
+        let scrollSpeed = 1;
 
         // ================= AUTO SCROLL =================
-        function autoScroll() {
+            function autoScroll() {
 
             const maxScroll = container.scrollHeight - container.clientHeight;
 
-            container.scrollTop += 1;
+            container.scrollTop += scrollSpeed;
 
             if (container.scrollTop >= maxScroll) {
-                container.scrollTop = 0;
+            container.scrollTop = 0;
             }
-        }
+            }
 
         // ================= LOAD FLOOR PREVIEW =================
 
