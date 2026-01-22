@@ -107,7 +107,6 @@
             resizable: true
         });
 
-        // initGrid();
         loadInstructions();
 
         $("#btnLoad").click(loadInstructions);
@@ -144,45 +143,7 @@
     });
 
 
-    function initGrid() {
-        const source = {
-            datatype: "json",
-            localdata: [],
-            datafields: [
-                { name: "id", type: "number" },
-                { name: "versionNo", type: "number" },
-                { name: "status", type: "string" },
-                { name: "isMandatory", type: "bool" },
-                { name: "isActive", type: "bool" }
-            ]
-        };
-
-        const adapter = new $.jqx.dataAdapter(source);
-
-        $("#instructionGrid").jqxGrid({
-            width: "100%",
-            height: 400,
-            source: adapter,
-            pageable: true,
-            sortable: true,
-            columnsresize: true,
-            columns: [
-                { text: "Version", datafield: "versionNo", width: 90 },
-                { text: "Mandatory", datafield: "isMandatory", columntype: "checkbox", width: 110 },
-                { text: "Active", datafield: "isActive", columntype: "checkbox", width: 90 },
-                { text: "Status", datafield: "status", width: 110 },
-                {
-                    text: "Edit", width: 80, cellsrenderer: (row) => `
-                        <button class="btn btn-sm btn-primary" onclick="editInstruction(${row})">Edit</button>`
-                },
-                {
-                    text: "Preview", width: 80, cellsrenderer: (row) => `
-                        <button class="btn btn-sm btn-primary" onclick="previewInstruction(${row})">Preview</button>`
-                }
-            ]
-        });
-    }
-
+ 
 
     function loadInstructions() {
 
@@ -199,7 +160,6 @@
                 { name: "stationName", type: "string" },
                 { name: "htmlContent", type: "string" },
                 { name: "status", type: "string" },
-                { name: "isActive", type: "bool" },
             ]
         };
 
@@ -213,9 +173,9 @@
                 { text: "ID", datafield: "id", width: 50 },
                 { text: "Model", datafield: "modelId" },
                 { text: "Model", datafield: "modelName" },
+                 { text: "StationID", datafield: "stationId" },
                 { text: "Station", datafield: "stationName" },
                 { text: "Status", datafield: "status" },
-                { text: "Active", datafield: "isActive", columntype: "checkbox" },
                 {
                 text: "Edit",
                 width: 80,
@@ -269,9 +229,11 @@
             return;
         }
 
-        // Navigate to preview page
-        window.location.href =
-            `/floor-preview?station=${stationId}&model=${modelId}`;
+           window.open(
+        `/floor-preview?station=${stationId}&model=${modelId}`,
+        '_blank'
+    );
+
     }
 
 
