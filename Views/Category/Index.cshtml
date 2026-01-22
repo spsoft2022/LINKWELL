@@ -180,7 +180,6 @@
         if (!confirm(`Are you sure you want to ${action} this category?`))
             return;
 
-            alert(categoryId);
         $.ajax({
             url: "/category/toggle/" + categoryId,
             type: "PUT",

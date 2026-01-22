@@ -59,7 +59,7 @@
 
 
 	 function loadCategories(callback) {
-    $.get("/api/category/get-categories", function (res) {
+    $.get("/category/get-categories", function (res) {
         $("#categoryId").empty();
         $("#categoryId").append(`<option value="">-- Select --</option>`);
 

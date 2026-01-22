@@ -50,7 +50,6 @@ namespace LinkwellProductionSystem.Controllers
         public IActionResult GetAll()
         {
             var data = _context.Category
-                               .Where(x => x.IsActive)
                                .OrderBy(x => x.CategoryName)
                                .ToList();
 
