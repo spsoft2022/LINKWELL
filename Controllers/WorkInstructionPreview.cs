@@ -1,5 +1,6 @@
 ﻿using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.DTOs.WorkInstruction;
+using LinkwellProductionSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,76 +9,69 @@ using Microsoft.EntityFrameworkCore;
 public class WorkInstructionPreviewController : ControllerBase
 {
     private readonly IWebHostEnvironment _env;
-
-    public WorkInstructionPreviewController(IWebHostEnvironment env)
-    {
-        _env = env;
-    }
-
     private readonly ApplicationDbContext _context;
 
-    public WorkInstructionPreviewController(ApplicationDbContext context)
+    public WorkInstructionPreviewController(IWebHostEnvironment env, ApplicationDbContext context)
     {
+        _env = env;
         _context = context;
     }
+
+   
+
+  
 
     [HttpGet("preview")]
     public IActionResult Preview(int modelId, int stationId, int? versionNo = null)
     {
-        //// 🔹 Get latest version
-        //int latestVersion = _context.ModelStationWorkInstruction
-        //    .Where(x => x.ModelId == modelId && x.StationId == stationId)
-        //    .Max(x => (int?)x.VersionNo) ?? 1;
-
-        //int effectiveVersion = versionNo ?? latestVersion;
-
-        //var data = (
-        //    from mswi in _context.ModelStationWorkInstruction
-        //    join wi in _context.WorkInstruction
-        //        on mswi.WorkInstructionId equals wi.Id
-        //    where mswi.ModelId == modelId
-        //       && mswi.StationId == stationId
-        //       && mswi.VersionNo == effectiveVersion
-        //       && mswi.Status != "Archived"
-        //    orderby mswi.SequenceNo
-        //    select new
-        //    {
-        //        SequenceNo = mswi.SequenceNo ?? 0,
-        //        IsMandatory = mswi.IsMandatory ?? false,
-        //        ConditionJson = mswi.ConditionJson ?? "",
-        //        ValidationJson = mswi.ValidationJson ?? "",
-        //        VersionNo = mswi.VersionNo ?? 1,
-        //        Status = mswi.Status ?? "",
-
-        //        InstructionId = wi.Id,
-        //        Content = wi.HtmlContent ?? ""
-        //    }
-        //).ToList();
-
-        //var result = data
-        //    .GroupBy(x => x.SequenceNo)
-        //    .Select(g => new WorkInstructionPreviewStepDto
-        //    {
-        //        SequenceNo = g.Key,
-        //        Instructions = g.Select(i => new WorkInstructionPreviewItemDto
-        //        {
-        //            InstructionId = i.InstructionId,
-        //            InstructionText = i.h,
-        //            IsMandatory = i.IsMandatory,
-        //            ConditionJson = i.ConditionJson,
-        //            ValidationJson = i.ValidationJson,
-        //            VersionNo = i.VersionNo,
-        //            Status = i.Status
-        //        }).ToList()
-        //    })
-        //    .OrderBy(x => x.SequenceNo)
-        //    .ToList();
-
-        //// ✅ RETURN VERSION INFO ALSO
-        return Ok(new
+        try
         {
-        });
+            // Get Station Name
+            var stationName = _context.Stations
+            .Where(x => x.Id == stationId.ToString())
+            .Select(x => x.StationName)
+            .FirstOrDefault();
+
+
+            // Get Model Name
+            var modelName = _context.Models
+                .Where(x => x.Id == modelId)
+                .Select(x => x.ModelName)
+                .FirstOrDefault();
+
+            // Get Instructions
+            var data = _context.WorkInstruction
+                .Where(x => x.ModelId == modelId
+                         && x.StationId == stationId
+                         && x.Status == "Published"
+                         ) // usually true = active
+                .OrderByDescending(x => x.CreatedOn)
+                .Select(x => new
+                {
+                    htmlContent = x.HtmlContent
+                })
+                .ToList();
+
+            return Ok(new
+            {
+                success = true,
+                stationName = stationName,
+                modelName = modelName,
+                data = data
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
     }
+
+
+
 
     [HttpPost("upload")]
     public async Task<IActionResult> UploadImage(IFormFile upload)

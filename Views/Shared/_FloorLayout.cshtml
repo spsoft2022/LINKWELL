@@ -18,30 +18,40 @@
     <script src="~/lib/support/jqx-all.js"></script>
 
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden !important;
+        }
+
         body {
             background: #fff;
-            padding: 10px 20px;
             font-size: 22px;
         }
+
+        /* Instruction cards */
         .instruction-block {
             border: 2px solid #ddd;
             padding: 20px;
             margin-bottom: 25px;
             border-radius: 10px;
         }
+
         .instruction-title {
             font-size: 28px;
             font-weight: 600;
             margin-bottom: 10px;
         }
 
+        /* Main scroll container */
         #instructionContainer {
-            height: 100vh; /* full screen */
-            overflow-y: auto;
-            scroll-behavior: smooth;
-            scroll-behavior: smooth;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* IMPORTANT: no scrollbar */
             padding: 20px;
             background: white;
+            box-sizing: border-box;
         }
 
 

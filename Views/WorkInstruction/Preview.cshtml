@@ -1,44 +1,38 @@
 ﻿@{
     ViewData["Title"] = "Work Instruction Preview";
 }
+
 <style>
     .step-box {
         border-left: 6px solid #1976d2;
         margin-bottom: 15px;
-        padding: 10px;
+        padding: 12px;
         background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
 
-        .step-box.mandatory {
-            border-left-color: #d32f2f;
-        }
-
-    .step-header {
+    #headerPanel label {
         font-weight: 600;
-        margin-bottom: 8px;
-        display: flex;
-        justify-content: space-between;
+        font-size: 14px;
     }
 
-    .mandatory-badge {
-        background: #d32f2f;
-        color: #fff;
-        padding: 2px 8px;
-        font-size: 11px;
-        border-radius: 3px;
-    }
-
-    .instruction-box {
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin-bottom: 8px;
-        background: #f7f7f7;
-        border-radius: 3px;
-    }
-
-    .instruction-title {
+    .preview-title {
+        font-size: 18px;
         font-weight: 600;
-        margin-bottom: 4px;
+        margin-bottom: 10px;
+        color: #1976d2;
+    }
+
+    .step-box p {
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .step-box h1,
+    .step-box h2,
+    .step-box h3 {
+        color: #1976d2;
+        margin-top: 12px;
     }
 </style>
 
@@ -46,38 +40,54 @@
 
     <!-- HEADER -->
     <div id="headerPanel">
-        <div style="display:flex; gap:15px; align-items:end;">
+
+        <div style="display:flex; gap:15px; align-items:end; flex-wrap:wrap">
+
             <div>
                 <label>Model</label>
                 <div id="ddlModel"></div>
             </div>
+
             <div>
                 <label>Station</label>
                 <div id="ddlStation"></div>
             </div>
-        
+
             <div>
                 <input type="button" id="btnLoad" value="Load Preview" />
             </div>
+
         </div>
+
     </div>
 
     <br />
 
-    <!-- PREVIEW -->
+    <!-- PREVIEW PANEL -->
     <div id="previewPanel"></div>
 
 </div>
 
 <script>
+
     $(document).ready(function () {
-       
-        $("#btnLoad").jqxButton({ width: 140, height: 32, theme: 'light' });
-        $("#previewPanel").jqxPanel({ width: '100%', height: 600, theme: 'light' });
+
+        $("#btnLoad").jqxButton({
+            width: 140,
+            height: 32,
+            theme: 'light'
+        });
+
+        $("#previewPanel").jqxPanel({
+            width: '100%',
+            height: 600,
+            theme: 'light'
+        });
 
         loadDropdowns();
-         //loadVersions(modelId, stationId);
+
         $("#btnLoad").on("click", function () {
+
             const modelId = $("#ddlModel").jqxDropDownList('val');
             const stationId = $("#ddlStation").jqxDropDownList('val');
 
@@ -93,134 +103,93 @@
     /* ===============================
        LOAD PREVIEW
     ================================ */
+
     function loadPreview(modelId, stationId) {
 
         $("#previewPanel").jqxPanel('clearContent');
-        $("#previewPanel").jqxPanel('append', '<div>Loading...</div>');
+        $("#previewPanel").jqxPanel('append',
+            "<div style='padding:10px'>Loading preview...</div>");
 
         $.ajax({
             url: `/api/workinstructions/preview?modelId=${modelId}&stationId=${stationId}`,
             type: "GET",
-            success: function (data) {
-                renderPreview(data.steps);
+
+            success: function (res) {
+
+                if (!res || !res.data || res.data.length === 0) {
+
+                    $("#previewPanel").jqxPanel('clearContent');
+                    $("#previewPanel").jqxPanel('append',
+                        "<div style='color:#d32f2f;padding:10px'>No instructions configured</div>");
+
+                    return;
+                }
+
+                renderPreview(res.data);
             },
+
             error: function () {
+
                 $("#previewPanel").jqxPanel('clearContent');
                 $("#previewPanel").jqxPanel('append',
-                    "<div style='color:red'>Failed to load preview</div>");
+                    "<div style='color:red;padding:10px'>Failed to load preview</div>");
             }
         });
     }
 
     /* ===============================
-       RENDER PREVIEW
+       RENDER PREVIEW (HTML CONTENT)
     ================================ */
-    function renderPreview(steps) {
+
+    function renderPreview(data) {
 
         $("#previewPanel").jqxPanel('clearContent');
 
-        if (!steps || steps.length === 0) {
-            $("#previewPanel").jqxPanel('append', "<div>No instructions found</div>");
-            return;
-        }
-
         let html = "";
 
-        steps.forEach(step => {
-
-            const hasMandatory = step.instructions.some(x => x.isMandatory);
+        data.forEach(item => {
 
             html += `
-                <div class="step-box ${hasMandatory ? 'mandatory' : ''}">
-                    <div class="step-header">
-                        <div>STEP ${step.sequenceNo}</div>
-                        ${hasMandatory ? '<span class="mandatory-badge">MANDATORY</span>' : ''}
-                    </div>
+                <div class="step-box">
+                    ${item.htmlContent}
+                </div>
             `;
-
-            step.instructions.forEach(inst => {
-                html += renderInstruction(inst);
-            });
-
-            html += `</div>`;
         });
 
         $("#previewPanel").jqxPanel('append', html);
     }
 
     /* ===============================
-       RENDER INSTRUCTION
-    ================================ */
-    function renderInstruction(inst) {
-
-        let body = "";
-
-        switch (inst.instructionType) {
-            case "Text":
-                body = `<p>${inst.instructionText}</p>`;
-                break;
-
-            case "Image":
-                body = `<img src="${inst.attachmentPath}" style="max-width:100%" />`;
-                break;
-
-            case "PDF":
-                body = `<iframe src="${inst.attachmentPath}" width="100%" height="450"></iframe>`;
-                break;
-
-            case "Video":
-                body = `
-                    <video controls width="100%">
-                        <source src="${inst.attachmentPath}" type="video/mp4">
-                    </video>`;
-                break;
-
-            default:
-                body = `<span style="color:red">Unsupported type</span>`;
-        }
-
-        return `
-            <div class="instruction-box">
-                <div class="instruction-title">
-                    ${inst.instructionType}
-                    ${inst.isMandatory ? '<span class="mandatory-badge" style="margin-left:6px">Mandatory</span>' : ''}
-                </div>
-                ${body}
-            </div>
-        `;
-    }
-
-    /* ===============================
        LOAD DROPDOWNS
     ================================ */
+
     function loadDropdowns() {
 
+        // MODEL DROPDOWN
         $.get('/api/model/get-models', function (data) {
-        $("#ddlModel").jqxDropDownList({
-        source: data,
-        displayMember: "modelName",
-        valueMember: "id",
-        width: 250,
-        height: 30,
-        placeHolder: "Select Model"
+
+            $("#ddlModel").jqxDropDownList({
+                source: data,
+                displayMember: "modelName",
+                valueMember: "id",
+                width: 250,
+                height: 30,
+                placeHolder: "Select Model"
+            });
         });
-        });
 
-
-
+        // STATION DROPDOWN
         $.get('/api/station/get-stations', function (data) {
+
             $("#ddlStation").jqxDropDownList({
                 source: data.data,
                 displayMember: "stationName",
                 valueMember: "id",
                 width: 250,
                 height: 30,
-                selectedIndex: -1,
-                theme: 'light',
                 placeHolder: "Select Station"
             });
         });
-
-
     }
+
 </script>
