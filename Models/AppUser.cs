@@ -7,6 +7,8 @@ namespace LinkwellProductionSystem.Models
         public string Username { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;   // BCrypt hashed
         public string? FullName { get; set; }
+
+        public string? Email { get; set; }
         public string? StationId { get; set; }                        // NULL for Admin
         public string Role { get; set; } = "Incharge";             // "Admin" or "Incharge"
 

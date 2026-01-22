@@ -6,29 +6,41 @@
 <head>
     <title>@ViewData["Title"] - Linkwell</title>
     <meta name="viewport" content="width=device-width" />
+   
     <link href="~/lib/support/bootstrap.min.css" rel="stylesheet">
     <link href="~/lib/support/toastr.min.css" rel="stylesheet">
     <link href="~/lib/support/jqx.base.css" rel="stylesheet" />
 
-    <!-- jQuery MUST be first -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- jQuery FIRST -->
     <script src="~/lib/support/jquery.min.js"></script>
 
-    <!-- Bootstrap 5 -->
-    <script src="~/lib/support/bootstrap.min.js"></script>
+    <!-- Bootstrap WITH Popper -->
+    <script src="~/lib/support/bootstrap.bundle.min.js"></script>
 
-    <!-- jqxGrid -->
+    <!-- jqx -->
     <script src="~/lib/support/jqx-all.js"></script>
 
+    <!-- CKEditor -->
     <script src="~/lib/support/ckeditor.js"></script>
-    
 
-    <!-- toastr (optional) -->
+    <!-- toastr -->
     <script src="~/lib/support/toastr.min.js"></script>
 
     <style>
         #toast-container {
             z-index: 999999 !important;
         }
+
+        #userMenuBtn:hover {
+            background-color: #0b5ed7;
+        }
+
+        .dropdown-menu {
+            min-width: 180px;
+        }
+
     </style>
 
 </head>
@@ -51,8 +63,8 @@
                     <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
                     <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a>
                     <a asp-controller="WorkInstruction" asp-action="AddInstructions" class="text-white d-block my-2">Instructions</a>
-                    <a asp-controller="WorkInstruction" asp-action="Preview" class="text-white d-block my-2">Preview</a>
-                    <a asp-controller="Assignment" asp-action="Index" class="text-white d-block my-2">Display Instruction</a>
+                    @* <a asp-controller="WorkInstruction" asp-action="Preview" class="text-white d-block my-2">Preview</a> *@
+                    @* <a asp-controller="Assignment" asp-action="Index" class="text-white d-block my-2">Display Instruction</a> *@
                 }
 
                 @if (Context.Session.GetString("Role") == "Incharge")
@@ -75,9 +87,42 @@
                         </span>
                     </div>
 
-                    <a asp-controller="Account" asp-action="Logout" class="btn btn-sm btn-danger">
-                        Logout
-                    </a>
+                    <div class="dropdown">
+
+                        <!-- Rounded User Icon -->
+                        <div id="userMenuBtn"
+                             class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                             data-bs-toggle="dropdown"
+                             style="width:40px;height:40px;cursor:pointer;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+
+                        <!-- Context Menu -->
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Account"
+                                   asp-action="ChangePassword">
+                                    Change Password
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item text-danger"
+                                   asp-controller="Account"
+                                   asp-action="Logout">
+                                    Logout
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
                 </div>
 
                 <!-- CONTENT -->
