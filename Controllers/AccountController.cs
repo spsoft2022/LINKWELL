@@ -3,9 +3,13 @@ using System.Net.Mail;
 using BCrypt.Net;
 using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.Models;
+using LinkwellProductionSystem.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
+
 
 
 namespace LinkwellProductionSystem.Controllers
@@ -26,6 +30,66 @@ namespace LinkwellProductionSystem.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            if (HttpContext.Session.GetString("Username") == null)
+                return RedirectToAction("Login");
+
+            return View();
+        }
+
+
+        [HttpPost]
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePasswordVM model)
+        {
+            if (HttpContext.Session.GetString("Username") == null)
+                return RedirectToAction("Login");
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            string username = HttpContext.Session.GetString("Username");
+
+            var user = _db.AppUsers.FirstOrDefault(x => x.Username == username);
+
+            if (user == null)
+            {
+                TempData["error"] = "User not found";
+                return View(model);
+            }
+
+            // ✅ VERIFY CURRENT PASSWORD (BCrypt)
+            bool passwordValid = BCrypt.Net.BCrypt.Verify(
+                                        model.CurrentPassword,
+                                        user.PasswordHash);
+
+            if (!passwordValid)
+            {
+                TempData["error"] = "Current password is incorrect";
+                return View(model);
+            }
+
+            // ✅ HASH NEW PASSWORD (BCrypt)
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+
+            _db.SaveChanges();
+
+            TempData["success"] = "Password changed successfully";
+
+            // Optional security: force logout
+            // HttpContext.Session.Clear();
+            // return RedirectToAction("Login");
+
+            return RedirectToAction("ChangePassword");
+        }
+
+
+
+
 
 
         // GET
