@@ -9,7 +9,7 @@
         public bool IsMandatory { get; set; }
         public bool IsActive { get; set; }
         public string Status { get; set; }
-        public int VersionNo { get; set; }
+        public int? VersionNo { get; set; }
 
     }
 

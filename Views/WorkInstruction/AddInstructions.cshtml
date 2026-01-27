@@ -241,6 +241,7 @@
 
             modelId = modelItem.value;
             stationId = stationItem.value;
+             version= 1;
         }
 
         const payload = {
@@ -252,7 +253,7 @@
             createdBy: "admin",
             versionNo:version
         };
-
+        alert(JSON.stringify(payload));
         const url = id ? "/api/admin/work-instructions/update" : "/api/admin/work-instructions/add";
 
         $.ajax({
