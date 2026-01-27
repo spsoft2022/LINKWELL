@@ -7,15 +7,15 @@ namespace LinkwellProductionSystem.Controllers
         // ==============================
         // ADMIN UI PAGE
         // ==============================
-        public IActionResult Admin()
-        {
-            return View();
-        }
+        //public IActionResult Admin()
+        //{
+        //    return View();
+        //}
 
-        public IActionResult Preview()
-        {
-            return View();
-        }
+        //public IActionResult Preview()
+        //{
+        //    return View();
+        //}
 
         public IActionResult AddInstructions()
         {

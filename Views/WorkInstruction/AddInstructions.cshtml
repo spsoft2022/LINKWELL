@@ -132,10 +132,28 @@
         });
 
         /* --------- INIT CKEDITOR --------- */
-         ClassicEditor.create(document.querySelector('#editor'), {
-        language: 'en'
-    }).then(ed => editor = ed);
+    //      ClassicEditor.create(document.querySelector('#editor'), {
+    //     language: 'en'
+    // }).then(ed => editor = ed);
 
+           ClassicEditor.create(document.querySelector('#editor'), {
+        language: 'en',
+        simpleUpload: {
+            uploadUrl: '/api/admin/work-instructions/upload'
+        },
+        toolbar: {
+            items: [
+                'heading', '|',
+                'bold', 'italic',
+                '|',
+                'insertImage',
+                '|',
+                'undo', 'redo'
+            ]
+        }
+    })
+    .then(ed => editor = ed)
+    .catch(err => console.error(err));
 
 
 

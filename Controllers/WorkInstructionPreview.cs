@@ -17,9 +17,9 @@ public class WorkInstructionPreviewController : ControllerBase
         _context = context;
     }
 
-   
 
-  
+
+
 
     [HttpGet("preview")]
     public IActionResult Preview(int modelId, int stationId, int? versionNo = null)
@@ -74,36 +74,23 @@ public class WorkInstructionPreviewController : ControllerBase
 
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadImage(IFormFile upload)
+    public async Task<IActionResult> Upload(IFormFile upload)
     {
         if (upload == null || upload.Length == 0)
-            return BadRequest("No file");
+            return BadRequest("No file uploaded");
 
-        // validate image
-        var allowed = new[] { ".png", ".jpg", ".jpeg", ".gif", ".webp" };
-        var ext = Path.GetExtension(upload.FileName).ToLowerInvariant();
+        var uploads = Path.Combine(_env.WebRootPath, "uploads");
+        Directory.CreateDirectory(uploads);
 
-        if (!allowed.Contains(ext))
-            return BadRequest("Invalid file type");
-
-        // create folder if missing
-        string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "work-instructions");
-        if (!Directory.Exists(uploadsFolder))
-            Directory.CreateDirectory(uploadsFolder);
-
-        // safe unique file name
-        string fileName = $"{Guid.NewGuid()}{ext}";
-        string filePath = Path.Combine(uploadsFolder, fileName);
+        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(upload.FileName);
+        var filePath = Path.Combine(uploads, fileName);
 
         using (var stream = new FileStream(filePath, FileMode.Create))
             await upload.CopyToAsync(stream);
 
-        // CKEditor expects relative URL
-        string fileUrl = $"/uploads/work-instructions/{fileName}";
-
-        return Ok(new { url = fileUrl });
+        return Ok(new { url = "/uploads/" + fileName });
     }
 
-
 }
+
 
