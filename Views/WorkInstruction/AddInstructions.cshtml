@@ -123,14 +123,8 @@
 
         ClassicEditor
             .create(document.querySelector('#editor'), {
-                language: 'en',
-                toolbar: [
-                    'uploadImage',
-                    '|',
-                    'bold', 'italic',
-                    '|',
-                    'undo', 'redo'
-                ]
+                language: 'en'
+              
             })
             .then(ed => {
                 editor = ed;
