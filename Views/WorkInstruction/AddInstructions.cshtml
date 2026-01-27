@@ -2,7 +2,6 @@
     ViewData["Title"] = "Work Instruction Management";
 }
 
-
 <div class="row align-items-end g-3 mb-3">
     <div class="col-md-3">
         <label class="form-label fw-semibold">Model</label>
@@ -14,8 +13,7 @@
         <div id="ddlStation"></div>
     </div>
 
-    <div class="col-md-3 pt-4">
-    </div>
+    <div class="col-md-3 pt-4"></div>
 
     <div class="col-md-3 pt-4 text-end">
         <input type="button" id="btnAdd" value="Add Instruction" />
@@ -24,13 +22,13 @@
 
 <div id="instructionGrid"></div>
 
-<!-- ================= MODAL ================= -->
 <div id="instructionWindow">
     <div>Work Instruction Editor</div>
     <div style="padding:10px;">
         <input type="hidden" id="hdnId" />
         <input type="hidden" id="modeleditId" />
         <input type="hidden" id="stationeditId" />
+
         <div id="editor" style="border:1px solid #ccc; min-height:350px;"></div>
 
         <div class="mt-3">
@@ -38,34 +36,61 @@
             <div id="ddlStatus"></div>
         </div>
 
-
         <br />
         <input type="button" id="btnSave" value="Save" />
         <input type="button" id="btnCancel" value="Cancel" />
     </div>
 </div>
+
 <div id="toastMsg">Please select Model and Station</div>
+
 <script>
-    let modelId = 0;
-    let stationId = 0;
+
+    class Base64UploadAdapter {
+        constructor(loader) {
+            this.loader = loader;
+        }
+
+        upload() {
+            return this.loader.file.then(file => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve({ default: reader.result });
+                    reader.onerror = err => reject(err);
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
+        abort() {}
+    }
+
     let editor;
     let isEditMode = false;
 
     $(document).ready(function () {
 
         $("#toastMsg").jqxNotification({
-        width: 300,
-        position: "top-right",
-        opacity: 0.9,
-        autoOpen: false,
-        autoClose: true,
-        autoCloseDelay: 2500,
-        template: "warning"
+            width: 300,
+            position: "top-right",
+            opacity: 0.9,
+            autoOpen: false,
+            autoClose: true,
+            autoCloseDelay: 2500,
+            template: "warning"
         });
 
+        $("#btnAdd, #btnSave, #btnCancel").jqxButton({ height: 30 });
 
-        /* --------- MODEL LIST --------- */
-        $.get("/api/model/get-models", function (data) {
+        $("#instructionWindow").jqxWindow({
+            width: 900,
+            height: 650,
+            isModal: true,
+            autoOpen: false,
+            resizable: true
+        });
+
+        $.get("/api/model/get-models", data => {
             $("#ddlModel").jqxDropDownList({
                 source: data,
                 displayMember: "modelName",
@@ -76,8 +101,7 @@
             });
         });
 
-        /* --------- STATION LIST --------- */
-        $.get("/api/station/get-stations", function (res) {
+        $.get("/api/station/get-stations", res => {
             $("#ddlStation").jqxDropDownList({
                 source: res.data,
                 displayMember: "stationName",
@@ -88,7 +112,6 @@
             });
         });
 
-        /* --------- STATUS --------- */
         $("#ddlStatus").jqxDropDownList({
             source: ["Draft", "Published"],
             width: 200,
@@ -96,201 +119,119 @@
             selectedIndex: 0
         });
 
+        $("#btnAdd").prop("disabled", true);
 
-        $("#btnLoad, #btnAdd, #btnSave, #btnCancel").jqxButton({ height: 30 });
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                language: 'en',
+                toolbar: [
+                    'uploadImage',
+                    '|',
+                    'bold', 'italic',
+                    '|',
+                    'undo', 'redo'
+                ]
+            })
+            .then(ed => {
+                editor = ed;
+                ed.plugins.get('FileRepository').createUploadAdapter = loader => new Base64UploadAdapter(loader);
+                $("#btnAdd").prop("disabled", false);
+            });
 
-        $("#instructionWindow").jqxWindow({
-            width: 900,
-            height: 650,
-            isModal: true,
-            autoOpen: false,
-            resizable: true
-        });
-
-        loadInstructions();
-
-        $("#btnLoad").click(loadInstructions);
-
-            $("#btnAdd").click(function () {
+        $("#btnAdd").click(function () {
             const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
             const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
 
             if (!modelItem || !stationItem) {
-            $("#toastMsg").text("Please select Model and Station");
-            $("#toastMsg").jqxNotification("open");
-            return;
+                $("#toastMsg").text("Please select Model and Station").jqxNotification("open");
+                return;
             }
 
             $("#hdnId").val("");
             editor.setData("");
             $("#instructionWindow").jqxWindow("open");
-            });
-
-
-        $("#btnCancel").click(function () {
-            $("#instructionWindow").jqxWindow("close");
         });
 
-        /* --------- INIT CKEDITOR --------- */
-    //      ClassicEditor.create(document.querySelector('#editor'), {
-    //     language: 'en'
-    // }).then(ed => editor = ed);
-
-           ClassicEditor.create(document.querySelector('#editor'), {
-        language: 'en',
-        simpleUpload: {
-            uploadUrl: '/api/admin/work-instructions/upload'
-        },
-        toolbar: {
-            items: [
-                'heading', '|',
-                'bold', 'italic',
-                '|',
-                'insertImage',
-                '|',
-                'undo', 'redo'
-            ]
-        }
-    })
-    .then(ed => editor = ed)
-    .catch(err => console.error(err));
-
-
+        $("#btnCancel").click(() => $("#instructionWindow").jqxWindow("close"));
 
         $("#btnSave").click(saveInstruction);
+
+        loadInstructions();
     });
-
-
- 
 
     function loadInstructions() {
+        $.get("/api/admin/work-instructions/getInstructions", res => {
+            const source = {
+                datatype: "json",
+                localdata: res,
+                datafields: [
+                    { name: "id", type: "number" },
+                    { name: "modelId", type: "number" },
+                    { name: "modelName", type: "string" },
+                    { name: "stationId", type: "number" },
+                    { name: "stationName", type: "string" },
+                    { name: "htmlContent", type: "string" },
+                    { name: "status", type: "string" },
+                ]
+            };
 
-    $.get("/api/admin/work-instructions/getInstructions", function (res) {
+            const adapter = new $.jqx.dataAdapter(source);
 
-        const source = {
-            datatype: "json",
-            localdata: res,
-            datafields: [
-                { name: "id", type: "number" },
-                { name: "modelId", type: "number" },
-                 { name: "modelName", type: "string" },
-                { name: "stationId", type: "number" },
-                { name: "stationName", type: "string" },
-                { name: "htmlContent", type: "string" },
-                { name: "status", type: "string" },
-            ]
-        };
-
-        const adapter = new $.jqx.dataAdapter(source);
-
-        $("#instructionGrid").jqxGrid({
-            source: adapter,
-            width: "100%",
-            autoheight: true,
-            columns: [
-                { text: "ID", datafield: "id", width: 50 },
-                { text: "Model", datafield: "modelId" },
-                { text: "Model", datafield: "modelName" },
-                 { text: "StationID", datafield: "stationId" },
-                { text: "Station", datafield: "stationName" },
-                { text: "Status", datafield: "status" },
-                {
-                text: "Edit",
-                width: 80,
-                cellsrenderer: function (row, column, value) {
-                return `<button class="btn btn-sm btn-primary" onclick="editInstruction(${row})">Edit</button>`;
-                }
-                },
-                {
-                text: "Preview",
-                width: 80,
-                cellsrenderer: function (row, column, value) {
-                return `<button class="btn btn-sm btn-primary" onclick="previewInstruction(${row})">Preview</button>`;
-                }
-                }
-              
-            ]
+            $("#instructionGrid").jqxGrid({
+                source: adapter,
+                width: "100%",
+                autoheight: true,
+                columns: [
+                    { text: "ID", datafield: "id", width: 50 },
+                    { text: "Model", datafield: "modelName" },
+                    { text: "Station", datafield: "stationName" },
+                    { text: "Status", datafield: "status" },
+                    {
+                        text: "Edit", width: 80,
+                        cellsrenderer: (row, col, val) =>
+                            `<button class="btn btn-sm btn-primary" onclick="editInstruction(${row})">Edit</button>`
+                    },
+                    {
+                        text: "Preview", width: 80,
+                        cellsrenderer: (row, col, val) =>
+                            `<button class="btn btn-sm btn-primary" onclick="previewInstruction(${row})">Preview</button>`
+                    }
+                ]
+            });
         });
-
-    });
-
-      
-
     }
-
-
-        function resetForm() {
-        $("#hdnId").val("");
-        editor.setData("");
-
-        $("#ddlStatus").jqxDropDownList("selectIndex", 0);
-
-        const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
-        const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
-
-        // keep selection if user already picked
-        if (!modelItem) $("#ddlModel").jqxDropDownList("selectIndex", -1);
-        if (!stationItem) $("#ddlStation").jqxDropDownList("selectIndex", -1);
-    }
-
-
-        function previewInstruction(rowIndex) {
-
-        // Get selected row data from jqxGrid
-        const rowData = $("#instructionGrid").jqxGrid('getrowdata', rowIndex);
-
-        const stationId = rowData.stationId;   // adjust field name
-        const modelId = rowData.modelId;             // your model id field
-
-        if (!stationId || !modelId) {
-            toastr.warning("Station or Model not found");
-            return;
-        }
-
-           window.open(
-        `/floor-preview?station=${stationId}&model=${modelId}`,
-        '_blank'
-    );
-
-    }
-
-
 
     function editInstruction(rowIndex) {
-        isEditMode = true;
         const row = $("#instructionGrid").jqxGrid("getrowdata", rowIndex);
         if (!row) return;
 
-        console.log(row);
         $("#hdnId").val(row.id);
-             $("#modeleditId").val(row.modelId);
-                  $("#stationeditId").val(row.stationId);
+        $("#modeleditId").val(row.modelId);
+        $("#stationeditId").val(row.stationId);
+
         editor.setData(row.htmlContent || "");
-
         $("#ddlStatus").jqxDropDownList("selectItem", row.status);
-
         $("#instructionWindow").jqxWindow("open");
     }
 
+    function previewInstruction(rowIndex) {
+        const row = $("#instructionGrid").jqxGrid('getrowdata', rowIndex);
+        window.open(`/floor-preview?station=${row.stationId}&model=${row.modelId}`, '_blank');
+    }
 
-        function saveInstruction() {
+    function saveInstruction() {
         const id = $("#hdnId").val();
-
         let modelId, stationId;
 
-        // EDIT MODE → pick from hidden fields, no toast validation
         if (id) {
             modelId = $("#modeleditId").val();
             stationId = $("#stationeditId").val();
-        }
-        // ADD MODE → pick from dropdown, and validate
-        else {
+        } else {
             const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
             const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
 
             if (!modelItem || !stationItem) {
-                $("#toastMsg").text("Please select Model and Station");
-                $("#toastMsg").jqxNotification("open");
+                $("#toastMsg").text("Please select Model and Station").jqxNotification("open");
                 return;
             }
 
@@ -302,8 +243,8 @@
             id: id ? parseInt(id) : undefined,
             htmlContent: editor.getData(),
             status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
-            modelId: modelId,
-            stationId: stationId,
+            modelId,
+            stationId,
             createdBy: "admin",
             versionNo: 1
         };
@@ -318,15 +259,9 @@
             success: () => {
                 $("#instructionWindow").jqxWindow("close");
                 loadInstructions();
-                resetForm();
-                isEditMode = false;
             },
             error: console.error
         });
     }
-
-
-
-       
 
 </script>
