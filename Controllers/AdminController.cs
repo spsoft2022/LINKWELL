@@ -10,12 +10,15 @@ namespace LinkwellProductionSystem.Controllers
         }
 
         [HttpGet("floor-preview")]
-        public IActionResult FloorPreview(int station, int model)
+        public IActionResult FloorPreview(int station, int model, int? versionNo)
         {
             ViewBag.StationId = station;
             ViewBag.ModelId = model;
+            ViewBag.VersionNo = versionNo;
+
             return View();
         }
+
 
     }
 }

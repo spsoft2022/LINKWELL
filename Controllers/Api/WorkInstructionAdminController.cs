@@ -4,6 +4,7 @@ using LinkwellProductionSystem.DTOs.WorkInstruction;
 using LinkwellProductionSystem.ViewModels.WorkInstructions.Requests;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinkwellProductionSystem.Controllers.Api
 {
@@ -50,6 +51,7 @@ namespace LinkwellProductionSystem.Controllers.Api
                     htmlContent = wi.HtmlContent,
                     status = wi.Status,
                     isActive = wi.IsActive,
+                    version=wi.VersionNo
                 };
 
             return Ok(data.ToList());
@@ -91,6 +93,15 @@ namespace LinkwellProductionSystem.Controllers.Api
             if (dto is null)
                 return BadRequest("Invalid payload");
 
+            // find latest version for this Model + Station
+            var latestVersion = await _context.WorkInstruction
+                .Where(x => x.ModelId == dto.ModelId && x.StationId == dto.StationId)
+                .OrderByDescending(x => x.VersionNo)
+                .Select(x => x.VersionNo)
+                .FirstOrDefaultAsync();
+
+            var nextVersion = (latestVersion ?? 0) + 1;
+
             var entity = new WorkInstruction
             {
                 HtmlContent = dto.HtmlContent,
@@ -98,14 +109,16 @@ namespace LinkwellProductionSystem.Controllers.Api
                 StationId = dto.StationId,
                 Status = dto.Status,
                 CreatedBy = "Admin",
-                CreatedOn = DateTime.Now
+                CreatedOn = DateTime.Now,
+                VersionNo = nextVersion
             };
 
             _context.WorkInstruction.Add(entity);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Instruction added", id = entity.Id });
+            return Ok(new { message = "Instruction added", id = entity.Id, version = nextVersion });
         }
+
 
 
 
@@ -129,7 +142,7 @@ namespace LinkwellProductionSystem.Controllers.Api
             entity.StationId= dto.StationId;
             entity.ModifiedBy = "Admin";
             entity.ModifiedOn = DateTime.Now;
-
+            entity.VersionNo=dto.VersionNo;
 
             await _context.SaveChangesAsync();
 

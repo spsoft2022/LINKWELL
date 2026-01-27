@@ -28,6 +28,7 @@
         <input type="hidden" id="hdnId" />
         <input type="hidden" id="modeleditId" />
         <input type="hidden" id="stationeditId" />
+        <input type="hidden" id="version" />
 
         <div id="editor" style="border:1px solid #ccc; min-height:350px;"></div>
 
@@ -166,6 +167,8 @@
                     { name: "stationName", type: "string" },
                     { name: "htmlContent", type: "string" },
                     { name: "status", type: "string" },
+                     { name: "version", type: "number" }
+                    
                 ]
             };
 
@@ -179,6 +182,7 @@
                     { text: "ID", datafield: "id", width: 50 },
                     { text: "Model", datafield: "modelName" },
                     { text: "Station", datafield: "stationName" },
+                     { text: "Version", datafield: "version" },
                     { text: "Status", datafield: "status" },
                     {
                         text: "Edit", width: 80,
@@ -202,6 +206,8 @@
         $("#hdnId").val(row.id);
         $("#modeleditId").val(row.modelId);
         $("#stationeditId").val(row.stationId);
+         $("#version").val(row.version);
+        
 
         editor.setData(row.htmlContent || "");
         $("#ddlStatus").jqxDropDownList("selectItem", row.status);
@@ -209,9 +215,12 @@
     }
 
     function previewInstruction(rowIndex) {
+
         const row = $("#instructionGrid").jqxGrid('getrowdata', rowIndex);
-        window.open(`/floor-preview?station=${row.stationId}&model=${row.modelId}`, '_blank');
+        const version = row.version ?? 1; // default version 1
+        window.open(`/floor-preview?station=${row.stationId}&model=${row.modelId}&versionNo=${row.version}`, '_blank');
     }
+
 
     function saveInstruction() {
         const id = $("#hdnId").val();
@@ -220,6 +229,7 @@
         if (id) {
             modelId = $("#modeleditId").val();
             stationId = $("#stationeditId").val();
+            version= $("#version").val();
         } else {
             const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
             const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
@@ -240,7 +250,7 @@
             modelId,
             stationId,
             createdBy: "admin",
-            versionNo: 1
+            versionNo:version
         };
 
         const url = id ? "/api/admin/work-instructions/update" : "/api/admin/work-instructions/add";
