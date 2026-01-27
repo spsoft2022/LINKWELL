@@ -1,8 +1,5 @@
 ﻿using LinkwellProductionSystem.Data;
-using LinkwellProductionSystem.DTOs.WorkInstruction;
-using LinkwellProductionSystem.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/workinstructions")]
@@ -103,29 +100,6 @@ public class WorkInstructionPreviewController : ControllerBase
                 message = ex.Message
             });
         }
-    }
-
-
-
-
-
-
-    [HttpPost("upload")]
-    public async Task<IActionResult> Upload(IFormFile upload)
-    {
-        if (upload == null || upload.Length == 0)
-            return BadRequest("No file uploaded");
-
-        var uploads = Path.Combine(_env.WebRootPath, "uploads");
-        Directory.CreateDirectory(uploads);
-
-        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(upload.FileName);
-        var filePath = Path.Combine(uploads, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-            await upload.CopyToAsync(stream);
-
-        return Ok(new { url = "/uploads/" + fileName });
     }
 
 }

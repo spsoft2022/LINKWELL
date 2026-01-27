@@ -92,10 +92,11 @@ namespace LinkwellProductionSystem.Controllers.Api
                     // UPDATEMicrosoft.Data.SqlClient.SqlException: 'Invalid object name 'Model'.'
                     _context.Database.ExecuteSqlRaw(
                         @"EXEC usp_Admin_UpdateModel
-              @Id, @ModelCode, @ModelName, @Description, @IsActive, @ModifiedBy, @UserRole",
+              @Id, @ModelCode, @ModelName,@categoryId, @Description, @IsActive, @ModifiedBy, @UserRole",
                         new SqlParameter("@Id", model.Id),
                         new SqlParameter("@ModelCode", model.ModelCode),
                         new SqlParameter("@ModelName", model.ModelName),
+                         new SqlParameter("@categoryId", model.CategoryId),
                         new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
                         new SqlParameter("@IsActive", model.IsActive),
                         new SqlParameter("@ModifiedBy", CurrentUser()),
@@ -157,35 +158,6 @@ namespace LinkwellProductionSystem.Controllers.Api
                     .ToList()
             );
         }
-
-
-
-
-
-
-
-        //[HttpPost("assignstations")]
-        //public IActionResult AssignStations([FromBody] ModelStationAssignVM vm)
-        //{
-        //    // Remove existing mappings
-        //    var existing = _context.ModelStationMap
-        //        .Where(x => x.ModelId == vm.ModelId);
-
-        //    _context.ModelStationMap.RemoveRange(existing);
-
-        //    // Insert new
-        //    foreach (var code in vm.StationCodes)
-        //    {
-        //        _context.ModelStationMap.Add(new ModelStationMap
-        //        {
-        //            ModelId = vm.ModelId,
-        //            StationCode = code,
-        //        });
-        //    }
-
-        //    _context.SaveChanges();
-        //    return Ok();
-        //}
 
 
         [HttpPost("assignstations")]

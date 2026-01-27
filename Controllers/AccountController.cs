@@ -146,13 +146,24 @@ namespace LinkwellProductionSystem.Controllers
             };
 
 
-            var mailMessage = new MailMessage
-            {
+                var mailMessage = new MailMessage
+                {
                 From = new MailAddress(_config["EmailSettings:Email"]),
-                Subject = "Password Reset",
-                Body = $"Your default password is: {password}\n\nPlease change after login.",
-                IsBodyHtml = false,
-            };
+                Subject = "Your Account Credentials",
+                Body = $"""
+                <p>Dear User,</p>
+
+                <p>A temporary password has been assigned to your account:</p>
+
+                <p><strong>{password}</strong></p>
+
+                <p>For security reasons, please update your password upon first login.</p>
+
+                <p>Regards,<br/>Support Team</p>
+                """,
+                IsBodyHtml = true
+                };
+
 
             mailMessage.To.Add(toEmail);
 

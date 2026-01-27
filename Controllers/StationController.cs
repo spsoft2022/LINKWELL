@@ -1,8 +1,4 @@
-﻿using LinkwellProductionSystem.Data;
-using LinkwellProductionSystem.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace LinkwellProductionSystem.Controllers
 {

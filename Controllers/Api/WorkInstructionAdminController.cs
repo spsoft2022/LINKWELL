@@ -1,8 +1,6 @@
 ﻿using LinkwellProductionSystem.Core.Entities;
 using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.DTOs.WorkInstruction;
-using LinkwellProductionSystem.ViewModels.WorkInstructions.Requests;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,32 +54,6 @@ namespace LinkwellProductionSystem.Controllers.Api
 
             return Ok(data.ToList());
         }
-
-
-
-
-        [HttpPost("upload")]
-        public async Task<IActionResult> Upload(IFormFile file)
-        {
-            var uploads = Path.Combine("wwwroot", "uploads", "workinstr");
-            Directory.CreateDirectory(uploads);
-
-            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploads, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-                await file.CopyToAsync(stream);
-
-            // auto detect base URL from current request
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
-
-            return Ok(new
-            {
-                relativePath = $"/uploads/workinstr/{fileName}",
-                absoluteUrl = $"{baseUrl}/uploads/workinstr/{fileName}"
-            });
-        }
-
 
 
         // =====================================================
@@ -148,24 +120,6 @@ namespace LinkwellProductionSystem.Controllers.Api
 
             return Ok(new { message = "Instruction updated" });
         }
-
-
-
-
-
-        [HttpGet("versions")]
-        public IActionResult GetVersions(int modelId, int stationId)
-        {
-            var versions = _context.ModelStationWorkInstruction
-                .Where(x => x.ModelId == modelId && x.StationId == stationId)
-                .Select(x => x.VersionNo)
-                .Distinct()
-                .OrderByDescending(x => x)
-                .ToList();
-
-            return Ok(versions);
-        }
-
 
 
         // =====================================================

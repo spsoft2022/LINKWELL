@@ -99,7 +99,19 @@
 		$("#modelCode").val(rowData.modelCode).prop("disabled", true);
 		$("#modelName").val(rowData.modelName);
 		$("#description").val(rowData.description);
-	    $("#categoryId").val(rowData.categoryId);
+			  loadCategories(function () {
+				console.log(rowData);
+
+					var categoryText = rowData.categoryName.toLowerCase();
+
+	$("#categoryId option").filter(function () {
+		return $(this).text().trim().toLowerCase() === categoryText;
+	}).prop("selected", true).trigger("change");
+
+
+
+		});
+	    // $("#categoryId").val(rowData.categoryId);
 
 		$(".modal-title").text("Edit Model");
 
