@@ -47,9 +47,13 @@
         // ===============================
         $.get('/api/station/get-stations', function (res) {
 
+            res.data.forEach(function (item) {
+            item.displayText = item.stationCode + " - " + item.stationName;
+            });
+
             $("#stationList").jqxListBox({
                 source: res.data,
-                displayMember: "stationCode",
+                displayMember: "displayText",
                 valueMember: "id",
                 checkboxes: true,
                 width: '100%',
