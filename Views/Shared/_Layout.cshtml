@@ -18,7 +18,7 @@
     <script src="~/lib/support/jquery.min.js"></script>
 
     <!-- Bootstrap WITH Popper -->
-    <script src="~/lib/support/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/support/bootstrap.bundle.min.js"></script>   
 
     <!-- jqx -->
     <script src="~/lib/support/jqx-all.js"></script>
@@ -64,11 +64,8 @@
                     <a asp-controller="Category" asp-action="Index" class="text-white d-block my-2">Category</a>
                     <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
                     <a asp-controller="Station" asp-action="Index" class="text-white d-block my-2">Stations</a>
-                
                     <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a>
                     <a asp-controller="WorkInstruction" asp-action="AddInstructions" class="text-white d-block my-2">Instructions</a>
-                    @* <a asp-controller="WorkInstruction" asp-action="Preview" class="text-white d-block my-2">Preview</a> *@
-                    @* <a asp-controller="Assignment" asp-action="Index" class="text-white d-block my-2">Display Instruction</a> *@
                 }
 
                 @if (Context.Session.GetString("Role") == "Incharge")

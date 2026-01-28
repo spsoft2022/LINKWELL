@@ -43,7 +43,6 @@ namespace LinkwellProductionSystem.Controllers
 
 
         [HttpPost]
-        [HttpPost]
         public IActionResult ChangePassword(ChangePasswordVM model)
         {
             if (HttpContext.Session.GetString("Username") == null)
