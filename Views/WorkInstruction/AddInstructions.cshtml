@@ -47,35 +47,17 @@
 
 <script>
 
-    class Base64UploadAdapter {
-        constructor(loader) {
-            this.loader = loader;
-        }
-
-        upload() {
-            return this.loader.file.then(file => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve({ default: reader.result });
-                    reader.onerror = err => reject(err);
-                    reader.readAsDataURL(file);
-                });
-            });
-        }
-
-        abort() {}
-    }
-
-    let editor;
-    let isEditMode = false;
+    let quill = null;
 
     $(document).ready(function () {
+
+        //-----------------------------
+        // UI INIT
+        //-----------------------------
 
         $("#toastMsg").jqxNotification({
             width: 300,
             position: "top-right",
-            opacity: 0.9,
-            autoOpen: false,
             autoClose: true,
             autoCloseDelay: 2500,
             template: "warning"
@@ -87,9 +69,19 @@
             width: 900,
             height: 650,
             isModal: true,
-            autoOpen: false,
-            resizable: true
+            autoOpen: false
         });
+
+        $("#ddlStatus").jqxDropDownList({
+            source: ["Draft", "Published"],
+            width: 200,
+            height: 30,
+            selectedIndex: 0
+        });
+
+        //-----------------------------
+        // LOAD DROPDOWNS
+        //-----------------------------
 
         $.get("/api/model/get-models", data => {
             $("#ddlModel").jqxDropDownList({
@@ -113,27 +105,38 @@
             });
         });
 
-        $("#ddlStatus").jqxDropDownList({
-            source: ["Draft", "Published"],
-            width: 200,
-            height: 30,
-            selectedIndex: 0
-        });
+        //-----------------------------
+        // QUILL INIT (STABLE)
+        //-----------------------------
 
-        $("#btnAdd").prop("disabled", true);
+           quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: {
+                container: [
+                    ['bold', 'italic', 'underline'],
+                    [{ color: [] }],
+                    [{ size: ['small', false, 'large', 'huge'] }],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['image'],   // IMAGE BUTTON
+                    ['clean']
+                ],
+                handlers: {
+                    image: imageHandler
+                }
+            }
+        }
+    });
 
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                language: 'en'
-              
-            })
-            .then(ed => {
-                editor = ed;
-                ed.plugins.get('FileRepository').createUploadAdapter = loader => new Base64UploadAdapter(loader);
-                $("#btnAdd").prop("disabled", false);
-            });
+
+        console.log("Quill Ready");
+
+        //-----------------------------
+        // BUTTON EVENTS
+        //-----------------------------
 
         $("#btnAdd").click(function () {
+
             const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
             const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
 
@@ -143,19 +146,57 @@
             }
 
             $("#hdnId").val("");
-            editor.setData("");
+
+            // Clear editor
+            quill.root.innerHTML = "";
+
             $("#instructionWindow").jqxWindow("open");
         });
 
-        $("#btnCancel").click(() => $("#instructionWindow").jqxWindow("close"));
+        $("#btnCancel").click(() => {
+            $("#instructionWindow").jqxWindow("close");
+        });
 
         $("#btnSave").click(saveInstruction);
 
         loadInstructions();
+
     });
 
+    function imageHandler() {
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.click();
+
+    input.onchange = () => {
+
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+
+            const range = quill.getSelection();
+            quill.insertEmbed(range.index, 'image', reader.result);
+
+        };
+
+        reader.readAsDataURL(file);
+    };
+}
+
+
+    //--------------------------------------
+    // LOAD GRID
+    //--------------------------------------
+
     function loadInstructions() {
+
         $.get("/api/admin/work-instructions/getInstructions", res => {
+
             const source = {
                 datatype: "json",
                 localdata: res,
@@ -167,8 +208,7 @@
                     { name: "stationName", type: "string" },
                     { name: "htmlContent", type: "string" },
                     { name: "status", type: "string" },
-                     { name: "version", type: "number" }
-                    
+                    { name: "version", type: "number" }
                 ]
             };
 
@@ -179,58 +219,85 @@
                 width: "100%",
                 autoheight: true,
                 columns: [
-                    { text: "ID", datafield: "id", width: 50 },
+                    { text: "ID", datafield: "id", width: 60 },
                     { text: "Model", datafield: "modelName" },
                     { text: "Station", datafield: "stationName" },
-                     { text: "Version", datafield: "version" },
+                    { text: "Version", datafield: "version" },
                     { text: "Status", datafield: "status" },
                     {
                         text: "Edit", width: 80,
-                        cellsrenderer: (row, col, val) =>
+                        cellsrenderer: row =>
                             `<button class="btn btn-sm btn-primary" onclick="editInstruction(${row})">Edit</button>`
                     },
                     {
-                        text: "Preview", width: 80,
-                        cellsrenderer: (row, col, val) =>
-                            `<button class="btn btn-sm btn-primary" onclick="previewInstruction(${row})">Preview</button>`
+                        text: "Preview", width: 90,
+                        cellsrenderer: row =>
+                            `<button class="btn btn-sm btn-secondary" onclick="previewInstruction(${row})">Preview</button>`
                     }
                 ]
             });
         });
     }
 
+
+    //--------------------------------------
+    // EDIT
+    //--------------------------------------
+
     function editInstruction(rowIndex) {
+
         const row = $("#instructionGrid").jqxGrid("getrowdata", rowIndex);
         if (!row) return;
 
         $("#hdnId").val(row.id);
         $("#modeleditId").val(row.modelId);
         $("#stationeditId").val(row.stationId);
-         $("#version").val(row.version);
-        
+        $("#version").val(row.version);
 
-        editor.setData(row.htmlContent || "");
-        $("#ddlStatus").jqxDropDownList("selectItem", row.status);
         $("#instructionWindow").jqxWindow("open");
+
+        // Set HTML safely
+        setTimeout(() => {
+            quill.root.innerHTML = row.htmlContent || "";
+        }, 100);
+
+        $("#ddlStatus").jqxDropDownList("selectItem", row.status);
     }
+
+
+    //--------------------------------------
+    // PREVIEW
+    //--------------------------------------
 
     function previewInstruction(rowIndex) {
 
-        const row = $("#instructionGrid").jqxGrid('getrowdata', rowIndex);
-        const version = row.version ?? 1; // default version 1
-        window.open(`/floor-preview?station=${row.stationId}&model=${row.modelId}&versionNo=${row.version}`, '_blank');
+        const row = $("#instructionGrid").jqxGrid("getrowdata", rowIndex);
+
+        window.open(
+            `/floor-preview?station=${row.stationId}&model=${row.modelId}&versionNo=${row.version}`,
+            '_blank'
+        );
     }
 
 
+    //--------------------------------------
+    // SAVE
+    //--------------------------------------
+
     function saveInstruction() {
+
         const id = $("#hdnId").val();
-        let modelId, stationId;
+
+        let modelId, stationId, version;
 
         if (id) {
+
             modelId = $("#modeleditId").val();
             stationId = $("#stationeditId").val();
-            version= $("#version").val();
+            version = $("#version").val();
+
         } else {
+
             const modelItem = $("#ddlModel").jqxDropDownList("getSelectedItem");
             const stationItem = $("#ddlStation").jqxDropDownList("getSelectedItem");
 
@@ -241,19 +308,29 @@
 
             modelId = modelItem.value;
             stationId = stationItem.value;
-             version= 1;
+            version = 1;
+        }
+
+        const htmlContent = quill.root.innerHTML;
+
+        if (!htmlContent.trim()) {
+            alert("Instruction content is empty");
+            return;
         }
 
         const payload = {
-            id: id ? parseInt(id) : undefined,
-            htmlContent: editor.getData(),
+            id: id ? parseInt(id) : 0,
+            htmlContent: htmlContent,
             status: $("#ddlStatus").jqxDropDownList("getSelectedItem")?.label,
             modelId,
             stationId,
             createdBy: "admin",
-            versionNo:version
+            versionNo: version
         };
-        const url = id ? "/api/admin/work-instructions/update" : "/api/admin/work-instructions/add";
+
+        const url = id
+            ? "/api/admin/work-instructions/update"
+            : "/api/admin/work-instructions/add";
 
         $.ajax({
             url,
@@ -264,7 +341,7 @@
                 $("#instructionWindow").jqxWindow("close");
                 loadInstructions();
             },
-            error: console.error
+            error: err => console.error(err)
         });
     }
 
