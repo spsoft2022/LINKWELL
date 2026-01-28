@@ -1,14 +1,8 @@
 ﻿using System.Net;
 using System.Net.Mail;
-using BCrypt.Net;
 using LinkwellProductionSystem.Data;
-using LinkwellProductionSystem.Models;
 using LinkwellProductionSystem.ViewModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Identity;
 
 
 
