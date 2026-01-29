@@ -1,4 +1,5 @@
 using LinkwellProductionSystem.Data;
+using LinkwellProductionSystem.Middlewares;
 using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ builder.Configuration
 
 // Add services
 builder.Services.AddControllersWithViews();
+builder.Services.AddProblemDetails();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -20,30 +22,12 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        var exception = context.Features
-            .Get<IExceptionHandlerFeature>()?.Error;
-
-        var logger = context.RequestServices
-            .GetRequiredService<ILogger<Program>>();
-
-        logger.LogError(exception, "Unhandled exception occurred");
-
-        context.Response.StatusCode = 500;
-        await context.Response.WriteAsync("Something went wrong");
-    });
-});
-};
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
+// ? Global exception handling
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseSession();
 app.UseAuthorization();
 
@@ -51,5 +35,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Station}/{action=Index}/{id?}");
 app.MapControllers();
+
 
 app.Run();  
