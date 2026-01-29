@@ -11,11 +11,12 @@ namespace LinkwellProductionSystem.Controllers
     public class StationApiController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<StationController> _logger;
 
-
-        public StationApiController(ApplicationDbContext context)
+        public StationApiController(ApplicationDbContext context, ILogger<StationController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // ==============================
@@ -37,35 +38,31 @@ namespace LinkwellProductionSystem.Controllers
         [HttpGet("get-stations")]
         public IActionResult GetStations()
         {
-            if (!IsAdmin())
-                return Unauthorized(new { message = "Admin access only" });
+            _logger.LogInformation("GetStations API called");
 
-            try
+            if (!IsAdmin())
             {
-                var stations = _context.StationVMs
+                _logger.LogWarning("Unauthorized access attempt to GetStations API");
+                return Unauthorized(new { message = "Admin access only" });
+            }
+
+            var stations = _context.StationVMs
                 .FromSqlRaw(
-                "EXEC usp_Admin_GetStations @UserRole",
-                new SqlParameter("@UserRole", "Admin")
+                    "EXEC usp_Admin_GetStations @UserRole",
+                    new SqlParameter("@UserRole", "Admin")
                 )
                 .AsNoTracking()
                 .ToList();
 
+            _logger.LogInformation("GetStations API executed successfully. Records: {Count}", stations.Count);
 
-                return Ok(new
-                {
-                    success = true,
-                    data = stations
-                });
-            }
-            catch (SqlException ex)
+            return Ok(new
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = ex.Message
-                });
-            }
+                success = true,
+                data = stations
+            });
         }
+
 
 
         [HttpPost("save")]

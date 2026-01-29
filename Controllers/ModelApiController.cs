@@ -28,7 +28,9 @@ namespace LinkwellProductionSystem.Controllers.Api
             return HttpContext.Session.GetString("Username") ?? "system";
         }
 
-
+        // ==============================
+        // GET MODELS
+        // ==============================
         [HttpGet("get-models")]
         public IActionResult GetModels()
         {
@@ -40,84 +42,67 @@ namespace LinkwellProductionSystem.Controllers.Api
             return Ok(data);
         }
 
-
+        // ==============================
+        // INSERT / UPDATE MODEL (ADMIN)
+        // ==============================
         [HttpPost("save")]
         public IActionResult SaveModel([FromBody] ModelUpsertVM model)
         {
             if (!IsAdmin())
                 return Unauthorized("Admin access only");
 
-          
-
             if (model.Id == null)
             {
+                // INSERT
+                _context.Database.ExecuteSqlRaw(
+                    @"EXEC usp_Admin_InsertModel
+                      @CategoryId,
+                      @ModelCode,
+                      @ModelName,
+                      @Description,
+                      @IsActive,
+                      @CreatedBy,
+                      @UserRole",
+                    new SqlParameter("@CategoryId", model.CategoryId),
+                    new SqlParameter("@ModelCode", model.ModelCode),
+                    new SqlParameter("@ModelName", model.ModelName),
+                    new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
+                    new SqlParameter("@IsActive", model.IsActive),
+                    new SqlParameter("@CreatedBy", CurrentUser()),
+                    new SqlParameter("@UserRole", "Admin")
+                );
 
-                try
-                {
-                        // INSERT
-                        _context.Database.ExecuteSqlRaw(
-                        @"EXEC usp_Admin_InsertModel
-                        @CategoryId,
-                        @ModelCode,
-                        @ModelName,
-                        @Description,
-                        @IsActive,
-                        @CreatedBy,
-                        @UserRole",
-                        new SqlParameter("@CategoryId", model.CategoryId),   // ⬅ NEW
-                        new SqlParameter("@ModelCode", model.ModelCode),
-                        new SqlParameter("@ModelName", model.ModelName),
-                        new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
-                        new SqlParameter("@IsActive", model.IsActive),
-                        new SqlParameter("@CreatedBy", CurrentUser()),
-                        new SqlParameter("@UserRole", "Admin")
-                    );
-
-
-                    return Ok(new { success = true, message = "Model created successfully" });
-
-                }
-                catch (SqlException ex)
-                {
-
-                    return BadRequest(new { success = false, message = ex.Message });
-                }
-
+                return Ok(new { success = true, message = "Model created successfully" });
             }
             else
             {
-                try
-                {
+                // UPDATE
+                _context.Database.ExecuteSqlRaw(
+                    @"EXEC usp_Admin_UpdateModel
+                      @Id,
+                      @ModelCode,
+                      @ModelName,
+                      @CategoryId,
+                      @Description,
+                      @IsActive,
+                      @ModifiedBy,
+                      @UserRole",
+                    new SqlParameter("@Id", model.Id),
+                    new SqlParameter("@ModelCode", model.ModelCode),
+                    new SqlParameter("@ModelName", model.ModelName),
+                    new SqlParameter("@CategoryId", model.CategoryId),
+                    new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
+                    new SqlParameter("@IsActive", model.IsActive),
+                    new SqlParameter("@ModifiedBy", CurrentUser()),
+                    new SqlParameter("@UserRole", "Admin")
+                );
 
-                    // UPDATEMicrosoft.Data.SqlClient.SqlException: 'Invalid object name 'Model'.'
-                    _context.Database.ExecuteSqlRaw(
-                        @"EXEC usp_Admin_UpdateModel
-              @Id, @ModelCode, @ModelName,@categoryId, @Description, @IsActive, @ModifiedBy, @UserRole",
-                        new SqlParameter("@Id", model.Id),
-                        new SqlParameter("@ModelCode", model.ModelCode),
-                        new SqlParameter("@ModelName", model.ModelName),
-                         new SqlParameter("@categoryId", model.CategoryId),
-                        new SqlParameter("@Description", (object?)model.Description ?? DBNull.Value),
-                        new SqlParameter("@IsActive", model.IsActive),
-                        new SqlParameter("@ModifiedBy", CurrentUser()),
-                        new SqlParameter("@UserRole", "Admin")
-                    );
-
-                    return Ok(new { success = true, message = "Model updated successfully" });
-
-                }
-                catch (SqlException ex)
-                {
-
-                    return BadRequest(new { success = false, message = ex.Message });
-                }
-           
+                return Ok(new { success = true, message = "Model updated successfully" });
             }
         }
 
-
         // ==============================
-        // TOGGLE STATION (ADMIN)
+        // TOGGLE MODEL STATUS (ADMIN)
         // ==============================
         [HttpPut("toggle")]
         public IActionResult ToggleStationStatus([FromBody] ModelStatusVM model)
@@ -125,29 +110,23 @@ namespace LinkwellProductionSystem.Controllers.Api
             if (!IsAdmin())
                 return Unauthorized("Admin access only");
 
-            try
-            {
-                _context.Database.ExecuteSqlRaw(
-                    @"EXEC usp_Model_ToggleStatus
-                @Id,
-                @IsActive,
-                @ModifiedBy",
-                    new SqlParameter("@Id", model.Id),
-                    new SqlParameter("@IsActive", model.IsActive),
-                    new SqlParameter("@ModifiedBy", CurrentUser())
-                );
+            _context.Database.ExecuteSqlRaw(
+                @"EXEC usp_Model_ToggleStatus
+                  @Id,
+                  @IsActive,
+                  @ModifiedBy",
+                new SqlParameter("@Id", model.Id),
+                new SqlParameter("@IsActive", model.IsActive),
+                new SqlParameter("@ModifiedBy", CurrentUser())
+            );
 
-                string msg = model.IsActive ? "Model enabled" : "Model disabled";
-                return Ok(new { success = true, message = msg });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
+            string msg = model.IsActive ? "Model enabled" : "Model disabled";
+            return Ok(new { success = true, message = msg });
         }
 
-
-
+        // ==============================
+        // GET MAPPED STATIONS
+        // ==============================
         [HttpGet("get-mapped-stations/{modelId}")]
         public IActionResult GetMappedStations(int modelId)
         {
@@ -159,7 +138,9 @@ namespace LinkwellProductionSystem.Controllers.Api
             );
         }
 
-
+        // ==============================
+        // ASSIGN STATIONS
+        // ==============================
         [HttpPost("assignstations")]
         public IActionResult AssignStations([FromBody] ModelStationAssignVM vm)
         {
@@ -183,11 +164,5 @@ namespace LinkwellProductionSystem.Controllers.Api
             _context.SaveChanges();
             return Ok();
         }
-
-
-
-
-
-
     }
 }

@@ -145,24 +145,14 @@ namespace LinkwellProductionSystem.Controllers
         [HttpGet("get-categories")]
         public IActionResult GetCategories()
         {
-            try
-            {
-                var result = _context.CategoryVM.FromSqlRaw("EXEC usp_Category_GetCategories").ToList();
+              var result = _context.CategoryVM.FromSqlRaw("EXEC usp_Category_GetCategories").ToList();
 
                 return Ok(new
                 {
                     success = true,
                     data = result
                 });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = ex.Message
-                });
-            }
+           
         }
     }
 

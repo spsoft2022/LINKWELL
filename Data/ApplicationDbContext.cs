@@ -7,6 +7,14 @@ namespace LinkwellProductionSystem.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        public Guid InstanceId { get; } = Guid.NewGuid();
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+            Console.WriteLine($"DbContext Instance: {InstanceId}");
+        }
+
         public DbSet<ModelStationWorkInstruction> ModelStationWorkInstruction { get; set; } = null!;
 
         public DbSet<Category> Category { get; set; }

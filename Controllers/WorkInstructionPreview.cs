@@ -19,8 +19,7 @@ public class WorkInstructionPreviewController : ControllerBase
     [HttpGet("preview")]
     public IActionResult Preview(int modelId, int stationId, int? versionNo = null)
     {
-        try
-        {
+       
             var stationName = _context.Stations
                 .Where(x => x.Id == stationId.ToString())
                 .Select(x => x.StationName)
@@ -91,15 +90,7 @@ public class WorkInstructionPreviewController : ControllerBase
                 version = versionToLoad,
                 data
             });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new
-            {
-                success = false,
-                message = ex.Message
-            });
-        }
+      
     }
 
 }
