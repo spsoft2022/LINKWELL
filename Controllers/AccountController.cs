@@ -109,26 +109,33 @@ namespace LinkwellProductionSystem.Controllers
 
             if (user == null)
             {
-                ViewBag.Error = "Email not found!";
+                TempData["error"] = "Email not found!";
                 return View();
             }
 
-            // Generate default password
-            string defaultPassword = "Admin@123"; // or random generator
+            string tempPassword = GenerateTempPassword();
 
-            // Hash password (IMPORTANT)
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(tempPassword);
+            user.MustChangePassword = true;
 
             _db.Update(user);
             await _db.SaveChangesAsync();
 
-            // Send email
-            await SendEmail(email, defaultPassword);
+            await SendEmail(email, tempPassword);
 
-            ViewBag.Message = "Default password sent to your email.";
+            TempData["success"] = "Temporary password sent to your email.";
 
-            return View();
+            return RedirectToAction("ForgotPassword");
         }
+
+
+
+
+        private string GenerateTempPassword()
+        {
+            return "Adm@" + Guid.NewGuid().ToString("N").Substring(0, 6);
+        }
+
 
 
         private async Task SendEmail(string toEmail, string password)
