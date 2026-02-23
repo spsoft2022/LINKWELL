@@ -55,30 +55,40 @@ namespace LinkwellProductionSystem.Controllers
                 return View(model);
             }
 
-            // ✅ VERIFY CURRENT PASSWORD (BCrypt)
-            bool passwordValid = BCrypt.Net.BCrypt.Verify(
-                                        model.CurrentPassword,
-                                        user.PasswordHash);
-
-            if (!passwordValid)
+            // Verify current password
+            if (!BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.PasswordHash))
             {
                 TempData["error"] = "Current password is incorrect";
                 return View(model);
             }
 
-            // ✅ HASH NEW PASSWORD (BCrypt)
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            // Prevent same password reuse
+            if (BCrypt.Net.BCrypt.Verify(model.NewPassword, user.PasswordHash))
+            {
+                TempData["error"] = "New password cannot be same as current password";
+                return View(model);
+            }
 
-            _db.SaveChanges();
+            try
+            {
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+                _db.SaveChanges();
 
-            TempData["success"] = "Password changed successfully";
+                TempData["success"] = "Password changed successfully";
 
-            // Optional security: force logout
-            // HttpContext.Session.Clear();
-            // return RedirectToAction("Login");
+                // Optional: Force logout
+                // HttpContext.Session.Clear();
+                // return RedirectToAction("Login");
 
-            return RedirectToAction("ChangePassword");
+                return RedirectToAction("ChangePassword");
+            }
+            catch
+            {
+                TempData["error"] = "Something went wrong. Please try again.";
+                return View(model);
+            }
         }
+
 
 
 
@@ -177,10 +187,11 @@ namespace LinkwellProductionSystem.Controllers
                 HttpContext.Session.SetString("FullName", user.FullName);
                 HttpContext.Session.SetString("Role", user.Role);
 
+                TempData["success"] = "Login successful";
                 return RedirectToAction("Index","Station");
             }
 
-            ViewBag.Error = "Invalid username or password";
+            TempData["error"] = "Invalid username or password";
             return View();
         }
 

@@ -1,6 +1,5 @@
 using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.Middlewares;
-using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -144,5 +144,29 @@
         @RenderBody()
     }
 
+
+    <script>
+
+            toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+            };
+        @if (TempData["success"] != null)
+        {
+                <text>
+                    toastr.success('@TempData["success"]');
+                </text>
+        }
+
+        @if (TempData["error"] != null)
+        {
+                <text>
+                    toastr.error('@TempData["error"]');
+                </text>
+        }
+    </script>
+
 </body>
 </html>
