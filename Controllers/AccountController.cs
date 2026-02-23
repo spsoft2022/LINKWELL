@@ -181,7 +181,6 @@ namespace LinkwellProductionSystem.Controllers
         }
 
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(string username, string password)
@@ -194,13 +193,21 @@ namespace LinkwellProductionSystem.Controllers
                 HttpContext.Session.SetString("FullName", user.FullName);
                 HttpContext.Session.SetString("Role", user.Role);
 
+                // 🔐 Force password change if required
+                if (user.MustChangePassword)
+                {
+                    TempData["warning"] = "Please change your temporary password.";
+                    return RedirectToAction("ChangePassword", "Account");
+                }
+
                 TempData["success"] = "Login successful";
-                return RedirectToAction("Index","Station");
+                return RedirectToAction("Index", "Station");
             }
 
             TempData["error"] = "Invalid username or password";
             return View();
         }
+
 
 
         public IActionResult Logout()
