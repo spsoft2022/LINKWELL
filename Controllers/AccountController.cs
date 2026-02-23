@@ -72,6 +72,8 @@ namespace LinkwellProductionSystem.Controllers
             try
             {
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+
+                user.MustChangePassword = false;
                 _db.SaveChanges();
 
                 TempData["success"] = "Password changed successfully";
