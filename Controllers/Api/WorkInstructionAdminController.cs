@@ -1,11 +1,13 @@
 ﻿using LinkwellProductionSystem.Core.Entities;
 using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.DTOs.WorkInstruction;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LinkwellProductionSystem.Controllers.Api
 {
+    [Authorize]
     [ApiController]
     [Route("api/admin/work-instructions")]
     public class WorkInstructionAdminController : ControllerBase

@@ -1,12 +1,14 @@
 ﻿using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.Models;
 using LinkwellProductionSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace LinkwellProductionSystem.Controllers.Api
 {
+    [Authorize]
     [ApiController]
     [Route("api/model")]
     public class ModelApiController : ControllerBase
@@ -20,12 +22,12 @@ namespace LinkwellProductionSystem.Controllers.Api
 
         private bool IsAdmin()
         {
-            return HttpContext.Session.GetString("Role") == "Admin";
+            return User.IsInRole("Admin");
         }
 
         private string CurrentUser()
         {
-            return HttpContext.Session.GetString("Username") ?? "system";
+            return User.Identity?.Name ?? "system";
         }
 
         // ==============================

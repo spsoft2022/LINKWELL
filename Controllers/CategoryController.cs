@@ -2,9 +2,11 @@
 using LinkwellProductionSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LinkwellProductionSystem.Controllers
 {
+    [Authorize]
     [Route("category")]
     public class CategoryController : Controller
     {
@@ -18,9 +20,6 @@ namespace LinkwellProductionSystem.Controllers
 
         public IActionResult Index()
         {
-            // Optional: server-side admin check
-            if (HttpContext.Session.GetString("Role") != "Admin")
-                return Unauthorized();
 
             return View();
         }
@@ -33,7 +32,7 @@ namespace LinkwellProductionSystem.Controllers
                 return BadRequest("Invalid data");
 
             model.CreatedOn = DateTime.Now;
-            model.CreatedBy = "Admin"; // get from session later
+            model.CreatedBy = User.Identity?.Name;
             model.IsActive = true;
 
             _context.Category.Add(model);
@@ -77,7 +76,7 @@ namespace LinkwellProductionSystem.Controllers
                 return NotFound("Category not found");
 
             category.IsActive = model.IsActive;
-            category.ModifiedBy = "Admin";
+            category.ModifiedBy = User.Identity?.Name;
             category.ModifiedOn = DateTime.Now;
 
             _context.SaveChanges();
@@ -103,7 +102,7 @@ namespace LinkwellProductionSystem.Controllers
             category.Description = model.Description;
             category.IsActive = model.IsActive;
 
-            category.ModifiedBy = "Admin";
+            category.ModifiedBy = User.Identity?.Name;
             category.ModifiedOn = DateTime.Now;
 
             _context.SaveChanges();
@@ -126,7 +125,7 @@ namespace LinkwellProductionSystem.Controllers
 
             category.IsActive = false;
             category.ModifiedOn = DateTime.Now;
-            category.ModifiedBy = "Admin";
+            category.ModifiedBy = User.Identity?.Name;
 
             _context.SaveChanges();
 

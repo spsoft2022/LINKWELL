@@ -1,5 +1,6 @@
 ﻿using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -24,43 +25,28 @@ namespace LinkwellProductionSystem.Controllers
         // ==============================
         private bool IsAdmin()
         {
-            return HttpContext.Session.GetString("Role") == "Admin";
+            return User.IsInRole("Admin");
         }
 
         private string CurrentUser()
         {
-            return HttpContext.Session.GetString("Username") ?? "system";
+            return User.Identity?.Name ?? "system";
         }
 
         // ==============================
         // GET ALL STATIONS (ADMIN)
         // ==============================
+        [Authorize(Roles = "Admin")]
         [HttpGet("get-stations")]
         public IActionResult GetStations()
         {
-            _logger.LogInformation("GetStations API called");
-
-            if (!IsAdmin())
-            {
-                _logger.LogWarning("Unauthorized access attempt to GetStations API");
-                return Unauthorized(new { message = "Admin access only" });
-            }
-
             var stations = _context.StationVMs
-                .FromSqlRaw(
-                    "EXEC usp_Admin_GetStations @UserRole",
-                    new SqlParameter("@UserRole", "Admin")
-                )
+                .FromSqlRaw("EXEC usp_Admin_GetStations @UserRole",
+                    new SqlParameter("@UserRole", "Admin"))
                 .AsNoTracking()
                 .ToList();
 
-            _logger.LogInformation("GetStations API executed successfully. Records: {Count}", stations.Count);
-
-            return Ok(new
-            {
-                success = true,
-                data = stations
-            });
+            return Ok(new { success = true, data = stations });
         }
 
 

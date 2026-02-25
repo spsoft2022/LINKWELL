@@ -1,8 +1,12 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
 using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.ViewModels;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 
 
@@ -185,36 +189,50 @@ namespace LinkwellProductionSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var user = _db.AppUsers.FirstOrDefault(x => x.Username == username);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            var user = _db.AppUsers.FirstOrDefault(x => x.Username == model.Username);
+
+            if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetString("FullName", user.FullName);
-                HttpContext.Session.SetString("Role", user.Role);
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim("FullName", user.FullName)
+        };
 
-                // 🔐 Force password change if required
-                if (user.MustChangePassword)
+                var claimsIdentity = new ClaimsIdentity(
+                    claims,
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
                 {
-                    TempData["warning"] = "Please change your temporary password.";
-                    return RedirectToAction("ChangePassword", "Account");
-                }
+                    IsPersistent = model.RememberMe
+                };
 
-                TempData["success"] = "Login successful";
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                if (user.MustChangePassword)
+                    return RedirectToAction("ChangePassword");
+
                 return RedirectToAction("Index", "Station");
             }
 
-            TempData["error"] = "Invalid username or password";
-            return View();
+            ModelState.AddModelError("", "Invalid username or password");
+            return View(model);
         }
 
 
-
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
     }

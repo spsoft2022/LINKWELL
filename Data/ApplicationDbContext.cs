@@ -29,20 +29,6 @@ namespace LinkwellProductionSystem.Data
 
         public DbSet<StationVM> StationVMs { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                var connectionString = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json")
-                    .AddEnvironmentVariables()
-                    .Build()
-                    .GetConnectionString("Con");
-
-                optionsBuilder.UseSqlServer(connectionString);
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // ===============================
