@@ -1,12 +1,14 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
+using System.Security.Claims;
 using LinkwellProductionSystem.Data;
 using LinkwellProductionSystem.ViewModels;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 
@@ -29,27 +31,22 @@ namespace LinkwellProductionSystem.Controllers
             return View();
         }
 
-
+        [Authorize]
         [HttpGet]
         public IActionResult ChangePassword()
         {
-            if (HttpContext.Session.GetString("Username") == null)
-                return RedirectToAction("Login");
-
             return View();
         }
 
-
+        [Authorize]
         [HttpPost]
         public IActionResult ChangePassword(ChangePasswordVM model)
         {
-            if (HttpContext.Session.GetString("Username") == null)
-                return RedirectToAction("Login");
-
+        
             if (!ModelState.IsValid)
                 return View(model);
 
-            string username = HttpContext.Session.GetString("Username");
+            string username = User.Identity.Name;
 
             var user = _db.AppUsers.FirstOrDefault(x => x.Username == username);
 
@@ -194,39 +191,47 @@ namespace LinkwellProductionSystem.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = _db.AppUsers.FirstOrDefault(x => x.Username == model.Username);
+            var user = await _db.AppUsers
+                .FirstOrDefaultAsync(x => x.Username == model.Username);
 
-            if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+            if (user == null)
             {
-                var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role),
-            new Claim("FullName", user.FullName)
-        };
-
-                var claimsIdentity = new ClaimsIdentity(
-                    claims,
-                    CookieAuthenticationDefaults.AuthenticationScheme);
-
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = model.RememberMe
-                };
-
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties);
-
-                if (user.MustChangePassword)
-                    return RedirectToAction("ChangePassword");
-
-                return RedirectToAction("Index", "Station");
+                ModelState.AddModelError("", "Invalid username or password");
+                return View(model);
             }
 
-            ModelState.AddModelError("", "Invalid username or password");
-            return View(model);
+            if (!BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+            {
+                ModelState.AddModelError("", "Invalid username or password");
+                return View(model);
+            }
+
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Role, user.Role),
+        new Claim("FullName", user.FullName)
+    };
+
+            var claimsIdentity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = model.RememberMe,
+                AllowRefresh = true
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
+            if (user.MustChangePassword)
+                return RedirectToAction("ChangePassword");
+
+            return RedirectToAction("Index", "Station");
         }
 
 
