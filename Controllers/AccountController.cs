@@ -196,13 +196,13 @@ namespace LinkwellProductionSystem.Controllers
 
             if (user == null)
             {
-                ModelState.AddModelError("", "Invalid username or password");
+                TempData["error"] = "Invalid username or password";
                 return View(model);
             }
 
             if (!BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
-                ModelState.AddModelError("", "Invalid username or password");
+                TempData["error"] = "Invalid username or password";
                 return View(model);
             }
 
