@@ -199,9 +199,27 @@
                 <text>toastr.error('@TempData["error"]');</text>
         }
 
+     
+
+         // ✅ Restore sidebar state on page load
+        if (localStorage.getItem("sidebarState") === "collapsed") {
+            $("#sidebar").addClass("collapsed");
+        }
+
+        // ✅ Toggle sidebar
         $("#toggleSidebar").click(function () {
+
             $("#sidebar").toggleClass("collapsed");
+
+            // ✅ Save state
+            if ($("#sidebar").hasClass("collapsed")) {
+                localStorage.setItem("sidebarState", "collapsed");
+            } else {
+                localStorage.setItem("sidebarState", "expanded");
+            }
         });
+
+
     </script>
     @RenderSection("Scripts", required: false)
 </body>
