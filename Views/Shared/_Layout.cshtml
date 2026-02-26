@@ -2,7 +2,7 @@
 
 @{
     var isLoggedIn = User.Identity.IsAuthenticated;
-    var fullName = User.FindFirst("FullName")?.Value;
+    var fullName = User.Identity.Name;
     var role = User.FindFirst(ClaimTypes.Role)?.Value;
 }
 
@@ -95,8 +95,8 @@
                             <li>
                                 <a class="dropdown-item"
                                    asp-controller="Account"
-                                   asp-action="ChangePassword">
-                                    Change Password
+                                   asp-action="Profile">
+                                    Profile
                                 </a>
                             </li>
 
@@ -151,6 +151,6 @@
                 <text>toastr.error('@TempData["error"]');</text>
         }
     </script>
-
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

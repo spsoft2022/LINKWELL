@@ -1,0 +1,124 @@
+﻿@using LinkwellProductionSystem.ViewModels
+@model ProfilePageVM
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var errors = [];
+
+            @foreach (var value in ViewData.ModelState.Values)
+            {
+                        foreach (var error in value.Errors)
+                        {
+                                    <text>
+                                        errors.push("@error.ErrorMessage");
+                                    </text>
+                        }
+            }
+
+            errors.forEach(function (msg) {
+                toastr.error(msg);
+            });
+
+        });
+    </script>
+}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle"></i> Profile
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-action="UpdateProfile" method="post">
+
+                        <!-- User Name -->
+                        <div class="mb-3">
+                            <label class="form-label">User Name</label>
+                            <input asp-for="Profile.UserName" class="form-control" />
+                            <span asp-validation-for="Profile.UserName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input asp-for="Profile.Email" type="email" class="form-control" />
+                            <span asp-validation-for="Profile.Email" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Update Profile
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            </div>
+
+        <div class="col-md-5">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-lock"></i> Change Password
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-action="ChangePassword" method="post">
+
+                        <!-- Current Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input asp-for="ChangePassword.CurrentPassword" class="form-control" />
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input asp-for="ChangePassword.NewPassword" class="form-control" />
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input asp-for="ChangePassword.ConfirmPassword" class="form-control" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Update Password
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+

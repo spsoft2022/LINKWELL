@@ -31,66 +31,109 @@ namespace LinkwellProductionSystem.Controllers
             return View();
         }
 
-        [Authorize]
         [HttpGet]
-        public IActionResult ChangePassword()
+        public async Task<IActionResult> Profile()
         {
-            return View();
-        }
+            var username = User.Identity.Name;
 
-        [Authorize]
-        [HttpPost]
-        public IActionResult ChangePassword(ChangePasswordVM model)
-        {
-        
-            if (!ModelState.IsValid)
-                return View(model);
-
-            string username = User.Identity.Name;
-
-            var user = _db.AppUsers.FirstOrDefault(x => x.Username == username);
+            var user = await _db.AppUsers
+                .FirstOrDefaultAsync(x => x.Username == username);
 
             if (user == null)
+                return RedirectToAction("Login");
+
+            var vm = new ProfilePageVM
             {
-                TempData["error"] = "User not found";
-                return View(model);
-            }
+                Profile = new Profile
+                {
+                    UserName = user.Username,
+                    Email = user.Email
+                },
+                ChangePassword = new ChangePasswordVM()
+            };
 
-            // Verify current password
-            if (!BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.PasswordHash))
-            {
-                TempData["error"] = "Current password is incorrect";
-                return View(model);
-            }
-
-            // Prevent same password reuse
-            if (BCrypt.Net.BCrypt.Verify(model.NewPassword, user.PasswordHash))
-            {
-                TempData["error"] = "New password cannot be same as current password";
-                return View(model);
-            }
-
-            try
-            {
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-
-                user.MustChangePassword = false;
-                _db.SaveChanges();
-
-                TempData["success"] = "Password changed successfully";
-
-                // Optional: Force logout
-                // HttpContext.Session.Clear();
-                // return RedirectToAction("Login");
-
-                return RedirectToAction("ChangePassword");
-            }
-            catch
-            {
-                TempData["error"] = "Something went wrong. Please try again.";
-                return View(model);
-            }
+            return View(vm);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(ProfilePageVM vm)
+        {
+
+            // ✅ remove password validation completely
+            ModelState.Remove("ChangePassword");
+
+            if (!ModelState.IsValid)
+                return View("Profile", vm);
+
+            var username = User.Identity.Name;
+
+            var user = await _db.AppUsers
+                .FirstOrDefaultAsync(x => x.Username == username);
+
+            user.Username = vm.Profile.UserName;
+            user.Email = vm.Profile.Email;
+
+            await _db.SaveChangesAsync();
+
+            // ✅ recreate auth cookie
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
+
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity));
+
+            TempData["success"] = "Profile Updated Successfully";
+
+            return RedirectToAction("Profile");
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(
+    [Bind(Prefix = "ChangePassword")] ChangePasswordVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Invalid password data";
+                return RedirectToAction("Profile");
+            }
+
+            var username = User.Identity.Name;
+
+            var user = await _db.AppUsers
+                .FirstOrDefaultAsync(x => x.Username == username);
+
+            if (!BCrypt.Net.BCrypt.Verify(
+                    model.CurrentPassword,
+                    user.PasswordHash))
+            {
+                TempData["error"] = "Current password incorrect";
+                return RedirectToAction("Profile");
+            }
+
+            user.PasswordHash =
+                BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+
+            await _db.SaveChangesAsync();
+
+            TempData["success"] = "Password updated successfully";
+
+            return RedirectToAction("Profile");
+        }
+
 
 
 
