@@ -27,6 +27,33 @@
     <script src="~/lib/support/toastr.min.js"></script>
 
     <style>
+
+        .sidebar {
+    width: 250px;
+    transition: all 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    margin: 6px 0;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.menu-link:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar.collapsed .menu-text {
+    display: none;
+}
         #toast-container {
             z-index: 999999 !important;
         }
@@ -49,31 +76,52 @@
         <div class="d-flex" style="min-height:100vh;">
 
             <!-- SIDEBAR -->
-            <div class="bg-primary text-white p-3" style="width:250px;">
-                <h4 class="text-center border-bottom pb-2">LINKWELL</h4>
+            <div id="sidebar" class="bg-primary text-white p-3 sidebar">
 
-                @if (User.IsInRole("Admin"))
-                {
-                    <a asp-controller="Category" asp-action="Index" class="text-white d-block my-2">Category</a>
-                    <a asp-controller="Model" asp-action="Index" class="text-white d-block my-2">Models</a>
-                    <a asp-controller="Station" asp-action="Index" class="text-white d-block my-2">Stations</a>
-                    <a asp-controller="Model" asp-action="AssignStation" class="text-white d-block my-2">Assign Stations</a>
-                    <a asp-controller="WorkInstruction" asp-action="AddInstructions" class="text-white d-block my-2">Instructions</a>
-                }
+                <h4 class="text-center border-bottom pb-2 menu-text">
+                    LINKWELL
+                </h4>
 
-                @if (User.IsInRole("Incharge"))
-                {
-                    <a asp-controller="Incharge" asp-action="HourlyEntry" class="text-white d-block my-2">
-                        Hourly Entry
-                    </a>
-                }
+                <a asp-controller="Category" asp-action="Index"
+                   class="menu-link text-white">
+                    <i class="bi bi-tags"></i>
+                    <span class="menu-text">Category</span>
+                </a>
+
+                <a asp-controller="Model" asp-action="Index"
+                   class="menu-link text-white">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Models</span>
+                </a>
+
+                <a asp-controller="Station" asp-action="Index"
+                   class="menu-link text-white">
+                    <i class="bi bi-building"></i>
+                    <span class="menu-text">Stations</span>
+                </a>
+
+                <a asp-controller="Model" asp-action="AssignStation"
+                   class="menu-link text-white">
+                    <i class="bi bi-diagram-3"></i>
+                    <span class="menu-text">Assign Stations</span>
+                </a>
+
+                <a asp-controller="WorkInstruction" asp-action="AddInstructions"
+                   class="menu-link text-white">
+                    <i class="bi bi-journal-text"></i>
+                    <span class="menu-text">Instructions</span>
+                </a>
+
             </div>
-
             <!-- RIGHT SIDE -->
             <div class="flex-grow-1 d-flex flex-column">
 
                 <!-- HEADER -->
                 <div class="bg-light p-3 border-bottom d-flex justify-content-between">
+                <button id="toggleSidebar" class="btn btn-outline-primary">
+                <i class="bi bi-list"></i>
+                </button>
+
                     <div>
                         <strong>@fullName</strong>
                         <span class="text-muted">
@@ -150,6 +198,10 @@
         {
                 <text>toastr.error('@TempData["error"]');</text>
         }
+
+        $("#toggleSidebar").click(function () {
+            $("#sidebar").toggleClass("collapsed");
+        });
     </script>
     @RenderSection("Scripts", required: false)
 </body>
