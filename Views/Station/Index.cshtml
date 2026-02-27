@@ -20,24 +20,25 @@
 
             <div class="modal-body">
                 <input type="hidden" id="stationId">
+                <p class="small text-muted mb-3">Fields marked with <span class="text-danger" aria-hidden="true">*</span> are required.</p>
 
                 <div class="mb-2">
-                    <label>Station Code</label>
-                    <input type="text" class="form-control" id="stationCode">
+                    <label for="stationCode">Station Code <span class="text-danger" aria-hidden="true">*</span></label>
+                    <input type="text" class="form-control" id="stationCode" required aria-required="true">
                 </div>
 
                 <div class="mb-2">
-                    <label>Station Name</label>
-                    <input type="text" class="form-control" id="stationName">
+                    <label for="stationName">Station Name <span class="text-danger" aria-hidden="true">*</span></label>
+                    <input type="text" class="form-control" id="stationName" required aria-required="true">
                 </div>
 
                 <div class="mb-2">
-                    <label>Description</label>
+                    <label for="description">Description</label>
                     <textarea class="form-control" id="description"></textarea>
                 </div>
 
                 <div class="mb-2">
-                    <label>Location</label>
+                    <label for="location">Location</label>
                     <input type="text" class="form-control" id="location">
                 </div>
             </div>
@@ -101,6 +102,10 @@
                 location: $("#location").val()
                 };
 
+                if (!data.stationCode || !data.stationName) {
+                toastr.error("Station Code and Station Name are required");
+                return;
+                }
 
                 $.ajax({
                 url: "/api/station/save",

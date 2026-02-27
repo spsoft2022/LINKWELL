@@ -21,19 +21,20 @@
             <div class="modal-body">
 
                 <input type="hidden" id="categoryId">
+                <p class="small text-muted mb-3">Fields marked with <span class="text-danger" aria-hidden="true">*</span> are required.</p>
 
                 <div class="mb-2">
-                    <label>Category Code</label>
-                    <input type="text" class="form-control" id="categoryCode">
+                    <label for="categoryCode">Category Code <span class="text-danger" aria-hidden="true">*</span></label>
+                    <input type="text" class="form-control" id="categoryCode" required aria-required="true">
                 </div>
 
                 <div class="mb-2">
-                    <label>Category Name</label>
-                    <input type="text" class="form-control" id="categoryName">
+                    <label for="categoryName">Category Name <span class="text-danger" aria-hidden="true">*</span></label>
+                    <input type="text" class="form-control" id="categoryName" required aria-required="true">
                 </div>
 
                 <div class="mb-2">
-                    <label>Description</label>
+                    <label for="categoryDescription">Description</label>
                     <textarea class="form-control" id="categoryDescription"></textarea>
                 </div>
 
