@@ -7,6 +7,44 @@
     ➕ Add Station
 </button>
 
+<style>
+    #stationGrid {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    #stationGrid .jqx-grid-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 600;
+    }
+
+    #stationGrid .jqx-grid-cell {
+        font-size: 0.95rem;
+    }
+
+    .status-pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .status-pill.active {
+        color: #0a7d2c;
+        background-color: #e8f7ed;
+    }
+
+    .status-pill.disabled {
+        color: #a21f2d;
+        background-color: #fbe9eb;
+    }
+</style>
+
 <div id="stationGrid"></div>
 
 <div class="modal fade" id="stationModal" tabindex="-1">
@@ -55,6 +93,7 @@
 <script>
     $(document).ready(function () {
     loadStationGrid();
+    bindStationGridResizeEvents();
     });
 
     $("#btnAddStation").click(function () {
@@ -197,31 +236,34 @@
 
         $("#stationGrid").jqxGrid({
             width: "100%",
-            height: 400,
+            autoheight: true,
             source: adapter,
             pageable: true,
             sortable: true,
             filterable: true,
             showfilterrow: true,
             columnsresize: true,
+            rowsheight: 44,
+            columnsheight: 40,
+            altrows: true,
             columns: [
-                { text: "Code", datafield: "stationCode", width: 60 },
-                { text: "Name", datafield: "stationName", width: 150 },
-                { text: "Description", datafield: "description", width: 400 },
-                { text: "Location", datafield: "location", width: 200 },
+                { text: "Code", datafield: "stationCode", width: "12%" },
+                { text: "Name", datafield: "stationName", width: "20%" },
+                { text: "Description", datafield: "description", width: "33%" },
+                { text: "Location", datafield: "location", width: "16%" },
                 {
                     text: "Status",
                     datafield: "isActive",
-                    width: 100,
+                    width: "9%",
                     cellsrenderer: function (row, col, val) {
                         return val
-                            ? "<span style='color:green;font-weight:bold'>Active</span>"
-                            : "<span style='color:red;font-weight:bold'>Disabled</span>";
+                            ? "<span class='status-pill active'>Active</span>"
+                            : "<span class='status-pill disabled'>Disabled</span>";
                     }
                 },
                 {
                 text: "Actions",
-                width: 160,
+                width: "10%",
                 cellsrenderer: function (row) {
 
                 const data = $("#stationGrid").jqxGrid('getrowdata', row);
@@ -229,9 +271,9 @@
                 const toggleClass = data.isActive ? "btn-danger" : "btn-success";
 
                 return `
-                <button class="btn btn-sm btn-warning me-1"
+                <button class="btn btn-sm btn-outline-primary me-1"
                 onclick="editStation(${row})">
-                ✏️ Edit
+                Edit
                 </button>
 
                 <button class="btn btn-sm ${toggleClass}"
@@ -246,6 +288,25 @@
 
 
             ]
+        });
+    }
+
+    function refreshStationGridLayout() {
+        if (!$("#stationGrid").data("jqxGrid")) {
+            return;
+        }
+
+        $("#stationGrid").jqxGrid("render");
+        $("#stationGrid").jqxGrid("autoresizecolumns", "cells");
+    }
+
+    function bindStationGridResizeEvents() {
+        $(window).on("resize", function () {
+            refreshStationGridLayout();
+        });
+
+        window.addEventListener("sidebar:toggled", function () {
+            setTimeout(refreshStationGridLayout, 280);
         });
     }
 </script>
