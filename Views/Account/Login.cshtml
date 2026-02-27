@@ -8,6 +8,21 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            const rememberMeKey = "rememberedUsername";
+            const rememberedUsername = localStorage.getItem(rememberMeKey);
+
+            if (rememberedUsername) {
+                $("#Username").val(rememberedUsername);
+                $("#RememberMe").prop("checked", true);
+            }
+
+            $("form").on("submit", function () {
+                if ($("#RememberMe").is(":checked")) {
+                    localStorage.setItem(rememberMeKey, $("#Username").val());
+                } else {
+                    localStorage.removeItem(rememberMeKey);
+                }
+            });
 
             var errors = [];
 
@@ -40,9 +55,9 @@
 
                 <form asp-action="Login" method="post">
 
-                    <input asp-for="Username" class="form-control mb-3" placeholder="Username" />
+                    <input asp-for="Username" class="form-control mb-3" placeholder="Username" autocomplete="username" />
 
-                    <input asp-for="Password" type="password" class="form-control mb-3" placeholder="Password" />
+                    <input asp-for="Password" type="password" class="form-control mb-3" placeholder="Password" autocomplete="current-password" />
 
                     <div class="form-check mb-3">
                         <input asp-for="RememberMe" class="form-check-input" />
