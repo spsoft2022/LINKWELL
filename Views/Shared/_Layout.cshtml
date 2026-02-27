@@ -263,11 +263,43 @@
         const toggleIcon = $("#toggleSidebarIcon");
         const menuLinks = sidebar.find(".menu-link");
 
-        function refreshGridLayouts() {
-            $("[id]").each(function () {
-                const element = $(this);
+        const standardJqxGridSettings = {
+            width: "100%",
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            showfilterrow: true,
+            columnsresize: true,
+            rowsheight: 44,
+            columnsheight: 40,
+            altrows: true
+        };
 
-                if (!element.data("jqxGrid")) {
+        const registeredGridSelectors = new Set();
+
+        function registerGrid(selector) {
+            if (!selector) {
+                return;
+            }
+
+            registeredGridSelectors.add(selector);
+        }
+
+        function createStandardGrid(selector, options) {
+            if (!selector) {
+                return;
+            }
+
+            registerGrid(selector);
+            const mergedOptions = $.extend(true, {}, standardJqxGridSettings, options || {});
+            $(selector).jqxGrid(mergedOptions);
+        }
+
+        function refreshGridLayouts() {
+            registeredGridSelectors.forEach(function (selector) {
+                const element = $(selector);
+
+                if (!element.length || !element.data("jqxGrid")) {
                     return;
                 }
 
@@ -275,6 +307,13 @@
                 element.jqxGrid("autoresizecolumns", "cells");
             });
         }
+
+        window.LinkwellGrid = {
+            defaults: standardJqxGridSettings,
+            create: createStandardGrid,
+            register: registerGrid,
+            refreshLayouts: refreshGridLayouts
+        };
 
         function applySidebarState(isCollapsed) {
             sidebar.toggleClass("collapsed", isCollapsed);

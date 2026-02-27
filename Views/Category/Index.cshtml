@@ -95,7 +95,6 @@
 
     $(document).ready(function () {
         loadCategoryGrid();
-        bindCategoryGridResizeEvents();
     });
 
     let categoryModal;
@@ -256,20 +255,9 @@
 
         var adapter = new $.jqx.dataAdapter(source);
 
-        $("#categoryGrid").jqxGrid({
-
-            width: "100%",
+        window.LinkwellGrid.create("#categoryGrid", {
             autoheight: true,
             source: adapter,
-            pageable: true,
-            sortable: true,
-            filterable: true,
-            showfilterrow: true,
-            columnsresize: true,
-            rowsheight: 44,
-            columnsheight: 40,
-            altrows: true,
-
             columns: [
 
                 { text: "Category Code", datafield: "categoryCode", width: "20%" },
@@ -309,25 +297,6 @@
                     sortable: false
                 }
             ]
-        });
-    }
-
-    function refreshCategoryGridLayout() {
-        if (!$("#categoryGrid").data("jqxGrid")) {
-            return;
-        }
-
-        $("#categoryGrid").jqxGrid("render");
-        $("#categoryGrid").jqxGrid("autoresizecolumns", "cells");
-    }
-
-    function bindCategoryGridResizeEvents() {
-        $(window).on("resize", function () {
-            refreshCategoryGridLayout();
-        });
-
-        window.addEventListener("sidebar:toggled", function () {
-            setTimeout(refreshCategoryGridLayout, 280);
         });
     }
 
