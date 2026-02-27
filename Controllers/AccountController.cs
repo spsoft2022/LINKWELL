@@ -276,7 +276,7 @@ namespace LinkwellProductionSystem.Controllers
             if (user.MustChangePassword)
                 return RedirectToAction("Profile");
 
-            return RedirectToAction("Index", "Station");
+            return RedirectToAction("AddInstructions", "WorkInstruction");
         }
 
 
