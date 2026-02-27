@@ -1,4 +1,4 @@
-﻿@using LinkwellProductionSystem.ViewModels
+@using LinkwellProductionSystem.ViewModels
 @model ProfilePageVM
 
 @{
@@ -6,37 +6,30 @@
 }
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
         $(document).ready(function () {
-
             var errors = [];
 
             @foreach (var value in ViewData.ModelState.Values)
             {
-                        foreach (var error in value.Errors)
-                        {
-                                    <text>
-                                        errors.push("@error.ErrorMessage");
-                                    </text>
-                        }
+                foreach (var error in value.Errors)
+                {
+                    <text>errors.push("@error.ErrorMessage");</text>
+                }
             }
 
             errors.forEach(function (msg) {
                 toastr.error(msg);
             });
-
         });
     </script>
 }
 
 <div class="container mt-4">
-
-    <div class="row justify-content-center">
-
-        <div class="col-md-7">
-
+    <div class="row justify-content-center g-4">
+        <div class="col-lg-7">
             <div class="card shadow">
-
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
                         <i class="bi bi-person-circle"></i> Profile
@@ -44,48 +37,55 @@
                 </div>
 
                 <div class="card-body">
+                    <p class="small text-muted mb-3">Fields marked with <span class="text-danger">*</span> are required.</p>
 
-                    <form asp-action="UpdateProfile" method="post">
+                    <form asp-action="UpdateProfile" method="post" novalidate aria-describedby="profile-form-hint">
+                        <div id="profile-form-hint" class="visually-hidden">Complete all required fields before updating your profile.</div>
 
-                        <!-- User Name -->
-                        <div class="mb-3">
-                            <label class="form-label">User Name</label>
-                            <input asp-for="Profile.UserName" class="form-control" />
-                            <span asp-validation-for="Profile.UserName" class="text-danger"></span>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input asp-for="Profile.Email" type="email" class="form-control" />
-                            <span asp-validation-for="Profile.Email" class="text-danger"></span>
-                        </div>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert" aria-live="assertive"></div>
 
                         <div class="mb-3">
-                            <label class="form-label">Role</label>
-                            <input asp-for="Profile.Role" class="form-control"
-                            readonly
-                            style="background-color:#e9ecef;
-                            opacity:1;
-                            cursor:not-allowed;" />
+                            <label asp-for="Profile.UserName" class="form-label"></label>
+                            <span class="text-danger" aria-hidden="true">*</span>
+                            <input asp-for="Profile.UserName"
+                                   class="form-control"
+                                   autocomplete="username"
+                                   maxlength="50"
+                                   required
+                                   aria-required="true" />
+                            <span asp-validation-for="Profile.UserName" class="invalid-feedback d-block"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            Update Profile
-                        </button>
+                        <div class="mb-3">
+                            <label asp-for="Profile.Email" class="form-label"></label>
+                            <span class="text-danger" aria-hidden="true">*</span>
+                            <input asp-for="Profile.Email"
+                                   type="email"
+                                   class="form-control"
+                                   autocomplete="email"
+                                   inputmode="email"
+                                   required
+                                   aria-required="true" />
+                            <span asp-validation-for="Profile.Email" class="invalid-feedback d-block"></span>
+                        </div>
 
+                        <div class="mb-3">
+                            <label asp-for="Profile.Role" class="form-label"></label>
+                            <input asp-for="Profile.Role"
+                                   class="form-control"
+                                   readonly
+                                   aria-readonly="true"
+                                   style="background-color:#e9ecef;opacity:1;cursor:not-allowed;" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
                     </form>
-
                 </div>
-
             </div>
+        </div>
 
-            </div>
-
-        <div class="col-md-5">
-
+        <div class="col-lg-5">
             <div class="card shadow">
-
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
                         <i class="bi bi-shield-lock"></i> Change Password
@@ -93,41 +93,47 @@
                 </div>
 
                 <div class="card-body">
+                    <p class="small text-muted mb-3">Use a strong password with at least 6 characters.</p>
 
-                    <form asp-action="ChangePassword" method="post">
-
-                        <!-- Current Password -->
+                    <form asp-action="ChangePassword" method="post" novalidate>
                         <div class="mb-3">
-                            <label class="form-label">Current Password</label>
-                            <input asp-for="ChangePassword.CurrentPassword" class="form-control" />
+                            <label asp-for="ChangePassword.CurrentPassword" class="form-label"></label>
+                            <span class="text-danger" aria-hidden="true">*</span>
+                            <input asp-for="ChangePassword.CurrentPassword"
+                                   class="form-control"
+                                   autocomplete="current-password"
+                                   required
+                                   aria-required="true" />
+                            <span asp-validation-for="ChangePassword.CurrentPassword" class="invalid-feedback d-block"></span>
                         </div>
 
-                        <!-- New Password -->
                         <div class="mb-3">
-                            <label class="form-label">New Password</label>
-                            <input asp-for="ChangePassword.NewPassword" class="form-control" />
+                            <label asp-for="ChangePassword.NewPassword" class="form-label"></label>
+                            <span class="text-danger" aria-hidden="true">*</span>
+                            <input asp-for="ChangePassword.NewPassword"
+                                   class="form-control"
+                                   autocomplete="new-password"
+                                   minlength="6"
+                                   required
+                                   aria-required="true" />
+                            <span asp-validation-for="ChangePassword.NewPassword" class="invalid-feedback d-block"></span>
                         </div>
 
-                        <!-- Confirm Password -->
                         <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <input asp-for="ChangePassword.ConfirmPassword" class="form-control" />
+                            <label asp-for="ChangePassword.ConfirmPassword" class="form-label"></label>
+                            <span class="text-danger" aria-hidden="true">*</span>
+                            <input asp-for="ChangePassword.ConfirmPassword"
+                                   class="form-control"
+                                   autocomplete="new-password"
+                                   required
+                                   aria-required="true" />
+                            <span asp-validation-for="ChangePassword.ConfirmPassword" class="invalid-feedback d-block"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            Update Password
-                        </button>
-
+                        <button type="submit" class="btn btn-primary w-100">Update Password</button>
                     </form>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
-
-
