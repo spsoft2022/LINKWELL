@@ -125,6 +125,7 @@ namespace LinkwellProductionSystem.Controllers
                 return RedirectToAction("Profile");
             }
 
+            user.MustChangePassword = false; ;
             user.PasswordHash =
                 BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
 
