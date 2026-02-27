@@ -78,8 +78,7 @@
 	$("#btnAddModel").click(function () {
 		clearModelForm();
 		$(".modal-title").text("Add Model");
-		$("#modelCode").prop("disabled", false);
-
+			$("#modelCode").prop("disabled", false).prop("readonly", false);
 		// 🔹 load categories before showing modal
 		loadCategories(function () {
 			modelModal = new bootstrap.Modal(
@@ -96,7 +95,7 @@
 		const rowData = $("#modelGrid").jqxGrid('getrowdata', rowIndex);
 
 		$("#modelId").val(rowData.id);
-		$("#modelCode").val(rowData.modelCode).prop("disabled", true);
+		$("#modelCode").val(rowData.modelCode);
 		$("#modelName").val(rowData.modelName);
 		$("#description").val(rowData.description);
 			  loadCategories(function () {

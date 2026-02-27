@@ -84,7 +84,7 @@
         const rowData = $("#categoryGrid").jqxGrid('getrowdata', rowIndex);
 
         $("#categoryId").val(rowData.categoryId);
-        $("#categoryCode").val(rowData.categoryCode).prop("disabled", true);
+        $("#categoryCode").val(rowData.categoryCode);
         $("#categoryName").val(rowData.categoryName);
         $("#categoryDescription").val(rowData.description);
 
