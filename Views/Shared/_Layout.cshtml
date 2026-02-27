@@ -263,6 +263,19 @@
         const toggleIcon = $("#toggleSidebarIcon");
         const menuLinks = sidebar.find(".menu-link");
 
+        function refreshGridLayouts() {
+            $("[id]").each(function () {
+                const element = $(this);
+
+                if (!element.data("jqxGrid")) {
+                    return;
+                }
+
+                element.jqxGrid("render");
+                element.jqxGrid("autoresizecolumns", "cells");
+            });
+        }
+
         function applySidebarState(isCollapsed) {
             sidebar.toggleClass("collapsed", isCollapsed);
             toggleBtn.attr("aria-expanded", String(!isCollapsed));
@@ -276,7 +289,11 @@
             window.dispatchEvent(new CustomEvent("sidebar:toggled", {
                 detail: { collapsed: isCollapsed }
             }));
+
+            setTimeout(refreshGridLayouts, 280);
         }
+
+        $(window).on("resize", refreshGridLayouts);
 
         // ✅ Restore sidebar state on page load
         const isCollapsedOnLoad = localStorage.getItem("sidebarState") === "collapsed";
