@@ -6,6 +6,44 @@
 	➕ Add Model
 </button>
 
+<style>
+	#modelGrid {
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		overflow: hidden;
+		background-color: #fff;
+	}
+
+	#modelGrid .jqx-grid-header {
+		background: #f8f9fa;
+		border-bottom: 1px solid #dee2e6;
+		font-weight: 600;
+	}
+
+	#modelGrid .jqx-grid-cell {
+		font-size: 0.95rem;
+	}
+
+	.status-pill {
+		display: inline-block;
+		padding: 3px 10px;
+		border-radius: 999px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.status-pill.active {
+		color: #0a7d2c;
+		background-color: #e8f7ed;
+	}
+
+	.status-pill.disabled {
+		color: #a21f2d;
+		background-color: #fbe9eb;
+	}
+</style>
+
 <div id="modelGrid"></div>
 
 <div class="modal fade" id="modelModal" tabindex="-1">
@@ -54,6 +92,7 @@
 <script>
 	$(document).ready(function () {
 		loadModelGrid();
+		bindModelGridResizeEvents();
 
 	});
 	 let modelModal;
@@ -241,31 +280,34 @@
 
 		$("#modelGrid").jqxGrid({
 			width: "100%",
-			height: 400,
+			autoheight: true,
 			source: adapter,
 			pageable: true,
 			sortable: true,
 			filterable: true,
 			showfilterrow: true,
 			columnsresize: true,
+			rowsheight: 44,
+			columnsheight: 40,
+			altrows: true,
 			columns: [
-						{ text: "Category", datafield: "categoryName", width: 200 },
-				{ text: "Model Code", datafield: "modelCode", width: 120 },
-				{ text: "Model Name", datafield: "modelName", width: 200 },
-				{ text: "Description", datafield: "description", width: 300 },
+						{ text: "Category", datafield: "categoryName", width: "20%" },
+				{ text: "Model Code", datafield: "modelCode", width: "14%" },
+				{ text: "Model Name", datafield: "modelName", width: "23%" },
+				{ text: "Description", datafield: "description", width: "27%" },
 				{
 					text: "Status",
 					datafield: "isActive",
-					width: 100,
+					width: "8%",
 					cellsrenderer: function (row, col, val) {
 						return val
-							? "<span style='color:green;font-weight:bold'>Active</span>"
-							: "<span style='color:red;font-weight:bold'>Disabled</span>";
+							? "<span class='status-pill active'>Active</span>"
+							: "<span class='status-pill disabled'>Disabled</span>";
 					}
 				},
 				{
 					text: "Actions",
-					width: 160,
+					width: "8%",
 					cellsrenderer: function (row) {
 
 						const data = $("#modelGrid").jqxGrid('getrowdata', row);
@@ -273,9 +315,9 @@
 						const toggleClass = data.isActive ? "btn-danger" : "btn-success";
 
 						return `
-							<button class="btn btn-sm btn-warning me-1"
+							<button class="btn btn-sm btn-outline-primary me-1"
 								onclick="editModel(${row})">
-								✏️ Edit
+								Edit
 							</button>
 
 							<button class="btn btn-sm ${toggleClass}"
@@ -290,6 +332,25 @@
 				
 
 			]
+		});
+	}
+
+	function refreshModelGridLayout() {
+		if (!$("#modelGrid").data("jqxGrid")) {
+			return;
+		}
+
+		$("#modelGrid").jqxGrid("render");
+		$("#modelGrid").jqxGrid("autoresizecolumns", "cells");
+	}
+
+	function bindModelGridResizeEvents() {
+		$(window).on("resize", function () {
+			refreshModelGridLayout();
+		});
+
+		window.addEventListener("sidebar:toggled", function () {
+			setTimeout(refreshModelGridLayout, 280);
 		});
 	}
 

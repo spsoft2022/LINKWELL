@@ -2,6 +2,26 @@
     ViewData["Title"] = "Work Instruction Management";
 }
 
+
+<style>
+    #instructionGrid {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    #instructionGrid .jqx-grid-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 600;
+    }
+
+    #instructionGrid .jqx-grid-cell {
+        font-size: 0.95rem;
+    }
+</style>
+
 <div class="row align-items-end g-3 mb-3">
     <div class="col-md-3">
         <label class="form-label fw-semibold">Model</label>
@@ -160,6 +180,7 @@
         $("#btnSave").click(saveInstruction);
 
         loadInstructions();
+        bindInstructionGridResizeEvents();
 
     });
 
@@ -218,6 +239,14 @@
                 source: adapter,
                 width: "100%",
                 autoheight: true,
+                rowsheight: 44,
+                columnsheight: 40,
+                altrows: true,
+                pageable: true,
+                sortable: true,
+                filterable: true,
+                showfilterrow: true,
+                columnsresize: true,
                 columns: [
                     { text: "ID", datafield: "id", width: 60 },
                     { text: "Model", datafield: "modelName" },
@@ -236,6 +265,26 @@
                     }
                 ]
             });
+        });
+    }
+
+
+    function refreshInstructionGridLayout() {
+        if (!$("#instructionGrid").data("jqxGrid")) {
+            return;
+        }
+
+        $("#instructionGrid").jqxGrid("render");
+        $("#instructionGrid").jqxGrid("autoresizecolumns", "cells");
+    }
+
+    function bindInstructionGridResizeEvents() {
+        $(window).on("resize", function () {
+            refreshInstructionGridLayout();
+        });
+
+        window.addEventListener("sidebar:toggled", function () {
+            setTimeout(refreshInstructionGridLayout, 280);
         });
     }
 
