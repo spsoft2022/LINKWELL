@@ -19,24 +19,25 @@
 
 			<div class="modal-body">
 				<input type="hidden" id="modelId">
+				<p class="small text-muted mb-3">Fields marked with <span class="text-danger" aria-hidden="true">*</span> are required.</p>
 
 				<div class="mb-2">
-					<label>Model Code</label>
-					<input type="text" class="form-control" id="modelCode">
+					<label for="modelCode">Model Code <span class="text-danger" aria-hidden="true">*</span></label>
+					<input type="text" class="form-control" id="modelCode" required aria-required="true">
 				</div>
 
 				<div class="mb-2">
-					<label>Model Name</label>
-					<input type="text" class="form-control" id="modelName">
+					<label for="modelName">Model Name <span class="text-danger" aria-hidden="true">*</span></label>
+					<input type="text" class="form-control" id="modelName" required aria-required="true">
 				</div>
 
 				<div class="mb-2">
-					<label>Description</label>
+					<label for="description">Description</label>
 					<textarea class="form-control" id="description"></textarea>
 				</div>
 				<div class="mb-2">
-					<label>Category</label>
-					<select class="form-select" id="categoryId"></select>
+					<label for="categoryId">Category <span class="text-danger" aria-hidden="true">*</span></label>
+					<select class="form-select" id="categoryId" required aria-required="true"></select>
 				</div>
 
 			</div>
@@ -139,6 +140,11 @@
 			Description: $("#description").val(),
 			IsActive: true
 		};
+
+		if (!data.ModelCode || !data.ModelName || !data.CategoryId) {
+			toastr.error("Model Code, Model Name, and Category are required");
+			return;
+		}
 
 		$.ajax({
 			url: "/api/model/save",
