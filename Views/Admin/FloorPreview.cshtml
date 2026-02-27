@@ -21,6 +21,18 @@
         padding: 20px;
     }
 
+    .instruction-content.ql-editor {
+        padding: 0;
+        font-size: 24px;
+        line-height: 1.5;
+    }
+
+    .instruction-content.ql-editor img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
 </style>
 <div id="floorHeader">
     <span id="stationName">Loading...</span>
@@ -93,7 +105,7 @@
 
                 html += `
                     <div class="border rounded p-3 mb-3 bg-white shadow-sm">
-                        ${x.htmlContent}
+                        <div class="instruction-content ql-editor">${x.htmlContent}</div>
                     </div>
                 `;
             });
@@ -121,4 +133,3 @@
 
     });
 </script>
-
