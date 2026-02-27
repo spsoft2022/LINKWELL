@@ -24,6 +24,54 @@
 		font-size: 0.95rem;
 	}
 
+
+	/* Grid wrapper scroll */
+	.grid-wrapper {
+		height: 500px;
+		overflow-y: auto;
+	}
+
+		/* Sticky Header */
+		.grid-wrapper .jqx-grid-header {
+			position: sticky !important;
+			top: 0;
+			z-index: 20;
+			background: #fff;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+		}
+
+		/* Sticky Filter Row */
+		.grid-wrapper .jqx-grid-filter-row {
+			position: sticky !important;
+			top: 45px;
+			z-index: 19;
+			background: #fff;
+		}
+
+	/* Status badge */
+	.status-pill {
+		padding: 4px 10px;
+		border-radius: 20px;
+		font-size: 12px;
+		font-weight: 600;
+		display: inline-block;
+	}
+
+		.status-pill.active {
+			background: #e6f7ee;
+			color: #1e7e34;
+		}
+
+		.status-pill.disabled {
+			background: #fdeaea;
+			color: #c82333;
+		}
+
+	/* Row hover UX */
+	.jqx-grid-cell:hover {
+		background-color: #f5f7fa !important;
+	}
+
 	.status-pill {
 		display: inline-block;
 		padding: 3px 10px;
@@ -44,7 +92,9 @@
 	}
 </style>
 
-<div id="modelGrid"></div>
+<div class="grid-wrapper">
+	<div id="modelGrid"></div>
+</div>
 
 <div class="modal fade" id="modelModal" tabindex="-1">
 	<div class="modal-dialog">
@@ -278,61 +328,118 @@
 
 		var adapter = new $.jqx.dataAdapter(source);
 
+		$(document).ready(function () {
+
 		$("#modelGrid").jqxGrid({
 			width: "100%",
-			autoheight: true,
+			height: 500, // ✅ Required for sticky header
+
 			source: adapter,
+
+			theme: "light",
+
 			pageable: true,
+			pagesize: 10,
+			pagesizeoptions: ['10', '20', '50', '100'],
+
 			sortable: true,
 			filterable: true,
 			showfilterrow: true,
+
 			columnsresize: true,
-			rowsheight: 44,
-			columnsheight: 40,
+			columnsreorder: true,
+
 			altrows: true,
+			enablehover: true,
+			enabletooltips: true,
+
+			selectionmode: "singlerow",
+
+			rowsheight: 44,
+			columnsheight: 45,
+
+			showstatusbar: true,
+			statusbarheight: 30,
+
+			localization: {
+				emptydatastring: "No models found"
+			},
+
 			columns: [
-						{ text: "Category", datafield: "categoryName", width: "20%" },
-				{ text: "Model Code", datafield: "modelCode", width: "14%" },
-				{ text: "Model Name", datafield: "modelName", width: "23%" },
-				{ text: "Description", datafield: "description", width: "27%" },
+				{
+					text: "Category",
+					datafield: "categoryName",
+					width: "20%",
+					align: "center"
+				},
+				{
+					text: "Model Code",
+					datafield: "modelCode",
+					width: "12%",
+					align: "center",
+					cellsalign: "center"
+				},
+				{
+					text: "Model Name",
+					datafield: "modelName",
+					width: "25%"
+				},
+				{
+					text: "Description",
+					datafield: "description",
+					width: "23%"
+				},
 				{
 					text: "Status",
 					datafield: "isActive",
 					width: "8%",
+					align: "center",
+					cellsalign: "center",
 					cellsrenderer: function (row, col, val) {
 						return val
-							? "<span class='status-pill active'>Active</span>"
-							: "<span class='status-pill disabled'>Disabled</span>";
+							? "<div class='status-pill active'>Active</div>"
+							: "<div class='status-pill disabled'>Disabled</div>";
 					}
 				},
 				{
 					text: "Actions",
-					width: "8%",
+					width: "12%",
+					align: "center",
+					cellsalign: "center",
+					sortable: false,
+					filterable: false,
 					cellsrenderer: function (row) {
 
-						const data = $("#modelGrid").jqxGrid('getrowdata', row);
-						const toggleText = data.isActive ? "Disable" : "Enable";
-						const toggleClass = data.isActive ? "btn-danger" : "btn-success";
+						const data =
+							$("#modelGrid").jqxGrid('getrowdata', row);
+
+						const toggleText =
+							data.isActive ? "Disable" : "Enable";
+
+						const toggleClass =
+							data.isActive ? "btn-danger" : "btn-success";
 
 						return `
-							<button class="btn btn-sm btn-outline-primary me-1"
-								onclick="editModel(${row})">
-								Edit
-							</button>
+							<div class="d-flex justify-content-center gap-1">
+								<button class="btn btn-sm btn-outline-primary"
+									onclick="editModel(${row})">
+									Edit
+								</button>
 
-							<button class="btn btn-sm ${toggleClass}"
-								onclick="toggleModel(${data.id}, ${data.isActive})">
-								${toggleText}
-							</button>
+								<button class="btn btn-sm ${toggleClass}"
+									onclick="toggleModel(${data.id}, ${data.isActive})">
+									${toggleText}
+								</button>
+							</div>
 						`;
-					},
-					filterable: false,
-					sortable: false
-				},
-				
-
+					}
+				}
 			]
 		});
+
+	});
+
+
 	}
 
 	function refreshModelGridLayout() {
