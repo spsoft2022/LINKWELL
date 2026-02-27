@@ -10,5 +10,8 @@ namespace LinkwellProductionSystem.ViewModels
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Enter valid email")]
         public string Email { get; set; }
+
+
+        public string Role { get; set; }
     }
 }

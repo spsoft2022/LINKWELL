@@ -47,7 +47,8 @@ namespace LinkwellProductionSystem.Controllers
                 Profile = new Profile
                 {
                     UserName = user.Username,
-                    Email = user.Email
+                    Email = user.Email,
+                    Role=user.Role
                 },
                 ChangePassword = new ChangePasswordVM()
             };
@@ -272,7 +273,7 @@ namespace LinkwellProductionSystem.Controllers
                 authProperties);
 
             if (user.MustChangePassword)
-                return RedirectToAction("ChangePassword");
+                return RedirectToAction("Profile");
 
             return RedirectToAction("Index", "Station");
         }
