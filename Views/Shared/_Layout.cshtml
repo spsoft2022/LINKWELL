@@ -303,6 +303,13 @@
                     return;
                 }
 
+                const parentWidth = element.parent().innerWidth();
+
+                if (parentWidth && parentWidth > 0) {
+                    element.jqxGrid({ width: parentWidth });
+                }
+
+                element.jqxGrid("refresh");
                 element.jqxGrid("render");
                 element.jqxGrid("autoresizecolumns", "cells");
             });
