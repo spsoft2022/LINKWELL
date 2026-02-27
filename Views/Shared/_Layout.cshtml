@@ -272,6 +272,10 @@
                 const menuText = $(this).data("menu-text");
                 $(this).attr("title", isCollapsed ? menuText : "");
             });
+
+            window.dispatchEvent(new CustomEvent("sidebar:toggled", {
+                detail: { collapsed: isCollapsed }
+            }));
         }
 
         // ✅ Restore sidebar state on page load
