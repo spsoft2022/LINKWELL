@@ -90,6 +90,7 @@
 
         .content-area {
             min-width: 0;
+            overflow-x: hidden;
         }
 
         #toast-container {
@@ -303,10 +304,11 @@
                     return;
                 }
 
-                const parentWidth = element.parent().innerWidth();
+                const parentElement = element.parent().get(0);
+                const parentWidth = parentElement ? Math.floor(parentElement.getBoundingClientRect().width) : 0;
 
                 if (parentWidth && parentWidth > 0) {
-                    element.jqxGrid({ width: parentWidth });
+                    element.jqxGrid({ width: Math.max(parentWidth - 1, 0) });
                 }
 
                 element.jqxGrid("refresh");
@@ -336,7 +338,9 @@
                 detail: { collapsed: isCollapsed }
             }));
 
-            setTimeout(refreshGridLayouts, 280);
+            requestAnimationFrame(refreshGridLayouts);
+            setTimeout(refreshGridLayouts, 140);
+            setTimeout(refreshGridLayouts, 320);
         }
 
         $(window).on("resize", refreshGridLayouts);
