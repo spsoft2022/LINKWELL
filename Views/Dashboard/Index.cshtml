@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var tiles = new[]
+    {
+        new { Title = "Category", Description = "Manage product categories.", Icon = "bi-tags", Controller = "Category", Action = "Index", Accent = "#0d6efd" },
+        new { Title = "Models", Description = "Create and maintain models.", Icon = "bi-box", Controller = "Model", Action = "Index", Accent = "#198754" },
+        new { Title = "Stations", Description = "Configure work stations.", Icon = "bi-building", Controller = "Station", Action = "Index", Accent = "#6f42c1" },
+        new { Title = "Assign Stations", Description = "Map models to stations.", Icon = "bi-diagram-3", Controller = "Model", Action = "AssignStation", Accent = "#fd7e14" },
+        new { Title = "Instructions", Description = "Create and manage instructions.", Icon = "bi-journal-text", Controller = "WorkInstruction", Action = "AddInstructions", Accent = "#dc3545" }
+    };
+}
+
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="mb-1">Dashboard</h3>
+            <p class="text-muted mb-0">Quick navigation shortcuts for all side menu modules.</p>
+        </div>
+
+        <a asp-controller="WorkInstruction" asp-action="AddInstructions" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            Create Instruction
+        </a>
+    </div>
+
+    <div class="row g-3">
+        @foreach (var tile in tiles)
+        {
+            <div class="col-12 col-sm-6 col-xl-4">
+                <a asp-controller="@tile.Controller" asp-action="@tile.Action" class="dashboard-tile text-decoration-none text-dark d-block h-100">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start justify-content-between mb-3">
+                                <div class="tile-icon" style="background-color: @tile.Accent;">
+                                    <i class="bi @tile.Icon"></i>
+                                </div>
+                                <i class="bi bi-arrow-up-right text-muted"></i>
+                            </div>
+
+                            <h5 class="card-title mb-1">@tile.Title</h5>
+                            <p class="card-text text-muted mb-0">@tile.Description</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .dashboard-tile .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 14px;
+    }
+
+    .dashboard-tile:hover .card {
+        transform: translateY(-4px);
+        box-shadow: 0 0.6rem 1.2rem rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .tile-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+</style>
