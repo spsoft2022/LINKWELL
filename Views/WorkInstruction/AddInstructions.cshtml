@@ -180,7 +180,6 @@
         $("#btnSave").click(saveInstruction);
 
         loadInstructions();
-        bindInstructionGridResizeEvents();
 
     });
 
@@ -235,18 +234,9 @@
 
             const adapter = new $.jqx.dataAdapter(source);
 
-            $("#instructionGrid").jqxGrid({
+            window.LinkwellGrid.create("#instructionGrid", {
                 source: adapter,
-                width: "100%",
                 autoheight: true,
-                rowsheight: 44,
-                columnsheight: 40,
-                altrows: true,
-                pageable: true,
-                sortable: true,
-                filterable: true,
-                showfilterrow: true,
-                columnsresize: true,
                 columns: [
                     { text: "ID", datafield: "id", width: 60 },
                     { text: "Model", datafield: "modelName" },
@@ -265,26 +255,6 @@
                     }
                 ]
             });
-        });
-    }
-
-
-    function refreshInstructionGridLayout() {
-        if (!$("#instructionGrid").data("jqxGrid")) {
-            return;
-        }
-
-        $("#instructionGrid").jqxGrid("render");
-        $("#instructionGrid").jqxGrid("autoresizecolumns", "cells");
-    }
-
-    function bindInstructionGridResizeEvents() {
-        $(window).on("resize", function () {
-            refreshInstructionGridLayout();
-        });
-
-        window.addEventListener("sidebar:toggled", function () {
-            setTimeout(refreshInstructionGridLayout, 280);
         });
     }
 

@@ -179,7 +179,6 @@
 
         /* ================= GRID INIT ================= */
         initGrid();
-        bindInstructionGridResizeEvents();
 
         /* ================= EVENTS ================= */
         $("#btnLoad").click(loadInstructions);
@@ -252,17 +251,10 @@
 
         const adapter = new $.jqx.dataAdapter(source);
 
-        $("#instructionGrid").jqxGrid({
-            width: "100%",
+        window.LinkwellGrid.create("#instructionGrid", {
             autoheight: true,
             source: adapter,
-            pageable: true,
-            sortable: true,
             filterable: false,
-            columnsresize: true,
-            rowsheight: 44,
-            columnsheight: 40,
-            altrows: true,
             columns: [
                 { text: "Seq", datafield: "sequenceNo", width: 60 },
                 { text: "Title", datafield: "title", width: 180 },
@@ -323,26 +315,6 @@
         return value || "";
         }
  
-
-    function refreshInstructionGridLayout() {
-        if (!$("#instructionGrid").data("jqxGrid")) {
-            return;
-        }
-
-        $("#instructionGrid").jqxGrid("render");
-        $("#instructionGrid").jqxGrid("autoresizecolumns", "cells");
-    }
-
-    function bindInstructionGridResizeEvents() {
-        $(window).on("resize", function () {
-            refreshInstructionGridLayout();
-        });
-
-        window.addEventListener("sidebar:toggled", function () {
-            setTimeout(refreshInstructionGridLayout, 280);
-        });
-    }
-
 
     /* ================= LOAD DATA ================= */
     function loadInstructions() {

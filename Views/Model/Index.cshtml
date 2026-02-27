@@ -142,7 +142,6 @@
 <script>
 	$(document).ready(function () {
 		loadModelGrid();
-		bindModelGridResizeEvents();
 
 	});
 	 let modelModal;
@@ -330,32 +329,23 @@
 
 		$(document).ready(function () {
 
-		$("#modelGrid").jqxGrid({
-			width: "100%",
+		window.LinkwellGrid.create("#modelGrid", {
 			height: 500, // ✅ Required for sticky header
 
 			source: adapter,
 
 			theme: "light",
 
-			pageable: true,
 			pagesize: 10,
 			pagesizeoptions: ['10', '20', '50', '100'],
 
-			sortable: true,
-			filterable: true,
-			showfilterrow: true,
 
-			columnsresize: true,
 			columnsreorder: true,
 
-			altrows: true,
 			enablehover: true,
 			enabletooltips: true,
 
 			selectionmode: "singlerow",
-
-			rowsheight: 44,
 			columnsheight: 45,
 
 			showstatusbar: true,
@@ -441,25 +431,5 @@
 
 
 	}
-
-	function refreshModelGridLayout() {
-		if (!$("#modelGrid").data("jqxGrid")) {
-			return;
-		}
-
-		$("#modelGrid").jqxGrid("render");
-		$("#modelGrid").jqxGrid("autoresizecolumns", "cells");
-	}
-
-	function bindModelGridResizeEvents() {
-		$(window).on("resize", function () {
-			refreshModelGridLayout();
-		});
-
-		window.addEventListener("sidebar:toggled", function () {
-			setTimeout(refreshModelGridLayout, 280);
-		});
-	}
-
 
 </script>

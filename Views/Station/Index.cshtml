@@ -93,7 +93,6 @@
 <script>
     $(document).ready(function () {
     loadStationGrid();
-    bindStationGridResizeEvents();
     });
 
     $("#btnAddStation").click(function () {
@@ -234,18 +233,9 @@
 
         var adapter = new $.jqx.dataAdapter(source);
 
-        $("#stationGrid").jqxGrid({
-            width: "100%",
+        window.LinkwellGrid.create("#stationGrid", {
             autoheight: true,
             source: adapter,
-            pageable: true,
-            sortable: true,
-            filterable: true,
-            showfilterrow: true,
-            columnsresize: true,
-            rowsheight: 44,
-            columnsheight: 40,
-            altrows: true,
             columns: [
                 { text: "Code", datafield: "stationCode", width: "12%" },
                 { text: "Name", datafield: "stationName", width: "20%" },
@@ -291,22 +281,4 @@
         });
     }
 
-    function refreshStationGridLayout() {
-        if (!$("#stationGrid").data("jqxGrid")) {
-            return;
-        }
-
-        $("#stationGrid").jqxGrid("render");
-        $("#stationGrid").jqxGrid("autoresizecolumns", "cells");
-    }
-
-    function bindStationGridResizeEvents() {
-        $(window).on("resize", function () {
-            refreshStationGridLayout();
-        });
-
-        window.addEventListener("sidebar:toggled", function () {
-            setTimeout(refreshStationGridLayout, 280);
-        });
-    }
 </script>
