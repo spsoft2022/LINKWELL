@@ -330,102 +330,101 @@
 		$(document).ready(function () {
 
 		window.LinkwellGrid.create("#modelGrid", {
-			height: 500, // ✅ Required for sticky header
 
-			source: adapter,
+		width: "100%",
+		height: 480,
 
-			theme: "light",
+		source: adapter,
+		theme: "light",
 
-			pagesize: 10,
-			pagesizeoptions: ['10', '20', '50', '100'],
+		pageable: true,
+		pagesize: 10,
+		pagesizeoptions: ['10', '20', '50', '100'],
 
+		columnsresize: true,
+		columnsreorder: true,
+		autoheight: false,
+		scrollmode: "logical",
+		autoshowloadelement: false,
 
-			columnsreorder: true,
+		enablehover: true,
+		enabletooltips: true,
 
-			enablehover: true,
-			enabletooltips: true,
+		selectionmode: "singlerow",
+		columnsheight: 45,
 
-			selectionmode: "singlerow",
-			columnsheight: 45,
+		showstatusbar: false,
 
-			showstatusbar: true,
-			statusbarheight: 30,
+		localization: {
+			emptydatastring: "No models found"
+		},
 
-			localization: {
-				emptydatastring: "No models found"
+		columns: [
+			{
+				text: "Category",
+				datafield: "categoryName",
+				width: "18%"
 			},
-
-			columns: [
-				{
-					text: "Category",
-					datafield: "categoryName",
-					width: "20%",
-					align: "center"
-				},
-				{
-					text: "Model Code",
-					datafield: "modelCode",
-					width: "12%",
-					align: "center",
-					cellsalign: "center"
-				},
-				{
-					text: "Model Name",
-					datafield: "modelName",
-					width: "25%"
-				},
-				{
-					text: "Description",
-					datafield: "description",
-					width: "23%"
-				},
-				{
-					text: "Status",
-					datafield: "isActive",
-					width: "8%",
-					align: "center",
-					cellsalign: "center",
-					cellsrenderer: function (row, col, val) {
-						return val
-							? "<div class='status-pill active'>Active</div>"
-							: "<div class='status-pill disabled'>Disabled</div>";
-					}
-				},
-				{
-					text: "Actions",
-					width: "12%",
-					align: "center",
-					cellsalign: "center",
-					sortable: false,
-					filterable: false,
-					cellsrenderer: function (row) {
-
-						const data =
-							$("#modelGrid").jqxGrid('getrowdata', row);
-
-						const toggleText =
-							data.isActive ? "Disable" : "Enable";
-
-						const toggleClass =
-							data.isActive ? "btn-danger" : "btn-success";
-
-						return `
-							<div class="d-flex justify-content-center gap-1">
-								<button class="btn btn-sm btn-outline-primary"
-									onclick="editModel(${row})">
-									Edit
-								</button>
-
-								<button class="btn btn-sm ${toggleClass}"
-									onclick="toggleModel(${data.id}, ${data.isActive})">
-									${toggleText}
-								</button>
-							</div>
-						`;
-					}
+			{
+				text: "Model Code",
+				datafield: "modelCode",
+				cellsalign: "center",
+				width: "12%"
+			},
+			{
+				text: "Model Name",
+				datafield: "modelName",
+				width: "20%"
+			},
+			{
+				text: "Description",
+				datafield: "description",
+				width: "25%"
+			},
+			{
+				text: "Status",
+				datafield: "isActive",
+				cellsalign: "center",
+				width: "10%",
+				cellsrenderer: function (row, col, val) {
+					return val
+						? "<div class='status-pill active w-100 text-center'>Active</div>"
+						: "<div class='status-pill disabled w-100 text-center'>Disabled</div>";
 				}
-			]
-		});
+			},
+			{
+				text: "Actions",
+				sortable: false,
+				filterable: false,
+				cellsalign: "center",
+				width: "15%",
+				cellsrenderer: function (row) {
+
+					const data = $("#modelGrid")
+						.jqxGrid('getrowdata', row);
+
+					const toggleText = data.isActive ? "Disable" : "Enable";
+					const toggleClass = data.isActive
+						? "btn-danger"
+						: "btn-success";
+
+					return `
+						<div class="d-flex justify-content-center gap-1 w-100">
+							<button class="btn btn-sm btn-outline-primary flex-fill"
+								onclick="editModel(${row})">
+								Edit
+							</button>
+
+							<button class="btn btn-sm ${toggleClass} flex-fill"
+								onclick="toggleModel(${data.id}, ${data.isActive})">
+								${toggleText}
+							</button>
+						</div>
+					`;
+				}
+			}
+		]
+	});
 
 	});
 

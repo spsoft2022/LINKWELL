@@ -233,52 +233,88 @@
 
         var adapter = new $.jqx.dataAdapter(source);
 
-        window.LinkwellGrid.create("#stationGrid", {
-            autoheight: true,
-            source: adapter,
-            columns: [
-                { text: "Code", datafield: "stationCode", width: "12%" },
-                { text: "Name", datafield: "stationName", width: "20%" },
-                { text: "Description", datafield: "description", width: "33%" },
-                { text: "Location", datafield: "location", width: "16%" },
-                {
-                    text: "Status",
-                    datafield: "isActive",
-                    width: "9%",
-                    cellsrenderer: function (row, col, val) {
-                        return val
-                            ? "<span class='status-pill active'>Active</span>"
-                            : "<span class='status-pill disabled'>Disabled</span>";
-                    }
-                },
-                {
-                text: "Actions",
+          window.LinkwellGrid.create("#stationGrid", {
+
+        width: "100%",
+        autoheight: true,
+        source: adapter,
+
+        columnsresize: true,
+        columnsreorder: true,
+        scrollmode: "logical",
+
+        columns: [
+            {
+                text: "Code",
+                datafield: "stationCode",
+                width: "12%"
+            },
+
+            {
+                text: "Name",
+                datafield: "stationName",
+                width: "18%"
+            },
+
+            {
+                text: "Description",
+                datafield: "description",
+                width: "28%"
+            },
+
+            {
+                text: "Location",
+                datafield: "location",
+                width: "15%"
+            },
+
+            {
+                text: "Status",
+                datafield: "isActive",
                 width: "10%",
+                align: "center",
+                cellsalign: "center",
+                cellsrenderer: function (row, col, val) {
+                    return val
+                        ? "<div class='status-pill active w-100 text-center'>Active</div>"
+                        : "<div class='status-pill disabled w-100 text-center'>Disabled</div>";
+                }
+            },
+
+            {
+                text: "Actions",
+                width: "17%",   // increased to prevent button overflow
+                filterable: false,
+                sortable: false,
+                cellsalign: "center",
                 cellsrenderer: function (row) {
 
-                const data = $("#stationGrid").jqxGrid('getrowdata', row);
-                const toggleText = data.isActive ? "Disable" : "Enable";
-                const toggleClass = data.isActive ? "btn-danger" : "btn-success";
+                    const data = $("#stationGrid")
+                        .jqxGrid('getrowdata', row);
 
-                return `
-                <button class="btn btn-sm btn-outline-primary me-1"
-                onclick="editStation(${row})">
-                Edit
-                </button>
+                    const toggleText = data.isActive ? "Disable" : "Enable";
+                    const toggleClass = data.isActive
+                        ? "btn-danger"
+                        : "btn-success";
 
-                <button class="btn btn-sm ${toggleClass}"
-                onclick="toggleStation(${data.id}, ${data.isActive})">
-                ${toggleText}
-                </button>
-                `;
-                },
-                filterable: false,
-                sortable: false
+                    return `
+                        <div class="d-flex justify-content-center gap-1 w-100">
+                            <button class="btn btn-sm btn-outline-primary flex-fill"
+                                onclick="editStation(${row})">
+                                Edit
+                            </button>
+
+                            <button class="btn btn-sm ${toggleClass} flex-fill"
+                                onclick="toggleStation(${data.id}, ${data.isActive})">
+                                ${toggleText}
+                            </button>
+                        </div>
+                    `;
                 }
+            }
+        ]
+    });
 
-
-            ]
-        });
     }
 
 </script>

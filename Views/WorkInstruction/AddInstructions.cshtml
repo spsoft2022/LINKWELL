@@ -234,27 +234,37 @@
 
             const adapter = new $.jqx.dataAdapter(source);
 
-            window.LinkwellGrid.create("#instructionGrid", {
-                source: adapter,
-                autoheight: true,
-                columns: [
-                    { text: "ID", datafield: "id", width: 60 },
-                    { text: "Model", datafield: "modelName" },
-                    { text: "Station", datafield: "stationName" },
-                    { text: "Version", datafield: "version" },
-                    { text: "Status", datafield: "status" },
-                    {
-                        text: "Edit", width: 80,
-                        cellsrenderer: row =>
-                            `<button class="btn btn-sm btn-primary" onclick="editInstruction(${row})">Edit</button>`
-                    },
-                    {
-                        text: "Preview", width: 90,
-                        cellsrenderer: row =>
-                            `<button class="btn btn-sm btn-secondary" onclick="previewInstruction(${row})">Preview</button>`
-                    }
-                ]
-            });
+               window.LinkwellGrid.create("#instructionGrid", {
+        width: "100%",          // ✅ Stretch to container width
+        autoheight: true,
+        columnsresize: true,    // ✅ Important for % resizing
+        scrollmode: "logical",  // ✅ Prevent weird horizontal scroll
+
+        source: adapter,
+
+        columns: [
+            { text: "ID", datafield: "id", width: "8%" },
+            { text: "Model", datafield: "modelName", width: "20%" },
+            { text: "Station", datafield: "stationName", width: "20%" },
+            { text: "Version", datafield: "version", width: "10%" },
+            { text: "Status", datafield: "status", width: "12%" },
+            {
+                text: "Edit",
+                width: "15%",
+                cellsrenderer: row =>
+                    `<button class="btn btn-sm btn-primary w-100"
+                        onclick="editInstruction(${row})">Edit</button>`
+            },
+            {
+                text: "Preview",
+                width: "15%",
+                cellsrenderer: row =>
+                    `<button class="btn btn-sm btn-secondary w-100"
+                        onclick="previewInstruction(${row})">Preview</button>`
+            }
+        ]
+    });
+
         });
     }
 

@@ -255,49 +255,82 @@
 
         var adapter = new $.jqx.dataAdapter(source);
 
-        window.LinkwellGrid.create("#categoryGrid", {
-            autoheight: true,
-            source: adapter,
-            columns: [
+    window.LinkwellGrid.create("#categoryGrid", {
+        width: "100%",
+        autoheight: true,
+        source: adapter,
 
-                { text: "Category Code", datafield: "categoryCode", width: "20%" },
-                { text: "Category Name", datafield: "categoryName", width: "24%" },
-                { text: "Description", datafield: "description", width: "30%" },
+        columnsresize: true,
+        columnsreorder: true,
+        scrollmode: "logical",
 
-                {
-                    text: "Status",
-                    datafield: "isActive",
-                    width: "11%",
-                    cellsrenderer: function (row, col, val) {
+        columns: [
 
-                        return val
-                            ? "<span class='status-pill active'>Active</span>"
-                            : "<span class='status-pill disabled'>Disabled</span>";
-                    }
-                },
+            {
+                text: "Category Code",
+                datafield: "categoryCode",
+                width: "18%"
+            },
 
-                {
-                    text: "Actions",
-                    width: "15%",
-                    cellsrenderer: function (row) {
+            {
+                text: "Category Name",
+                datafield: "categoryName",
+                width: "22%"
+            },
 
-                        const data = $("#categoryGrid").jqxGrid('getrowdata', row);
+            {
+                text: "Description",
+                datafield: "description",
+                width: "30%"
+            },
 
-                        const toggleText = data.isActive ? "Disable" : "Enable";
-                        const toggleClass = data.isActive ? "btn-danger" : "btn-success";
-
-                        return `<div class="d-flex gap-1 align-items-center h-100">
-                            <button class="btn btn-sm btn-outline-primary"
-                                onclick="editCategory(${row})">Edit</button>
-                            <button class="btn btn-sm ${toggleClass}"
-                                onclick="toggleCategory(${data.categoryId}, ${data.isActive})">${toggleText}</button>
-                        </div>`;
-                    },
-                    filterable: false,
-                    sortable: false
+            {
+                text: "Status",
+                datafield: "isActive",
+                width: "10%",
+                cellsalign: "center",
+                align: "center",
+                cellsrenderer: function (row, col, val) {
+                    return val
+                        ? "<div class='status-pill active w-100 text-center'>Active</div>"
+                        : "<div class='status-pill disabled w-100 text-center'>Disabled</div>";
                 }
-            ]
-        });
+            },
+
+            {
+                text: "Actions",
+                width: "20%",
+                filterable: false,
+                sortable: false,
+                cellsalign: "center",
+                cellsrenderer: function (row) {
+
+                    const data = $("#categoryGrid")
+                        .jqxGrid('getrowdata', row);
+
+                    const toggleText = data.isActive ? "Disable" : "Enable";
+                    const toggleClass = data.isActive
+                        ? "btn-danger"
+                        : "btn-success";
+
+                    return `
+                        <div class="d-flex justify-content-center gap-1 w-100">
+                            <button class="btn btn-sm btn-outline-primary flex-fill"
+                                onclick="editCategory(${row})">
+                                Edit
+                            </button>
+
+                            <button class="btn btn-sm ${toggleClass} flex-fill"
+                                onclick="toggleCategory(${data.categoryId}, ${data.isActive})">
+                                ${toggleText}
+                            </button>
+                        </div>`;
+                }
+            }
+        ]
+    });
+
+         
     }
 
 </script>
