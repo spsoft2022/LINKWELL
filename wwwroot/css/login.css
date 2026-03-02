@@ -87,12 +87,12 @@ body {
 /* INPUT */
 .form-control-custom {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    background: #2c2c2c;
-    border: 1px solid #333;
+    padding: 10px 12px;
+    background-color: #E6E6E6 !important; /* light grey */
+    border: 1px solid #ccc;
     border-radius: 4px;
-    color: white;
+    font-size: 14px;
+    color: #000;
 }
 
     .form-control-custom:focus {
@@ -230,6 +230,15 @@ body {
 .eye-icon {
     position: absolute;
     right: 12px;
-    top: 9px;
+    top: 50%;
+    transform: translateY(-50%);
     cursor: pointer;
+    font-size: 16px;
+    color: #666; /* normal state */
+    transition: 0.2s;
 }
+
+    .eye-icon:hover {
+        color: #ff8c1a; /* your theme orange */
+    }
+
