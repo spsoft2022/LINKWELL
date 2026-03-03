@@ -12,26 +12,23 @@
     <title>@ViewData["Title"] - Linkwell</title>
     <meta name="viewport" content="width=device-width" />
 
-    <link href="~/lib/support/bootstrap.min.css" rel="stylesheet">
-    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-
-    <link href="~/lib/support/toastr.min.css" rel="stylesheet">
-
+    <!-- ================= CSS ================= -->
+    <link href="~/lib/support/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/lib/support/toastr.min.css" rel="stylesheet" />
     <link href="~/lib/support/jqx.base.css" rel="stylesheet" />
-    
+    <link href="~/lib/support/quill.snow.css" rel="stylesheet" />
+
+    <!-- ================= JS LIBRARIES ================= -->
     <script src="~/lib/support/jquery.min.js"></script>
     <script src="~/lib/support/bootstrap.bundle.min.js"></script>
     <script src="~/lib/support/jqx-all.js"></script>
-
-    <link href="~/lib/support/quill.snow.css" rel="stylesheet">
     <script src="~/lib/support/quill.min.js"></script>
-
     <script src="~/lib/support/toastr.min.js"></script>
 
+    <!-- ================= GLOBAL STYLES ================= -->
     <style>
-
-          body {
+        body {
             overflow-x: hidden;
         }
 
@@ -43,7 +40,8 @@
 
         .sidebar {
             width: 219px;
-            background: #FFFFFF;
+            height:672px;
+            background: #fff;
             border-right: 1px solid #ddd;
             transition: width 0.25s ease;
             overflow: hidden;
@@ -53,10 +51,23 @@
                 width: 76px;
             }
 
-   
+        .sidebar-logo {
+            text-align: center;
+            height: 60px;
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+        }
+
+            .sidebar-logo img {
+                width: 179px;
+                transition: all 0.25s ease;
+            }
+
+        .sidebar.collapsed .sidebar-logo img {
+            max-width: 42px;
+        }
 
         .brand-short {
-            max-width: 40px;
             display: none;
         }
 
@@ -72,12 +83,16 @@
             margin-top: 20px;
         }
 
+
         .menu-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #888;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0;
             padding: 8px 16px;
-            font-weight: 600;
+            width: 198px;
+            height: 28px;
         }
 
         .sidebar.collapsed .menu-title {
@@ -85,6 +100,8 @@
         }
 
         .menu-link {
+            width:198px;
+            height:28px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -94,7 +111,7 @@
             color: #444;
             text-decoration: none;
             font-size: 14px;
-            transition: all 0.2s ease;
+            transition: 0.2s ease;
         }
 
             .menu-link:hover {
@@ -102,10 +119,20 @@
                 color: #000;
             }
 
+
+        .menu-text {
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .menu-link:hover .menu-text {
+            transform: translateX(8px);
+        }
+               
             .menu-link.active {
-                background: #fff;
-                border-left: 4px solid #ff6b00;
+                border-right: 4px solid #FF8D28;
                 font-weight: 600;
+                color: #FF8D28;
+                background: #EFEFEF;
             }
 
         .menu-icon {
@@ -122,6 +149,7 @@
             display: none;
         }
 
+        /* ================= TOPBAR ================= */
 
         .topbar {
             height: 60px;
@@ -130,51 +158,12 @@
             border-bottom: 1px solid #333;
         }
 
-
-        #userMenuBtn:hover {
-            background-color: #0b5ed7;
-        }
-
         .content-area {
             min-width: 0;
-            overflow-x: hidden;
         }
 
         #toast-container {
             z-index: 999999 !important;
-        }   
-
-
-        .dropdown-menu {
-            min-width: 180px;
-        }
-
-
-        .sidebar-logo {
-            background: #FFFFFF;
-            background: #eeeeee; /* match design */
-            text-align: center;
-            height:60px;
-            border-bottom: 1px solid #ddd;
-            padding: 20px 0;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .bodyback{
-            color: #D9D9D9;
-        }
-
-            .sidebar-logo img {
-                width:179px;
-            height: auto;
-            object-fit: contain;
-            transition: all 0.25s ease;
-            }
-
-        /* Collapsed Mode */
-        .sidebar.collapsed .sidebar-logo img {
-            max-width: 42px;
         }
     </style>
 </head>
@@ -183,13 +172,11 @@
 
     @if (isLoggedIn)
     {
-        <!-- LOGGED-IN LAYOUT -->
         <div class="d-flex app-shell">
 
             <!-- ================= SIDEBAR ================= -->
             <aside id="sidebar" class="sidebar">
 
-                <!-- Logo -->
                 <div class="sidebar-logo">
                     <img src="~/images/logo-full.png" class="brand-full" />
                     <img src="~/images/logo-icon.png" class="brand-short" />
@@ -199,33 +186,40 @@
                 <div class="menu-section">
                     <div class="menu-title">Dashboards</div>
 
-                    <a asp-controller="Dashboard" asp-action="Index" class="menu-link">
-                        <i class="bi bi-speedometer2 menu-icon"></i>
+                    <a asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="menu-link"
+                       data-menu-text="Dashboard">
+                        <img src="~/images/menuicons/dashboard.svg" class="menu-icon" alt="Dashboard" />
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </div>
 
                 <!-- MENU -->
-                <div class="menu-section">
+                <div class="menu-section">  
                     <div class="menu-title">Menu</div>
 
-                    <a asp-controller="Category" asp-action="Index" class="menu-link">
-                        <i class="bi bi-tags menu-icon"></i>
+                    <a asp-controller="Category" asp-action="Index"
+                       class="menu-link" data-menu-text="Category">
+                        <img src="~/images/menuicons/category.svg" class="menu-icon" alt="Category" />
                         <span class="menu-text">Category</span>
                     </a>
 
-                    <a asp-controller="Model" asp-action="Index" class="menu-link">
-                        <i class="bi bi-box menu-icon"></i>
+                    <a asp-controller="Model" asp-action="Index"
+                       class="menu-link" data-menu-text="Models">
+                        <img src="~/images/menuicons/models.svg" class="menu-icon" alt="Models" />
                         <span class="menu-text">Models</span>
                     </a>
 
-                    <a asp-controller="Station" asp-action="Index" class="menu-link">
-                        <i class="bi bi-building menu-icon"></i>
+                    <a asp-controller="Station" asp-action="Index"
+                       class="menu-link" data-menu-text="Stations">
+                        <img src="~/images/menuicons/stations.svg" class="menu-icon" alt="Stations" />
                         <span class="menu-text">Stations</span>
                     </a>
 
-                    <a asp-controller="Model" asp-action="AssignStation" class="menu-link">
-                        <i class="bi bi-diagram-3 menu-icon"></i>
+                    <a asp-controller="Model" asp-action="AssignStation"
+                       class="menu-link" data-menu-text="Assign Stations">
+                        <img src="~/images/menuicons/assign.svg" class="menu-icon" alt="AssignStations" />
                         <span class="menu-text">Assign Stations</span>
                     </a>
                 </div>
@@ -234,8 +228,11 @@
                 <div class="menu-section">
                     <div class="menu-title">Manuals</div>
 
-                    <a asp-controller="WorkInstruction" asp-action="AddInstructions" class="menu-link">
-                        <i class="bi bi-journal-text menu-icon"></i>
+                    <a asp-controller="WorkInstruction"
+                       asp-action="AddInstructions"
+                       class="menu-link"
+                       data-menu-text="Instructions">
+                        <img src="~/images/menuicons/instructions.svg" class="menu-icon" alt="Instructions" />
                         <span class="menu-text">Instructions</span>
                     </a>
                 </div>
@@ -244,78 +241,41 @@
                 <div class="menu-section">
                     <div class="menu-title">Help</div>
 
-                    <a asp-controller="Account" asp-action="Profile" class="menu-link">
+                    <a asp-controller="Account"
+                       asp-action="Profile"
+                       class="menu-link"
+                       data-menu-text="Profile">
                         <i class="bi bi-person menu-icon"></i>
                         <span class="menu-text">Profile</span>
                     </a>
                 </div>
 
             </aside>
-
             <!-- ================= RIGHT SIDE ================= -->
             <div class="flex-grow-1 d-flex flex-column content-area">
 
-                <!-- HEADER -->
+                <!-- TOPBAR -->
                 <div class="topbar d-flex align-items-center justify-content-between px-4">
 
                     <div class="d-flex align-items-center gap-3">
-
                         <button id="toggleSidebar"
-                                class="btn btn-link text-white p-0 border-0"
-                                type="button">
+                                class="btn btn-link text-white p-0 border-0">
                             <i class="bi bi-list fs-4"></i>
                         </button>
 
-                        <a href="javascript:history.back()" class="text-white text-decoration-none">
-                            <i class="bi bi-arrow-left fs-5"></i>
-                        </a>
-
-                        <span class="fs-5 fw-semibold text-white">
+                        <span class="fs-5 fw-semibold">
                             @ViewData["Title"]
                         </span>
                     </div>
 
-                    <div class="d-flex align-items-center gap-3">
-
-                        <div class="text-end text-white">
-                            <div class="fw-semibold">@fullName</div>
-                            <small class="text-warning">Login as @role</small>
-                        </div>
-
-                        <div class="dropdown">
-                            <div id="userMenuBtn"
-                                 class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                 data-bs-toggle="dropdown"
-                                 style="width:40px;height:40px;cursor:pointer;">
-                                <i class="bi bi-person-fill"></i>
-                            </div>
-
-                            <ul class="dropdown-menu dropdown-menu-end shadow">
-                                <li>
-                                    <a class="dropdown-item"
-                                       asp-controller="Account"
-                                       asp-action="Profile">
-                                        Profile
-                                    </a>
-                                </li>
-
-                                <li><hr class="dropdown-divider"></li>
-
-                                <li>
-                                    <a class="dropdown-item text-danger"
-                                       asp-controller="Account"
-                                       asp-action="Logout">
-                                        Logout
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
+                    <div class="text-end">
+                        <div>@fullName</div>
+                        <small class="text-warning">Login as @role</small>
                     </div>
                 </div>
 
                 <!-- CONTENT -->
-                <div class="bg-light flex-grow-1 p-3 bodyback">
+                <div class="bg-light flex-grow-1 p-3">
                     @RenderBody()
                 </div>
 
@@ -323,68 +283,97 @@
                 <div class="bg-light text-center p-2 border-top">
                     © @DateTime.Now.Year Linkwell Electronics
                 </div>
+
             </div>
         </div>
     }
     else
     {
-        <!-- LOGIN PAGE ONLY -->
         @RenderBody()
     }
 
+    <!-- ================= SCRIPTS ================= -->
     <script>
-
         $(function () {
 
-            /* ================= Sidebar ================= */
-
+            /* Sidebar Toggle */
             const sidebar = $("#sidebar");
-            const toggleBtn = $("#toggleSidebar");
-            const menuLinks = sidebar.find(".menu-link");
 
-            function applySidebarState(isCollapsed) {
-                sidebar.toggleClass("collapsed", isCollapsed);
+            function applySidebarState(collapsed) {
+                sidebar.toggleClass("collapsed", collapsed);
 
-                menuLinks.each(function () {
-                    const menuText = $(this).data("menu-text");
-                    $(this).attr("title", isCollapsed ? menuText : "");
+                $(".menu-link").each(function () {
+                    const text = $(this).data("menu-text");
+                    $(this).attr("title", collapsed ? text : "");
                 });
 
-                requestAnimationFrame(refreshGridLayouts);
-                setTimeout(refreshGridLayouts, 150);
+                refreshGridLayouts();
             }
 
-            // Restore state
             const savedState = localStorage.getItem("sidebarState") === "collapsed";
             applySidebarState(savedState);
 
-            // Toggle
-            toggleBtn.on("click", function () {
-                const newState = !sidebar.hasClass("collapsed");
-                applySidebarState(newState);
+            $("#toggleSidebar").click(function () {
+                const collapsed = !sidebar.hasClass("collapsed");
+                applySidebarState(collapsed);
                 localStorage.setItem("sidebarState",
-                    newState ? "collapsed" : "expanded");
+                    collapsed ? "collapsed" : "expanded");
             });
 
-            /* ================= Active Menu ================= */
+            /* Active Menu */
+                /* ================= Active Menu (Final Fix) ================= */
 
-            const currentUrl = window.location.pathname.toLowerCase();
+        const pathParts = window.location.pathname
+            .toLowerCase()
+            .split('/')
+            .filter(Boolean);
 
-            $(".menu-link").each(function () {
-                const linkUrl = $(this).attr("href")?.toLowerCase();
-                if (linkUrl && currentUrl.includes(linkUrl)) {
-                    $(".menu-link").removeClass("active");
-                    $(this).addClass("active");
+        const currentController = pathParts[0] || "";
+        const currentAction = pathParts[1] || "index";
+
+        let bestMatch = null;
+        let bestMatchLength = 0;
+
+        $(".menu-link").each(function () {
+
+            const href = $(this).attr("href");
+            if (!href) return;
+
+            const linkParts = href.toLowerCase()
+                .split('/')
+                .filter(Boolean);
+
+            const linkController = linkParts[0] || "";
+            const linkAction = linkParts[1] || "index";
+
+            // Match controller first
+            if (linkController === currentController) {
+
+                // Exact controller + action match gets priority
+                if (linkAction === currentAction) {
+                    bestMatch = $(this);
+                    bestMatchLength = 2;
                 }
-            });
 
-            /* ================= Toastr ================= */
+                // Controller-only match (fallback)
+                else if (bestMatchLength < 1) {
+                    bestMatch = $(this);
+                    bestMatchLength = 1;
+                }
+            }
+        });
 
+        if (bestMatch) {
+            $(".menu-link").removeClass("active");
+            bestMatch.addClass("active");
+        }
+
+            /* Toastr */
             toastr.options = {
                 closeButton: true,
                 progressBar: true,
                 positionClass: "toast-top-right",
-                timeOut: "3000"
+                timeOut: 3000
             };
 
             @if (TempData["success"] != null)
@@ -399,8 +388,7 @@
 
         });
 
-
-        /* ================= Grid Framework ================= */
+        /* ================= GRID FRAMEWORK ================= */
 
         const standardJqxGridSettings = {
             width: "100%",
@@ -409,59 +397,43 @@
             filterable: true,
             showfilterrow: true,
             columnsresize: true,
-            rowsheight: 30,
-            columnsheight: 30,
             altrows: true
         };
 
         const registeredGridSelectors = new Set();
 
         function registerGrid(selector) {
-            if (!selector) return;
             registeredGridSelectors.add(selector);
         }
 
         function createStandardGrid(selector, options) {
-            if (!selector || !$(selector).length) return;
+            if (!$(selector).length) return;
 
             registerGrid(selector);
-
-            const mergedOptions = $.extend(true, {}, standardJqxGridSettings, options || {});
-            $(selector).jqxGrid(mergedOptions);
+            const merged = $.extend(true, {}, standardJqxGridSettings, options);
+            $(selector).jqxGrid(merged);
         }
 
         function refreshGridLayouts() {
-            registeredGridSelectors.forEach(function (selector) {
+            registeredGridSelectors.forEach(selector => {
+                const el = $(selector);
+                if (!el.length || !el.data("jqxGrid")) return;
 
-                const element = $(selector);
-
-                if (!element.length || !element.data("jqxGrid")) return;
-
-                const parent = element.parent().get(0);
-                const parentWidth = parent
-                    ? Math.floor(parent.getBoundingClientRect().width)
-                    : 0;
-
-                if (parentWidth > 0) {
-                    element.jqxGrid({ width: parentWidth - 1 });
-                }
-
-                element.jqxGrid("refresh");
-                element.jqxGrid("render");
-                element.jqxGrid("autoresizecolumns", "cells");
+                el.jqxGrid("refresh");
+                el.jqxGrid("render");
             });
         }
 
         $(window).on("resize", refreshGridLayouts);
 
         window.LinkwellGrid = {
-            defaults: standardJqxGridSettings,
             create: createStandardGrid,
             register: registerGrid,
-            refreshLayouts: refreshGridLayouts
+            refresh: refreshGridLayouts
         };
-
     </script>
+
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>
