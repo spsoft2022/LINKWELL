@@ -30,22 +30,33 @@
     <script src="~/lib/support/toastr.min.js"></script>
 
     <style>
+
+          body {
+            overflow-x: hidden;
+        }
+
         .app-shell {
             min-height: 100vh;
         }
 
+        /* ================= SIDEBAR ================= */
+
         .sidebar {
-            width: 250px;
-            min-height: 100vh;
+            width: 219px;
+            background: #FFFFFF;
+            border-right: 1px solid #ddd;
             transition: width 0.25s ease;
             overflow: hidden;
         }
 
-        .sidebar.collapsed {
-            width: 76px;
-        }
+            .sidebar.collapsed {
+                width: 76px;
+            }
+
+   
 
         .brand-short {
+            max-width: 40px;
             display: none;
         }
 
@@ -57,39 +68,71 @@
             display: inline;
         }
 
+        .menu-section {
+            margin-top: 20px;
+        }
+
+        .menu-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #888;
+            padding: 8px 16px;
+            font-weight: 600;
+        }
+
+        .sidebar.collapsed .menu-title {
+            display: none;
+        }
+
         .menu-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 12px;
-            margin: 6px 0;
-            text-decoration: none;
+            padding: 10px 16px;
+            margin: 4px 8px;
             border-radius: 6px;
-            white-space: nowrap;
+            color: #444;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
 
-        .menu-link:hover,
-        .menu-link:focus-visible {
-            background: rgba(255,255,255,0.2);
-        }
+            .menu-link:hover {
+                background: #e9ecef;
+                color: #000;
+            }
+
+            .menu-link.active {
+                background: #fff;
+                border-left: 4px solid #ff6b00;
+                font-weight: 600;
+            }
 
         .menu-icon {
-            min-width: 18px;
+            font-size: 18px;
+            min-width: 22px;
             text-align: center;
-            display: inline-block;
         }
 
         .sidebar.collapsed .menu-link {
             justify-content: center;
-            padding-inline: 0;
         }
 
         .sidebar.collapsed .menu-text {
             display: none;
         }
 
+
         .topbar {
-            min-height: 76px;
+            height: 60px;
+            background: linear-gradient(to right, #2c2c2c, #1f1f1f);
+            color: white;
+            border-bottom: 1px solid #333;
+        }
+
+
+        #userMenuBtn:hover {
+            background-color: #0b5ed7;
         }
 
         .content-area {
@@ -99,14 +142,39 @@
 
         #toast-container {
             z-index: 999999 !important;
-        }
+        }   
 
-        #userMenuBtn:hover {
-            background-color: #0b5ed7;
-        }
 
         .dropdown-menu {
             min-width: 180px;
+        }
+
+
+        .sidebar-logo {
+            background: #FFFFFF;
+            background: #eeeeee; /* match design */
+            text-align: center;
+            height:60px;
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bodyback{
+            color: #D9D9D9;
+        }
+
+            .sidebar-logo img {
+                width:179px;
+            height: auto;
+            object-fit: contain;
+            transition: all 0.25s ease;
+            }
+
+        /* Collapsed Mode */
+        .sidebar.collapsed .sidebar-logo img {
+            max-width: 42px;
         }
     </style>
 </head>
@@ -118,115 +186,136 @@
         <!-- LOGGED-IN LAYOUT -->
         <div class="d-flex app-shell">
 
-            <!-- SIDEBAR -->
-            <aside id="sidebar" class="bg-primary text-white p-3 sidebar" aria-label="Main navigation">
+            <!-- ================= SIDEBAR ================= -->
+            <aside id="sidebar" class="sidebar">
 
-                <h4 class="text-center border-bottom pb-2">
-                    <span class="brand-full">LINKWELL</span>
-                    <span class="brand-short">LW</span>
-                </h4>
+                <!-- Logo -->
+                <div class="sidebar-logo">
+                    <img src="~/images/logo-full.png" class="brand-full" />
+                    <img src="~/images/logo-icon.png" class="brand-short" />
+                </div>
 
+                <!-- DASHBOARDS -->
+                <div class="menu-section">
+                    <div class="menu-title">Dashboards</div>
 
-                <a asp-controller="Dashboard" asp-action="Index"
-                   class="menu-link text-white"
-                   data-menu-text="Dashboard">
-                    <span class="menu-icon" aria-hidden="true">▦</span>
-                    <span class="menu-text">Dashboard</span>
-                </a>
+                    <a asp-controller="Dashboard" asp-action="Index" class="menu-link">
+                        <i class="bi bi-speedometer2 menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </div>
 
-                <a asp-controller="Category" asp-action="Index"
-                   class="menu-link text-white"
-                   data-menu-text="Category">
-                    <span class="menu-icon" aria-hidden="true">🏷</span>
-                    <span class="menu-text">Category</span>
-                </a>
+                <!-- MENU -->
+                <div class="menu-section">
+                    <div class="menu-title">Menu</div>
 
-                <a asp-controller="Model" asp-action="Index"
-                   class="menu-link text-white"
-                   data-menu-text="Models">
-                    <span class="menu-icon" aria-hidden="true">⬛</span>
-                    <span class="menu-text">Models</span>
-                </a>
+                    <a asp-controller="Category" asp-action="Index" class="menu-link">
+                        <i class="bi bi-tags menu-icon"></i>
+                        <span class="menu-text">Category</span>
+                    </a>
 
-                <a asp-controller="Station" asp-action="Index"
-                   class="menu-link text-white"
-                   data-menu-text="Stations">
-                    <span class="menu-icon" aria-hidden="true">🏭</span>
-                    <span class="menu-text">Stations</span>
-                </a>
+                    <a asp-controller="Model" asp-action="Index" class="menu-link">
+                        <i class="bi bi-box menu-icon"></i>
+                        <span class="menu-text">Models</span>
+                    </a>
 
-                <a asp-controller="Model" asp-action="AssignStation"
-                   class="menu-link text-white"
-                   data-menu-text="Assign Stations">
-                    <span class="menu-icon" aria-hidden="true">🗂</span>
-                    <span class="menu-text">Assign Stations</span>
-                </a>
+                    <a asp-controller="Station" asp-action="Index" class="menu-link">
+                        <i class="bi bi-building menu-icon"></i>
+                        <span class="menu-text">Stations</span>
+                    </a>
 
-                <a asp-controller="WorkInstruction" asp-action="AddInstructions"
-                   class="menu-link text-white"
-                   data-menu-text="Instructions">
-                    <span class="menu-icon" aria-hidden="true">📘</span>
-                    <span class="menu-text">Instructions</span>
-                </a>
+                    <a asp-controller="Model" asp-action="AssignStation" class="menu-link">
+                        <i class="bi bi-diagram-3 menu-icon"></i>
+                        <span class="menu-text">Assign Stations</span>
+                    </a>
+                </div>
+
+                <!-- MANUALS -->
+                <div class="menu-section">
+                    <div class="menu-title">Manuals</div>
+
+                    <a asp-controller="WorkInstruction" asp-action="AddInstructions" class="menu-link">
+                        <i class="bi bi-journal-text menu-icon"></i>
+                        <span class="menu-text">Instructions</span>
+                    </a>
+                </div>
+
+                <!-- HELP -->
+                <div class="menu-section">
+                    <div class="menu-title">Help</div>
+
+                    <a asp-controller="Account" asp-action="Profile" class="menu-link">
+                        <i class="bi bi-person menu-icon"></i>
+                        <span class="menu-text">Profile</span>
+                    </a>
+                </div>
 
             </aside>
-            <!-- RIGHT SIDE -->
+
+            <!-- ================= RIGHT SIDE ================= -->
             <div class="flex-grow-1 d-flex flex-column content-area">
 
                 <!-- HEADER -->
-                <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center topbar">
-                    <button id="toggleSidebar"
-                            class="btn btn-outline-primary"
-                            type="button"
-                            aria-controls="sidebar"
-                            aria-expanded="true"
-                            aria-label="Toggle sidebar">
-                        <span id="toggleSidebarIcon" aria-hidden="true">☰</span>
-                    </button>
+                <div class="topbar d-flex align-items-center justify-content-between px-4">
 
-                    <div>
-                        <strong>@fullName</strong>
-                        <span class="text-muted">
-                            (@role)
+                    <div class="d-flex align-items-center gap-3">
+
+                        <button id="toggleSidebar"
+                                class="btn btn-link text-white p-0 border-0"
+                                type="button">
+                            <i class="bi bi-list fs-4"></i>
+                        </button>
+
+                        <a href="javascript:history.back()" class="text-white text-decoration-none">
+                            <i class="bi bi-arrow-left fs-5"></i>
+                        </a>
+
+                        <span class="fs-5 fw-semibold text-white">
+                            @ViewData["Title"]
                         </span>
                     </div>
 
-                    <div class="dropdown">
+                    <div class="d-flex align-items-center gap-3">
 
-                        <div id="userMenuBtn"
-                             class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                             data-bs-toggle="dropdown"
-                             style="width:40px;height:40px;cursor:pointer;">
-                            <span aria-hidden="true">👤</span>
+                        <div class="text-end text-white">
+                            <div class="fw-semibold">@fullName</div>
+                            <small class="text-warning">Login as @role</small>
                         </div>
 
-                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <div class="dropdown">
+                            <div id="userMenuBtn"
+                                 class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                 data-bs-toggle="dropdown"
+                                 style="width:40px;height:40px;cursor:pointer;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
 
-                            <li>
-                                <a class="dropdown-item"
-                                   asp-controller="Account"
-                                   asp-action="Profile">
-                                    Profile
-                                </a>
-                            </li>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Account"
+                                       asp-action="Profile">
+                                        Profile
+                                    </a>
+                                </li>
 
-                            <li><hr class="dropdown-divider"></li>
+                                <li><hr class="dropdown-divider"></li>
 
-                            <li>
-                                <a class="dropdown-item text-danger"
-                                   asp-controller="Account"
-                                   asp-action="Logout">
-                                    Logout
-                                </a>
-                            </li>
-
-                        </ul>
+                                <li>
+                                    <a class="dropdown-item text-danger"
+                                       asp-controller="Account"
+                                       asp-action="Logout">
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
 
                     </div>
                 </div>
 
                 <!-- CONTENT -->
-                <div class="p-4 bg-light flex-grow-1">
+                <div class="bg-light flex-grow-1 p-3 bodyback">
                     @RenderBody()
                 </div>
 
@@ -244,29 +333,74 @@
     }
 
     <script>
-        toastr.options = {
-            "closeButton": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "timeOut": "3000"
-        };
 
-        @if (TempData["success"] != null)
-        {
-                <text>toastr.success('@TempData["success"]');</text>
-        }
+        $(function () {
 
-        @if (TempData["error"] != null)
-        {
-                <text>toastr.error('@TempData["error"]');</text>
-        }
+            /* ================= Sidebar ================= */
 
-     
+            const sidebar = $("#sidebar");
+            const toggleBtn = $("#toggleSidebar");
+            const menuLinks = sidebar.find(".menu-link");
 
-        const sidebar = $("#sidebar");
-        const toggleBtn = $("#toggleSidebar");
-        const toggleIcon = $("#toggleSidebarIcon");
-        const menuLinks = sidebar.find(".menu-link");
+            function applySidebarState(isCollapsed) {
+                sidebar.toggleClass("collapsed", isCollapsed);
+
+                menuLinks.each(function () {
+                    const menuText = $(this).data("menu-text");
+                    $(this).attr("title", isCollapsed ? menuText : "");
+                });
+
+                requestAnimationFrame(refreshGridLayouts);
+                setTimeout(refreshGridLayouts, 150);
+            }
+
+            // Restore state
+            const savedState = localStorage.getItem("sidebarState") === "collapsed";
+            applySidebarState(savedState);
+
+            // Toggle
+            toggleBtn.on("click", function () {
+                const newState = !sidebar.hasClass("collapsed");
+                applySidebarState(newState);
+                localStorage.setItem("sidebarState",
+                    newState ? "collapsed" : "expanded");
+            });
+
+            /* ================= Active Menu ================= */
+
+            const currentUrl = window.location.pathname.toLowerCase();
+
+            $(".menu-link").each(function () {
+                const linkUrl = $(this).attr("href")?.toLowerCase();
+                if (linkUrl && currentUrl.includes(linkUrl)) {
+                    $(".menu-link").removeClass("active");
+                    $(this).addClass("active");
+                }
+            });
+
+            /* ================= Toastr ================= */
+
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                positionClass: "toast-top-right",
+                timeOut: "3000"
+            };
+
+            @if (TempData["success"] != null)
+            {
+                    <text>toastr.success('@TempData["success"]');</text>
+            }
+
+            @if (TempData["error"] != null)
+            {
+                    <text>toastr.error('@TempData["error"]');</text>
+            }
+
+        });
+
+
+        /* ================= Grid Framework ================= */
 
         const standardJqxGridSettings = {
             width: "100%",
@@ -283,36 +417,33 @@
         const registeredGridSelectors = new Set();
 
         function registerGrid(selector) {
-            if (!selector) {
-                return;
-            }
-
+            if (!selector) return;
             registeredGridSelectors.add(selector);
         }
 
         function createStandardGrid(selector, options) {
-            if (!selector) {
-                return;
-            }
+            if (!selector || !$(selector).length) return;
 
             registerGrid(selector);
+
             const mergedOptions = $.extend(true, {}, standardJqxGridSettings, options || {});
             $(selector).jqxGrid(mergedOptions);
         }
 
         function refreshGridLayouts() {
             registeredGridSelectors.forEach(function (selector) {
+
                 const element = $(selector);
 
-                if (!element.length || !element.data("jqxGrid")) {
-                    return;
-                }
+                if (!element.length || !element.data("jqxGrid")) return;
 
-                const parentElement = element.parent().get(0);
-                const parentWidth = parentElement ? Math.floor(parentElement.getBoundingClientRect().width) : 0;
+                const parent = element.parent().get(0);
+                const parentWidth = parent
+                    ? Math.floor(parent.getBoundingClientRect().width)
+                    : 0;
 
-                if (parentWidth && parentWidth > 0) {
-                    element.jqxGrid({ width: Math.max(parentWidth - 1, 0) });
+                if (parentWidth > 0) {
+                    element.jqxGrid({ width: parentWidth - 1 });
                 }
 
                 element.jqxGrid("refresh");
@@ -321,45 +452,14 @@
             });
         }
 
+        $(window).on("resize", refreshGridLayouts);
+
         window.LinkwellGrid = {
             defaults: standardJqxGridSettings,
             create: createStandardGrid,
             register: registerGrid,
             refreshLayouts: refreshGridLayouts
         };
-
-        function applySidebarState(isCollapsed) {
-            sidebar.toggleClass("collapsed", isCollapsed);
-            toggleBtn.attr("aria-expanded", String(!isCollapsed));
-            toggleIcon.text(isCollapsed ? "☰" : "✕");
-
-            menuLinks.each(function () {
-                const menuText = $(this).data("menu-text");
-                $(this).attr("title", isCollapsed ? menuText : "");
-            });
-
-            window.dispatchEvent(new CustomEvent("sidebar:toggled", {
-                detail: { collapsed: isCollapsed }
-            }));
-
-            requestAnimationFrame(refreshGridLayouts);
-            setTimeout(refreshGridLayouts, 140);
-            setTimeout(refreshGridLayouts, 320);
-        }
-
-        $(window).on("resize", refreshGridLayouts);
-
-        // ✅ Restore sidebar state on page load
-        const isCollapsedOnLoad = localStorage.getItem("sidebarState") === "collapsed";
-        applySidebarState(isCollapsedOnLoad);
-
-        // ✅ Toggle sidebar
-        toggleBtn.on("click", function () {
-            const newState = !sidebar.hasClass("collapsed");
-            applySidebarState(newState);
-            localStorage.setItem("sidebarState", newState ? "collapsed" : "expanded");
-        });
-
 
     </script>
     @RenderSection("Scripts", required: false)
