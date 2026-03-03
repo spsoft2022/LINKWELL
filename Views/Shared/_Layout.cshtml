@@ -165,6 +165,79 @@
         #toast-container {
             z-index: 999999 !important;
         }
+        .bbgc{
+            background-color: #EFEFEF;
+        }
+
+        .breadcrumb-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        .custom-breadcrumb {
+            width: 100%;
+            max-width: 1161px;
+        }
+
+        /* ===== Breadcrumb Container ===== */
+        .custom-breadcrumb {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 43px;
+            padding: 5px 0 10px;
+            border-bottom: 1px solid #C9C9C9;
+            font-family: "Inter", "Segoe UI", sans-serif;
+        }
+
+        /* ===== Left Section ===== */
+        .breadcrumb-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            line-height: 20px;
+            font-weight: 500;
+        }
+
+        /* ===== Breadcrumb Link ===== */
+        .crumb-link {
+            width: 41px;
+            height: 20px;
+            text-decoration: none;
+            color: #6B7280; /* soft gray */
+            display: inline-block;
+            /* Transition should be here */
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+          
+
+            /* ===== Active Link ===== */
+            .crumb-link.active {
+                font-weight: 700;
+            }
+
+
+
+        /* ===== Separator ===== */
+        .separator {
+            color: #A0A0A0;
+            font-weight: 400;
+        }
+
+        /* ===== Current Page ===== */
+        .crumb-current {
+            font-family: Inter, sans-serif;
+            font-weight: 400;
+            color: #FF8D28;
+        }
+    
+
+
+
+
     </style>
 </head>
 
@@ -264,7 +337,7 @@
                         </button>
 
                         <span class="fs-5 fw-semibold">
-                            @ViewData["Title"]
+                            Instructions display system
                         </span>
                     </div>
 
@@ -275,12 +348,24 @@
                 </div>
 
                 <!-- CONTENT -->
-                <div class="bg-light flex-grow-1 p-3">
+                <div class="bbgc flex-grow-1 p-3">
+
+                    <div class="breadcrumb-wrapper">
+                    <div class="custom-breadcrumb">
+                    <div class="breadcrumb-left">
+                    <a href="/" class="crumb-link active">Home</a>
+                    <span class="separator">/</span>
+                    <span class="crumb-current">@ViewData["Title"]</span>
+                    </div>
+                    </div>
+                    </div>
+                    <!-- Breadcrumb -->
+              
                     @RenderBody()
                 </div>
 
                 <!-- FOOTER -->
-                <div class="bg-light text-center p-2 border-top">
+                <div class="bbgc text-center p-2 border-top">
                     © @DateTime.Now.Year Linkwell Electronics
                 </div>
 
