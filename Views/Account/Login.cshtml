@@ -5,6 +5,10 @@
     ViewData["Title"] = "Login";
 }
 
+<style>
+  
+</style>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
@@ -84,7 +88,7 @@
             </div>
 
             <!-- Form -->
-            <form asp-action="Login" method="post" class="login-form">
+                <form id="loginForm" asp-action="Login" method="post" class="login-form">
 
                 <!-- Employee ID -->
                 <div class="form-group">
@@ -130,12 +134,13 @@
                     </a>
                 </div>
 
-                <!-- Button -->
-                <button type="submit" class="login-btn">
-                    LOGIN
-                </button>
-
             </form>
+
+
+            <!-- Button -->
+            <button type="submit" form="loginForm" class="login-btn">
+                LOGIN
+            </button>
 
         </div>
 
