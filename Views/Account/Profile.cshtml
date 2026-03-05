@@ -13,10 +13,10 @@
 
             @foreach (var value in ViewData.ModelState.Values)
             {
-                foreach (var error in value.Errors)
-                {
-                    <text>errors.push("@error.ErrorMessage");</text>
-                }
+                    foreach (var error in value.Errors)
+                    {
+                            <text>errors.push("@error.ErrorMessage");</text>
+                    }
             }
 
             errors.forEach(function (msg) {
@@ -26,114 +26,110 @@
     </script>
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center g-4">
-        <div class="col-lg-7">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-person-circle"></i> Profile
-                    </h5>
-                </div>
 
-                <div class="card-body">
-                    <p class="small text-muted mb-3">Fields marked with <span class="text-danger">*</span> are required.</p>
+<div class="profile-wrapper">
 
-                    <form asp-action="UpdateProfile" method="post" novalidate aria-describedby="profile-form-hint">
-                        <div id="profile-form-hint" class="visually-hidden">Complete all required fields before updating your profile.</div>
+    <div class="profile-content">
 
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert" aria-live="assertive"></div>
+        <!-- PROFILE CARD -->
+        <div class="profile-card">
 
-                        <div class="mb-3">
-                            <label asp-for="Profile.UserName" class="form-label"></label>
-                            <span class="text-danger" aria-hidden="true">*</span>
-                            <input asp-for="Profile.UserName"
-                                   class="form-control"
-                                   autocomplete="username"
-                                   maxlength="50"
-                                   required
-                                   aria-required="true" />
-                            <span asp-validation-for="Profile.UserName" class="invalid-feedback d-block"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Profile.Email" class="form-label"></label>
-                            <span class="text-danger" aria-hidden="true">*</span>
-                            <input asp-for="Profile.Email"
-                                   type="email"
-                                   class="form-control"
-                                   autocomplete="email"
-                                   inputmode="email"
-                                   required
-                                   aria-required="true" />
-                            <span asp-validation-for="Profile.Email" class="invalid-feedback d-block"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Profile.Role" class="form-label"></label>
-                            <input asp-for="Profile.Role"
-                                   class="form-control"
-                                   readonly
-                                   aria-readonly="true"
-                                   style="background-color:#e9ecef;opacity:1;cursor:not-allowed;" />
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
-                    </form>
-                </div>
+            <div class="profile-title">
+                Profile Details
             </div>
+
+            <div class="profile-details">
+
+                <!-- Avatar -->
+                <div class="profile-avatar">
+                    <img src="/images/Profileavator.png" alt="Profile Image">
+                </div>
+
+                <!-- User Info -->
+                <div class="profile-info">
+
+                    <div class="profile-section-title">
+                        Email
+                    </div>
+
+                    <div class="profile-email">
+                        @Model.Profile.Email
+                    </div>
+
+                    <div class="profile-meta">
+                        <div>
+                            <span class="profile-section-title">User Name :</span> <br />
+                            <span>@Model.Profile.UserName</span>
+                        </div>
+                        <div>
+                            <span class="profile-section-title">Role :</span> <br />
+                            <span>@Model.Profile.Role</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="col-lg-5">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-shield-lock"></i> Change Password
-                    </h5>
-                </div>
 
-                <div class="card-body">
-                    <p class="small text-muted mb-3">Use a strong password with at least 6 characters.</p>
+        <!-- PASSWORD CARD -->
+        <div class="password-section">
 
-                    <form asp-action="ChangePassword" method="post" novalidate>
-                        <div class="mb-3">
-                            <label asp-for="ChangePassword.CurrentPassword" class="form-label"></label>
-                            <span class="text-danger" aria-hidden="true">*</span>
-                            <input asp-for="ChangePassword.CurrentPassword"
-                                   class="form-control"
-                                   autocomplete="current-password" type="password"
-                                   required
-                                   aria-required="true" />
-                            <span asp-validation-for="ChangePassword.CurrentPassword" class="invalid-feedback d-block"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="ChangePassword.NewPassword" class="form-label"></label>
-                            <span class="text-danger" aria-hidden="true">*</span>
-                            <input asp-for="ChangePassword.NewPassword" type="password"
-                                   class="form-control"
-                                   autocomplete="new-password"
-                                   minlength="6"
-                                   required
-                                   aria-required="true" />
-                            <span asp-validation-for="ChangePassword.NewPassword" class="invalid-feedback d-block"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="ChangePassword.ConfirmPassword" class="form-label"></label>
-                            <span class="text-danger" aria-hidden="true">*</span>
-                            <input asp-for="ChangePassword.ConfirmPassword" type="password"
-                                   class="form-control"
-                                   autocomplete="new-password"
-                                   required
-                                   aria-required="true" />
-                            <span asp-validation-for="ChangePassword.ConfirmPassword" class="invalid-feedback d-block"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Update Password</button>
-                    </form>
-                </div>
+            <div class="profile-title">
+                <i class="bi bi-shield-lock"></i> Change Password
             </div>
+
+            <form asp-action="ChangePassword" method="post" novalidate>
+
+                <div class="form-group">
+                    <div class="d-flex">
+                    <label asp-for="ChangePassword.CurrentPassword"></label>
+                    <span class="required">*</span></div>
+
+                    <input asp-for="ChangePassword.CurrentPassword"
+                           type="password"
+                           class="form-control"
+                           autocomplete="current-password" />
+
+                    <span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                     <div class="d-flex">
+                    <label asp-for="ChangePassword.NewPassword"></label>
+                    <span class="required">*</span>
+                    </div>
+                    <input asp-for="ChangePassword.NewPassword"
+                           type="password"
+                           class="form-control"
+                           autocomplete="new-password" />
+
+                    <span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                     <div class="d-flex">
+                    <label asp-for="ChangePassword.ConfirmPassword"></label>
+                    <span class="required">*</span>
+                    </div>
+                    <input asp-for="ChangePassword.ConfirmPassword"
+                           type="password"
+                           class="form-control"
+                           autocomplete="new-password" />
+
+                    <span asp-validation-for="ChangePassword.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn profile-btn">
+                    UPDATE PASSWORD
+                </button>
+
+            </form>
+
         </div>
+
     </div>
+
 </div>
