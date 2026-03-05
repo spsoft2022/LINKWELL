@@ -5,6 +5,9 @@
     ViewData["Title"] = "Profile";
 }
 
+
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
@@ -26,6 +29,17 @@
 
          
         });
+
+             var success = '@TempData["SuccessMessage"]';
+        var error = '@TempData["ErrorMessage"]';
+
+        if (success) {
+            toastr.success(success);
+        }
+
+        if (error) {
+            toastr.error(error);
+        }
 
            function previewImage(event) {
 

@@ -107,7 +107,12 @@ namespace LinkwellProductionSystem.Controllers
                     user.ProfileImagePath = imagePath;
 
                     await _db.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Profile image updated successfully.";
                 }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Please select an image.";
             }
 
             return RedirectToAction("Profile");

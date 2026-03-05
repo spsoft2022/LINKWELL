@@ -1,9 +1,16 @@
 ﻿@using System.Security.Claims
+@using LinkwellProductionSystem.Data
+@inject ApplicationDbContext _context
+
 
 @{
     var isLoggedIn = User.Identity.IsAuthenticated;
     var fullName = User.Identity.Name;
     var role = User.FindFirst(ClaimTypes.Role)?.Value;
+    var user = _context.AppUsers.FirstOrDefault(x => x.Username == fullName);
+    var profileImage = string.IsNullOrEmpty(user?.ProfileImagePath)
+       ? "/images/Profileavator.png"
+       : user.ProfileImagePath;
 }
 
 <!DOCTYPE html>
@@ -509,7 +516,8 @@
                         </div>
 
                         <div class="avatar">
-                            <img src="~/images/avatar.png" alt="avatar">
+                       
+                        <img src="@profileImage" class="header-profile-img" />
 
                         </div>
 
