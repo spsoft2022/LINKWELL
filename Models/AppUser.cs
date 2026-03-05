@@ -11,9 +11,11 @@ namespace LinkwellProductionSystem.Models
         public string? Email { get; set; }
         public string? StationId { get; set; }                        // NULL for Admin
         public string Role { get; set; } = "Incharge";
-
+       
         public bool MustChangePassword { get; set; }
         
         public Station? Station { get; set; }
+
+        public string? ProfileImagePath { get; set; }
     }
 }

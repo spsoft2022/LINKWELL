@@ -48,13 +48,71 @@ namespace LinkwellProductionSystem.Controllers
                 {
                     UserName = user.Username,
                     Email = user.Email,
-                    Role=user.Role
+                    Role = user.Role,
+                    ProfileImagePath = user.ProfileImagePath   // ⭐ Missing line
                 },
                 ChangePassword = new ChangePasswordVM()
             };
 
             return View(vm);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UploadProfileImage(IFormFile ProfileImage)
+        {
+            if (ProfileImage != null && ProfileImage.Length > 0)
+            {
+                // Generate unique filename
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfileImage.FileName);
+
+                var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/profile");
+
+                // Ensure folder exists
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                var filePath = Path.Combine(folderPath, fileName);
+
+                // Save image to server
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await ProfileImage.CopyToAsync(stream);
+                }
+
+                // Image path to save in DB
+                var imagePath = "/images/profile/" + fileName;
+
+                // Get current logged in user
+                var username = User.Identity.Name;
+
+                var user = _db.AppUsers.FirstOrDefault(x => x.Username == username);
+
+                if (user != null)
+                {
+                    // Delete old image if exists
+                    if (!string.IsNullOrEmpty(user.ProfileImagePath))
+                    {
+                        var oldImage = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.ProfileImagePath.TrimStart('/'));
+
+                        if (System.IO.File.Exists(oldImage))
+                        {
+                            System.IO.File.Delete(oldImage);
+                        }
+                    }
+
+                    // Save new path
+                    user.ProfileImagePath = imagePath;
+
+                    await _db.SaveChangesAsync();
+                }
+            }
+
+            return RedirectToAction("Profile");
+        }
+
 
 
         [HttpPost]

@@ -84,24 +84,58 @@ body {
     align-items: center;
 }
 
-/* Avatar */
-
+/* PROFILE A*/
 .profile-avatar {
-    width: 180px;
-    height: 180px;
-    background: #F2F2F2;
-    border-radius: 6px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    gap: 10px;
 }
 
-    .profile-avatar img {
-        width: 140px;
-        height: 140px;
-        border-radius: 4px;
-        border: 1px solid #D1D1D1;
+.avatar-wrapper {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+
+.avatar-img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f1f1f1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.avatar-camera {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 35px;
+    height: 35px;
+    background: #FF8D28;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+    .avatar-camera:hover {
+        background: #ff7a00;
     }
+
+.avatar-upload-btn {
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: #FF8D28;
+    border: none;
+    color: #fff;
+}
 
 /* Right side */
 

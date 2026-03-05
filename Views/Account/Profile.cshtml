@@ -22,7 +22,23 @@
             errors.forEach(function (msg) {
                 toastr.error(msg);
             });
+
+
+         
         });
+
+           function previewImage(event) {
+
+            const reader = new FileReader();
+
+            reader.onload = function () {
+            const output = document.getElementById('profilePreview');
+            output.src = reader.result;
+            };
+
+            reader.readAsDataURL(event.target.files[0]);
+            }
+
     </script>
 }
 
@@ -42,14 +58,47 @@
 
                 <!-- Avatar -->
                 <div class="profile-avatar">
-                    <img src="/images/Profileavator.png" alt="Profile Image">
-                </div>
 
+                    <form asp-action="UploadProfileImage"
+                          method="post"
+                          enctype="multipart/form-data"
+                          class="avatar-upload-form">
+                        <div class="avatar-wrapper">
+
+                            
+                            <img id="profilePreview"
+                                 src="@(!string.IsNullOrEmpty(Model.Profile.ProfileImagePath)
+                                             ? Model.Profile.ProfileImagePath
+                                             : "/images/Profileavator.png")"
+                                 alt="Profile Image"
+                                 class="avatar-img">
+
+
+                            <label for="profileImageInput" class="avatar-camera">
+                                <i class="bi bi-camera-fill"></i>
+                            </label>
+
+                            <input type="file"
+                                   id="profileImageInput"
+                                   name="ProfileImage"
+                                   accept="image/*"
+                                   hidden
+                                   onchange="previewImage(event)">
+
+                        </div>
+
+                        <button type="submit" class="btn avatar-upload-btn">
+                            Upload Photo
+                        </button>
+
+                    </form>
+
+                </div>
                 <!-- User Info -->
                 <div class="profile-info">
 
                     <div class="profile-section-title">
-                        Email
+                        Email Address
                     </div>
 
                     <div class="profile-email">

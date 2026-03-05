@@ -14,6 +14,8 @@ namespace LinkwellProductionSystem.ViewModels
         [EmailAddress(ErrorMessage = "Enter a valid email address (example: name@example.com).")]
         public string Email { get; set; }
 
+        public string ProfileImagePath { get; set; }
+
         [Display(Name = "Role")]
         public string Role { get; set; }
     }
