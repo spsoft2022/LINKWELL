@@ -1,4 +1,5 @@
-﻿
+﻿/* ================= BODY ================= */
+
 body {
     margin: 0;
     height: 100vh;
@@ -16,7 +17,8 @@ body {
         background: rgba(0,0,0,0.75);
     }
 
-/* Layout */
+/* ================= LAYOUT ================= */
+
 .login-wrapper {
     display: flex;
     height: 100vh;
@@ -24,7 +26,8 @@ body {
     z-index: 1;
 }
 
-/* LEFT SIDE */
+/* ================= LEFT SECTION ================= */
+
 .left-section {
     flex: 1;
     display: flex;
@@ -55,7 +58,8 @@ body {
     margin-top: 10px;
 }
 
-/* RIGHT SIDE */
+/* ================= RIGHT SECTION ================= */
+
 .right-section {
     flex: 1;
     display: flex;
@@ -63,8 +67,8 @@ body {
     align-items: center;
 }
 
+/* ================= FOOTER ================= */
 
-/* FOOTER */
 .login-footer {
     position: absolute;
     bottom: 10px;
@@ -75,51 +79,42 @@ body {
     z-index: 1;
 }
 
+/* =====================================================
+   LOGIN PAGE
+===================================================== */
 
-
-/* RIGHT SECTION CENTERING */
-.right-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: transparent;
-}
-
-/* Login page*/
 /* Login Card */
+
 .login-card {
-    position: absolute;
-    width: 439.79px;
-    height: 460.34px;
-    left: 864.21px;
-    top: calc(50% - 460.34px/2 - 22px);
+    width: 440px;
     background: #ffffff;
-    border-radius: 18.16px;
-    padding: 54.49px 36.33px;
+    border-radius: 18px;
+    padding: 54px 36px;
     display: flex;
     flex-direction: column;
-    gap: 27.25px;
-    font-family: Inter, sans-serif;
+    gap: 27px;
+    font-family: 'Inter', sans-serif;
 }
 
 /* Header */
+
 .login-header {
     display: flex;
     flex-direction: column;
-    gap: 9.08px;
+    gap: 9px;
 }
 
 /* Welcome Text */
+
 .welcome-text {
     font-size: 14.53px;
-    font-weight: 400;
     letter-spacing: -0.04em;
     color: #FF8D28;
     margin: 0;
 }
 
 /* Title */
+
 .login-title {
     font-size: 24.52px;
     font-weight: 700;
@@ -128,27 +123,30 @@ body {
 }
 
 /* Subtitle */
+
 .login-subtext {
     font-size: 12.71px;
     color: #9B9B9B;
-    margin: 0;
 }
 
 /* Form */
+
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 9.08px;
+    gap: 12px;
 }
 
 /* Form Group */
+
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 4.54px;
+    gap: 5px;
 }
 
 /* Labels */
+
 .form-label {
     font-size: 12.71px;
     color: #9B9B9B;
@@ -159,6 +157,7 @@ body {
 }
 
 /* Inputs */
+
 .form-control-custom {
     height: 39.96px;
     padding: 9px;
@@ -169,6 +168,7 @@ body {
 }
 
 /* Password wrapper */
+
 .password-wrapper {
     position: relative;
     display: flex;
@@ -176,6 +176,7 @@ body {
 }
 
 /* Eye icon */
+
 .eye-icon {
     position: absolute;
     right: 10px;
@@ -184,6 +185,7 @@ body {
 }
 
 /* Options Row */
+
 .login-options {
     display: flex;
     justify-content: space-between;
@@ -191,6 +193,7 @@ body {
 }
 
 /* Remember Me */
+
 .remember-label {
     display: flex;
     align-items: center;
@@ -200,6 +203,7 @@ body {
 }
 
 /* Forgot Password */
+
 .forgot-link {
     font-size: 12.7px;
     font-weight: 700;
@@ -208,6 +212,7 @@ body {
 }
 
 /* Login Button */
+
 .login-btn {
     height: 39.96px;
     width: 100%;
@@ -219,100 +224,97 @@ body {
     font-weight: 700;
     cursor: pointer;
 }
+
     .login-btn:hover {
         background: #f47f14;
     }
 
-/* CARD */
+/* =====================================================
+   FORGOT PASSWORD PAGE
+===================================================== */
+
+/* Card */
+
 .forgot-card {
-    width: 420px;
-    background: linear-gradient(145deg, #1f1f1f, #2a2a2a);
-    border-radius: 20px;
-    padding: 40px 35px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-    color: #ffffff;
+    width: 440px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 54px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 27px;
+    font-family: 'Inter', sans-serif;
 }
 
-/* HEADER */
+/* Header */
+
 .forgot-header {
-    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
 }
 
 .forgot-small-text {
-    display: block;
-    color: #ff8c2f;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 10px;
+    font-size: 14.53px;
+    color: #FF8D28;
 }
 
 .forgot-title {
-    font-size: 28px;
+    font-size: 24.52px;
     font-weight: 700;
-    margin-bottom: 10px;
 }
 
 .forgot-subtext {
-    font-size: 14px;
-    color: #cfcfcf;
-    line-height: 1.5;
+    font-size: 12.71px;
+    color: #9B9B9B;
 }
 
-/* FORM */
-.forgot-form-group {
-    margin-bottom: 25px;
+/* Form */
+
+.forgot-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
+
+/* Label */
 
 .forgot-label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 8px;
-    color: #ffffff;
+    font-size: 12.71px;
+    color: #878787;
 }
 
-.required {
-    color: #ff4d4d;
-}
+/* Input */
 
-/* INPUT */
 .forgot-input {
+    height: 39.96px;
     width: 100%;
-    padding: 14px 16px;
-    border-radius: 8px;
-    border: none;
-    outline: none;
-    background-color: #e9e9e9;
-    font-size: 14px;
-    color: #333;
-    transition: 0.3s ease;
+    padding: 9px;
+    border: 1px solid #D9D9D9;
+    border-radius: 4.54px;
+    font-size: 12.7px;
+    background: #ffffff;
 }
 
     .forgot-input:focus {
-        box-shadow: 0 0 0 2px #ff8c2f;
+        outline: none;
+        border-color: #FF8D28;
     }
 
-/* BUTTON */
+/* Button */
+
 .forgot-btn {
+    height: 39.96px;
     width: 100%;
-    padding: 14px;
-    background-color: #ff8c2f;
-    color: #000;
-    font-weight: 700;
-    font-size: 14px;
+    background: #FF8D28;
     border: none;
-    border-radius: 8px;
+    border-radius: 4.54px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12.71px;
+    font-weight: 700;
     cursor: pointer;
-    transition: 0.3s ease;
 }
 
     .forgot-btn:hover {
-        background-color: #ff7a1a;
+        background: #f47f14;
     }
-
-/* FOOTER FIX (optional alignment tweak) */
-.login-footer {
-    text-align: center;
-    font-size: 12px;
-    color: #aaa;
-    padding: 15px 0;
-}
