@@ -40,16 +40,45 @@
 
         .sidebar {
             width: 219px;
-            height:672px;
+            min-height: 100vh;
             background: #fff;
             border-right: 1px solid #ddd;
             transition: width 0.25s ease;
             overflow: hidden;
         }
 
-            .sidebar.collapsed {
-                width: 76px;
-            }
+        .sidebar.collapsed {
+        width: 76px;
+        }
+
+        /* Hide section titles */
+        .sidebar.collapsed .menu-title {
+            display: none;
+        }
+
+
+        /* Hide text */
+        .sidebar.collapsed .menu-text {
+            display: none;
+        }
+
+        /* Center icons */
+        .sidebar.collapsed .menu-link {
+            width: 60px;
+            justify-content: center;
+            padding: 10px 0;
+            margin: 6px auto;
+        }
+
+        /* Remove hover text slide animation when collapsed */
+        .sidebar.collapsed .menu-link:hover .menu-text {
+            transform: none;
+        }
+
+        /* Adjust logo */
+        .sidebar.collapsed .sidebar-logo img {
+        max-width: 42px;
+        }
 
         .sidebar-logo {
             text-align: center;
@@ -63,9 +92,7 @@
                 transition: all 0.25s ease;
             }
 
-        .sidebar.collapsed .sidebar-logo img {
-            max-width: 42px;
-        }
+      
 
         .brand-short {
             display: none;
@@ -156,6 +183,91 @@
             background: linear-gradient(to right, #2c2c2c, #1f1f1f);
             color: white;
             border-bottom: 1px solid #333;
+        }
+
+
+        .name-badge {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            width: 187px;
+            height: 36px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .username {
+            font-size: 14px;
+            font-weight: 700;
+            color: #D9D9D9;
+            line-height: 18px;
+        }
+
+        .role {
+            font-size: 10px;
+            color: #FF8D28;
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(28,28,28,0.05);
+        }
+
+            .avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+
+        /* Dropdown */
+
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 40px;
+            display: none;
+            flex-direction: column;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 120px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+            .dropdown-menu button {
+                border: none;
+                background: none;
+                padding: 10px;
+                text-align: left;
+                cursor: pointer;
+            }
+
+                .dropdown-menu button:hover {
+                    background: #f5f5f5;
+                }
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(28,28,28,0.05);
+            color: #F6901E;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         .content-area {
@@ -331,20 +443,40 @@
                 <div class="topbar d-flex align-items-center justify-content-between px-4">
 
                     <div class="d-flex align-items-center gap-3">
-                        <button id="toggleSidebar"
-                                class="btn btn-link text-white p-0 border-0">
-                            <i class="bi bi-list fs-4"></i>
-                        </button>
-
+                      
+                        <img id="toggleSidebar"  src="~/images/collposelefticon.png" alt="avatar">
                         <span class="fs-5 fw-semibold">
                             Instructions display system
                         </span>
                     </div>
 
-                    <div class="text-end">
-                        <div>@fullName</div>
-                        <small class="text-warning">Login as @role</small>
+
+                    <div class="name-badge">
+
+                        <div class="user-info">
+                            <div class="username">@fullName</div>
+                            <div class="role">Login as @role</div>
+                        </div>
+
+                        <div class="avatar">
+                            <img src="~/images/avatar.png" alt="avatar">
+                        </div>
+
+                        <div class="menu-container">
+                            <div class="menu-icon" onclick="toggleMenu()">
+                                <img src="~/images/profilecontexarrow.png" alt="arrow">
+                            </div>
+
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <button onclick="goProfile()">Profile</button>
+                                <button onclick="logout()">Logout</button>
+                            </div>
+                        </div>
+
                     </div>
+
+
+
                 </div>
 
                 <!-- CONTENT -->
@@ -516,6 +648,25 @@
             register: registerGrid,
             refresh: refreshGridLayouts
         };
+
+        function toggleMenu() {
+        const menu = document.getElementById("dropdownMenu");
+
+        if (menu.style.display === "flex") {
+        menu.style.display = "none";
+        } else {
+        menu.style.display = "flex";
+        }
+        }
+
+        function goProfile() {
+        alert("Go to Profile Page");
+        }
+
+        function logout() {
+        alert("Logging out...");
+        }
+
     </script>
 
     @RenderSection("Scripts", required: false)

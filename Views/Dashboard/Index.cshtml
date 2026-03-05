@@ -13,26 +13,184 @@
     };
 
 }
+
 <div id="dashboarddiv" class="dashboard-wrapper">
 
+    @{
+        int itemsPerRow = 4;
+
+        for (int i = 0; i < tiles.Length; i += itemsPerRow)
+        {
+            <div class="dashboard-row">
+                @{
+                    int itemsRendered = 0;
+                }
+
+                @for (int j = i; j < i + itemsPerRow && j < tiles.Length; j++)
+                {
+                    var tile = tiles[j];
+                    itemsRendered++;
+
+                    <div class="dashboard-card">
+
+                        <!-- Header -->
+                        <div class="card-header">
+                            <div class="card-title">@tile.Title</div>
+
+                            <a asp-controller="@tile.Controller"
+                               asp-action="@tile.Action"
+                               class="add-btn">
+                                Add +
+                            </a>
+                        </div>
+
+                        <!-- Icon -->
+                        <div class="card-icon">
+                            <img src="~/images/tiles/@tile.Image" alt="@tile.Title" />
+                        </div>
+
+                        <!-- Description -->
+                        <div class="card-description">
+                            @tile.Description
+                        </div>
+
+                    </div>
+                }
+
+                <!-- Fill Empty Slots -->
+                @for (int k = itemsRendered; k < itemsPerRow; k++)
+                {
+                    <div class="dashboard-card empty-card"></div>
+                }
+            </div>
+        }
+    }
+
+</div>
 
 <style>
+        /* =========================
+           DASHBOARD WRAPPER
+        ========================= */
+
         .dashboard-wrapper {
-            background: #C9C9C9;
-            padding:10px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top:30px;
         }
+
+        /* Each Row */
+        .dashboard-row {
+            display: flex;
+            gap: 27px;
+            width: 100%;
+        }
+
+        /* =========================
+           DASHBOARD CARD
+        ========================= */
+
+        
+
+
+    .dashboard-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 15px;
+        gap: 10px;
+        width: 308px; /* from Figma */
+        min-width: 171px; /* from Figma */
+        height: 206px; /* from Figma */
+
+        background: #FFFFFF;
+        border-radius: 20px;
+        flex: 1;
+    }
+
+            .dashboard-card:hover {
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            }
+
+        /* =========================
+           CARD HEADER
+        ========================= */
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: #7F7F7F;
+            letter-spacing: -0.04em;
+        }
+
+        /* =========================
+           ADD BUTTON
+        ========================= */
+
+        .add-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #F2F2F2;
+            border: 1px solid #E9E9E9;
+            border-radius: 15px;
+            font-family: 'Nexa Bold', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #F6901E;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+            .add-btn:hover {
+                background: #F6901E;
+                color: #ffffff;
+            }
+
+        /* =========================
+           ICON AREA
+        ========================= */
+
+        .card-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+            .card-icon img,
+            .card-icon svg {
+                width: 85px;
+                height: 85px;
+            }
+
+        /* =========================
+           DESCRIPTION
+        ========================= */
+
+        .card-description {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            line-height: 14px;
+            text-align: center;
+            color: #555555;
+        }
+
+ 
+
+        
 
 
 </style>
 
 
-
-
-
-</div>
-
-
-<script>
-
-  
-</script>
