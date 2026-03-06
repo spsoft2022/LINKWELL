@@ -485,7 +485,7 @@
                     <a asp-controller="WorkInstruction"
                        asp-action="AddInstructions"
                        class="menu-link"
-                       data-menu-text="Instructions">
+                       data-menu-text="Add Instructions">
                         <img src="~/images/menuicons/instructions.svg" class="menu-icon" alt="Instructions" />
                         <span class="menu-text">Instructions</span>
                     </a>
@@ -621,6 +621,13 @@
 
             const savedState = localStorage.getItem("sidebarState") === "collapsed";
             applySidebarState(savedState);
+
+            const toggleIcon = document.getElementById("toggleSidebar");
+            const openIcon = toggleIcon.getAttribute("data-open");
+            const closeIcon = toggleIcon.getAttribute("data-close");
+
+            /* Set correct icon on page load */
+            toggleIcon.src = savedState ? closeIcon : openIcon;
 
             $("#toggleSidebar").click(function () {
 
