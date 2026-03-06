@@ -2,49 +2,105 @@
     ViewData["Title"] = "Category Management";
 }
 
-<button class="btn btn-primary mb-3" id="btnAddCategory">
-    ➕ Add Category
-</button>
+
+
+<div class="org-container">
+
+    <div class="org-header">
+        <div class="left">
+            <div >
+                <img src="/images/menuicons/category.svg" class="icon" />
+            </div>
+            <span class="icontext">Category</span>
+        </div>
+
+
+        <button class="add-btn"
+            id="btnAddCategory">
+            + Add New
+        </button>
+    </div>
+
+ 
+
+
+    <div id="categoryGrid" class="org-table"></div>
+</div>
+
 
 <style>
-    #categoryGrid {
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        overflow: hidden;
-        background-color: #fff;
+    .org-container {
+        width: 100%;
+        max-width: 1160px;
+        margin: auto;
+        font-family: Inter;
     }
 
-    #categoryGrid .jqx-grid-header {
-        background: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
+    .org-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-top: 26px;
+    }
+
+        .org-header .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+    .icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 5px;
+    }
+
+    .icontext{
+        font-size:16px;
+        font-family:Inter;
+        font-weight:700;
+    }
+
+    .add-btn {
+        background: #FF8D28;
+        border: none;
+        padding: 8px 15px;
+        font-size: 12px;
         font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
     }
 
-    #categoryGrid .jqx-grid-cell {
-        font-size: 0.95rem;
+    .search-bar {
+        margin-bottom: 20px;
     }
 
-    .status-pill {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        line-height: 1.4;
+        .search-bar input {
+            width: 300px;
+            height: 35px;
+            padding-left: 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 5px;
+        }
+
+    .org-table {
+        width: 100%;
+        border-collapse: collapse;
     }
 
-    .status-pill.active {
-        color: #0a7d2c;
-        background-color: #e8f7ed;
-    }
+        .org-table th,
+        .org-table td {
+            border: 1px solid rgba(185,185,185,0.3);
+            padding: 10px;
+            font-size: 12px;
+        }
 
-    .status-pill.disabled {
-        color: #a21f2d;
-        background-color: #fbe9eb;
-    }
+        .org-table th {
+            font-weight: 700;
+        }
 </style>
 
-<div id="categoryGrid"></div>
 
 <!-- MODAL -->
 <div class="modal fade" id="categoryModal" tabindex="-1">
