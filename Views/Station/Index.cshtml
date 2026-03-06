@@ -2,50 +2,27 @@
     ViewData["Title"] = "Station Management";
 }
 
+<link rel="stylesheet" href="~/css/common.css" />
 
-<button class="btn btn-primary mb-3" id="btnAddStation">
-    ➕ Add Station
-</button>
+<div class="org-container">
 
-<style>
-    #stationGrid {
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        overflow: hidden;
-        background-color: #fff;
-    }
+    <div class="org-header">
+        <div class="left">
+            <div>
+                <img src="/images/menuicons/stations.svg" class="icon" />
+            </div>
+            <span class="icontext">Stations</span>
+        </div>
 
-    #stationGrid .jqx-grid-header {
-        background: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        font-weight: 600;
-    }
 
-    #stationGrid .jqx-grid-cell {
-        font-size: 0.95rem;
-    }
+        <button class="add-btn"
+                id="btnAddStation">
+            + Add New
+        </button>
+    </div>
 
-    .status-pill {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        line-height: 1.4;
-    }
-
-    .status-pill.active {
-        color: #0a7d2c;
-        background-color: #e8f7ed;
-    }
-
-    .status-pill.disabled {
-        color: #a21f2d;
-        background-color: #fbe9eb;
-    }
-</style>
-
-<div id="stationGrid"></div>
+    <div id="stationGrid" class="org-table"></div>
+</div>
 
 <div class="modal fade" id="stationModal" tabindex="-1">
     <div class="modal-dialog">

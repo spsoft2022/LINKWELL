@@ -2,98 +2,26 @@
 	ViewData["Title"] = "Model Management";
 }
 
-<button class="btn btn-primary mb-3" id="btnAddModel">
-	➕ Add Model
-</button>
+<link rel="stylesheet" href="~/css/common.css" />
 
-<style>
-	#modelGrid {
-		border: 1px solid #dee2e6;
-		border-radius: 8px;
-		overflow: hidden;
-		background-color: #fff;
-	}
+<div class="org-container">
 
-	#modelGrid .jqx-grid-header {
-		background: #f8f9fa;
-		border-bottom: 1px solid #dee2e6;
-		font-weight: 600;
-	}
-
-	#modelGrid .jqx-grid-cell {
-		font-size: 0.95rem;
-	}
+    <div class="org-header">
+        <div class="left">
+            <div >
+                <img src="/images/menuicons/models.svg" class="icon" />
+            </div>
+			<span class="icontext">Model</span>
+        </div>
 
 
-	/* Grid wrapper scroll */
-	.grid-wrapper {
-		height: 500px;
-		overflow-y: auto;
-	}
+        <button class="add-btn"
+				id="btnAddModel">
+            + Add New
+        </button>
+    </div>
 
-		/* Sticky Header */
-		.grid-wrapper .jqx-grid-header {
-			position: sticky !important;
-			top: 0;
-			z-index: 20;
-			background: #fff;
-			box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-		}
-
-		/* Sticky Filter Row */
-		.grid-wrapper .jqx-grid-filter-row {
-			position: sticky !important;
-			top: 45px;
-			z-index: 19;
-			background: #fff;
-		}
-
-	/* Status badge */
-	.status-pill {
-		padding: 4px 10px;
-		border-radius: 20px;
-		font-size: 12px;
-		font-weight: 600;
-		display: inline-block;
-	}
-
-		.status-pill.active {
-			background: #e6f7ee;
-			color: #1e7e34;
-		}
-
-		.status-pill.disabled {
-			background: #fdeaea;
-			color: #c82333;
-		}
-
-	/* Row hover UX */
-	.jqx-grid-cell:hover {
-		background-color: #f5f7fa !important;
-	}
-
-	.status-pill {
-		display: inline-block;
-		padding: 3px 10px;
-		border-radius: 999px;
-		font-size: 0.8rem;
-		font-weight: 600;
-		line-height: 1.4;
-	}
-
-	.status-pill.active {
-		color: #0a7d2c;
-		background-color: #e8f7ed;
-	}
-
-	.status-pill.disabled {
-		color: #a21f2d;
-		background-color: #fbe9eb;
-	}
-</style>
-
-<div class="grid-wrapper">
-	<div id="modelGrid"></div>
+	<div id="modelGrid" class="org-table"></div>
 </div>
 
 <div class="modal fade" id="modelModal" tabindex="-1">

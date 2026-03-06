@@ -2,45 +2,46 @@
     ViewData["Title"] = "Work Instruction Management";
 }
 
+<link rel="stylesheet" href="~/css/common.css" />
 
-<style>
-    #instructionGrid {
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        overflow: hidden;
-        background-color: #fff;
-    }
 
-    #instructionGrid .jqx-grid-header {
-        background: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        font-weight: 600;
-    }
+<div class="org-container">
 
-    #instructionGrid .jqx-grid-cell {
-        font-size: 0.95rem;
-    }
-</style>
+    <div class="org-header">
+        <div class="left">
+            <div>
+                <img src="/images/menuicons/instructions.svg" class="icon" />
+            </div>
+            <span class="icontext">Add Instructions</span>
+        </div>
 
-<div class="row align-items-end g-3 mb-3">
-    <div class="col-md-3">
-        <label class="form-label fw-semibold">Model</label>
-        <div id="ddlModel"></div>
+        <button class="add-btn"
+                id="btnAdd">
+            + Add New
+        </button>
     </div>
 
-    <div class="col-md-3">
-        <label class="form-label fw-semibold">Station</label>
-        <div id="ddlStation"></div>
+    <div class="row align-items-end g-3 mb-3">
+
+        <div class="col-md-6 d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Model</label>
+            <div id="ddlModel" class="flex-grow-1"></div>
+        </div>
+
+        <div class="col-md-6 d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Station</label>
+            <div id="ddlStation" class="flex-grow-1"></div>
+        </div>
+
     </div>
 
-    <div class="col-md-3 pt-4"></div>
+    <div id="instructionGrid" class="org-table"></div>
 
-    <div class="col-md-3 pt-4 text-end">
-        <input type="button" id="btnAdd" value="Add Instruction" />
-    </div>
 </div>
 
-<div id="instructionGrid"></div>
+
+
+
 
 <div id="instructionWindow">
     <div>Work Instruction Editor</div>
