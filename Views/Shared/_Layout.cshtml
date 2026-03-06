@@ -421,7 +421,7 @@
 
                 <div class="sidebar-logo">
                     <img src="~/images/logo-full.png" class="brand-full" />
-                    <img src="~/images/logo-icon.png" class="brand-short" />
+                    <img src="~/images/collaposelogo.png" style="width:25px; height:19px" class="brand-short" />
                 </div>
 
                 <!-- DASHBOARDS -->
@@ -500,11 +500,17 @@
                 <div class="topbar d-flex align-items-center justify-content-between px-4">
 
                     <div class="d-flex align-items-center gap-3">
-                      
-                        <img id="toggleSidebar"  src="~/images/collposelefticon.png" alt="avatar">
+
+                        <img id="toggleSidebar"
+                             src="/images/leftarrow.png"
+                             data-open="/images/leftarrow.png"
+                             data-close="/images/rightarrow.png"
+                             alt="toggle">
+
                         <span class="fs-5 fw-semibold">
                             Instructions display system
                         </span>
+
                     </div>
 
 
@@ -605,6 +611,16 @@
             applySidebarState(savedState);
 
             $("#toggleSidebar").click(function () {
+
+                const openIcon = this.getAttribute("data-open");
+                const closeIcon = this.getAttribute("data-close");
+
+                if (this.src.includes("leftarrow")) {
+                this.src = closeIcon;
+                } else {
+                this.src = openIcon;
+                }
+
                 const collapsed = !sidebar.hasClass("collapsed");
                 applySidebarState(collapsed);
                 localStorage.setItem("sidebarState",

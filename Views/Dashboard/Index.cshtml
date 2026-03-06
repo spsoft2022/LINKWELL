@@ -14,7 +14,7 @@
 
 }
 
-<div id="dashboarddiv" class="dashboard-wrapper">
+<div id="dashboarddiv" class="dashboard-wrapper" style="margin-top:26px">
 
     @{
         int itemsPerRow = 4;
@@ -31,30 +31,30 @@
                     var tile = tiles[j];
                     itemsRendered++;
 
-                    <div class="dashboard-card">
+                    <a asp-controller="@tile.Controller"
+                       asp-action="@tile.Action"
+                       class="dashboard-card-link">
 
-                        <!-- Header -->
-                        <div class="card-header">
-                            <div class="card-title">@tile.Title</div>
+                        <div class="dashboard-card">
 
-                            <a asp-controller="@tile.Controller"
-                               asp-action="@tile.Action"
-                               class="add-btn">
-                                Add +
-                            </a>
+                            <!-- Header -->
+                            <div class="card-header">
+                                <div class="card-title">@tile.Title</div>
+                            </div>
+
+                            <!-- Icon -->
+                            <div class="card-icon">
+                                <img src="~/images/tiles/@tile.Image" alt="@tile.Title" />
+                            </div>
+
+                            <!-- Description -->
+                            <div class="card-description">
+                                @tile.Description
+                            </div>
+
                         </div>
 
-                        <!-- Icon -->
-                        <div class="card-icon">
-                            <img src="~/images/tiles/@tile.Image" alt="@tile.Title" />
-                        </div>
-
-                        <!-- Description -->
-                        <div class="card-description">
-                            @tile.Description
-                        </div>
-
-                    </div>
+                    </a>
                 }
 
                 <!-- Fill Empty Slots -->
@@ -73,26 +73,26 @@
            DASHBOARD WRAPPER
         ========================= */
 
-        .dashboard-wrapper {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            margin-top:30px;
-        }
+    .dashboard-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 25px; /* space between rows */
+    }
 
-        /* Each Row */
-        .dashboard-row {
-            display: flex;
-            gap: 27px;
-            width: 100%;
-        }
+    .dashboard-row {
+        display: flex;
+        gap: 25px; /* space between cards in same row */
+    }
 
         /* =========================
            DASHBOARD CARD
         ========================= */
 
-        
 
+    .dashboard-card-link {
+        text-decoration: none;
+        display: block;
+    }
 
     .dashboard-card {
         display: flex;
@@ -100,21 +100,25 @@
         justify-content: center;
         align-items: center;
         padding: 20px 15px;
-        gap: 10px;
-        width: 308px; /* from Figma */
-        min-width: 171px; /* from Figma */
-        height: 206px; /* from Figma */
-
+        width: 270px;
+        min-width: 171px;
+        height: 205px;
         background: #FFFFFF;
         border-radius: 20px;
-        flex: 1;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
-            .dashboard-card:hover {
-                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            }
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
 
-        /* =========================
+
+    .empty-card{
+        background-color:inherit;
+    }
+    /* =========================
            CARD HEADER
         ========================= */
 
