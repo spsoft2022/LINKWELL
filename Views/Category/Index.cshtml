@@ -1,8 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Category Management";
 }
-
-
+<link rel="stylesheet" href="~/css/common.css" />
 
 <div class="org-container">
 
@@ -26,80 +25,6 @@
 
     <div id="categoryGrid" class="org-table"></div>
 </div>
-
-
-<style>
-    .org-container {
-        width: 100%;
-        max-width: 1160px;
-        margin: auto;
-        font-family: Inter;
-    }
-
-    .org-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        margin-top: 26px;
-    }
-
-        .org-header .left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-    .icon {
-        width: 35px;
-        height: 35px;
-        border-radius: 5px;
-    }
-
-    .icontext{
-        font-size:16px;
-        font-family:Inter;
-        font-weight:700;
-    }
-
-    .add-btn {
-        background: #FF8D28;
-        border: none;
-        padding: 8px 15px;
-        font-size: 12px;
-        font-weight: 600;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .search-bar {
-        margin-bottom: 20px;
-    }
-
-        .search-bar input {
-            width: 300px;
-            height: 35px;
-            padding-left: 10px;
-            border: 1px solid #D9D9D9;
-            border-radius: 5px;
-        }
-
-    .org-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-        .org-table th,
-        .org-table td {
-            border: 1px solid rgba(185,185,185,0.3);
-            padding: 10px;
-            font-size: 12px;
-        }
-
-        .org-table th {
-            font-weight: 700;
-        }
-</style>
 
 
 <!-- MODAL -->
